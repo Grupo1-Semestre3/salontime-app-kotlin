@@ -63,48 +63,63 @@ class UsuariosController {
     }
 
     @PutMapping("/{id}")
-    fun atualizar(@PathVariable id: Int, @RequestBody usuarioAtualizado: Usuarios): ResponseEntity<String> {
-        if (id in 0.. usuarios.size-1) {
-            return ResponseEntity.status(404).body("Usuário não encontrado")
-        }
+    fun atualizar(@PathVariable id: Int, @RequestBody usuarioAtualizado: Usuarios): ResponseEntity<Usuarios> {
+        val usuarioIndex = usuarios.indexOfFirst { it.id == id } // Busca pelo ID real
 
-        usuarios[id] = usuarioAtualizado
-        return ResponseEntity.ok("Usuário atualizado com sucesso!")
+        return if (usuarioIndex != -1) {
+            usuarios[usuarioIndex] = usuarioAtualizado
+            ResponseEntity.ok(usuarios[usuarioIndex])
+        } else {
+            ResponseEntity.status(404).build()
+        }
     }
 
-    @PatchMapping("/{id}/{novaSenha}")
-    fun mudarSenha(@PathVariable id:Int, @PathVariable novaSenha:String): ResponseEntity<Usuarios> {
-        if (id in 0..usuarios.size-1) {
-            usuarios[id].senha = novaSenha
-            return ResponseEntity.status(200).body(usuarios[id])
+    @PatchMapping("/mudarSenha/{id}/{novaSenha}")
+    fun mudarSenha(@PathVariable id: Int, @PathVariable novaSenha: String): ResponseEntity<Usuarios> {
+        val usuario = usuarios.find { it.id == id } // Busca o usuário pelo ID real
+
+        return if (usuario != null) {
+            usuario.senha = novaSenha
+            ResponseEntity.ok(usuario)
+        } else {
+            ResponseEntity.status(404).build()
         }
-        return ResponseEntity.status(404).build()
     }
 
-    @PatchMapping("/{id}/{novoEmail}")
-    fun mudarEmail(@PathVariable id:Int, @PathVariable novoEmail:String): ResponseEntity<Usuarios> {
-        if (id in 0..usuarios.size-1) {
-            usuarios[id].email = novoEmail
-            return ResponseEntity.status(200).body(usuarios[id])
+    @PatchMapping("/mudarEmail/{id}/{novoEmail}")
+    fun mudarEmail(@PathVariable id: Int, @PathVariable novoEmail: String): ResponseEntity<Usuarios> {
+        val usuario = usuarios.find { it.id == id } // Busca pelo ID dentro do objeto
+
+        return if (usuario != null) {
+            usuario.email = novoEmail
+            ResponseEntity.ok(usuario)
+        } else {
+            ResponseEntity.status(404).build() // Se não encontrar, retorna 404
         }
-        return ResponseEntity.status(404).build()
     }
 
-    @PatchMapping("/{id}/{novaCor}")
-    fun mudarCorCabelo(@PathVariable id:Int, @PathVariable novaCor:String): ResponseEntity<Usuarios> {
-        if (id in 0..usuarios.size-1) {
-            usuarios[id].corCabelo = novaCor
-            return ResponseEntity.status(200).body(usuarios[id])
+
+    @PatchMapping("/mudarCorCabelo/{id}/{novaCor}")
+    fun mudarCorCabelo(@PathVariable id: Int, @PathVariable novaCor: String): ResponseEntity<Usuarios> {
+        val usuario = usuarios.find { it.id == id } // Busca o usuário pelo ID real
+
+        return if (usuario != null) {
+            usuario.corCabelo = novaCor
+            ResponseEntity.ok(usuario)
+        } else {
+            ResponseEntity.status(404).build() // Retorna 404 se não encontrar
         }
-        return ResponseEntity.status(404).build()
     }
 
-    @PatchMapping("/{id}/{novoComprimento}")
-    fun mudarComprimentoCabelo(@PathVariable id:Int, @PathVariable novoComprimento:String): ResponseEntity<Usuarios> {
-        if (id in 0..usuarios.size-1) {
-            usuarios[id].tamanhoCabelo = novoComprimento
-            return ResponseEntity.status(200).body(usuarios[id])
+    @PatchMapping("/mudarCompCabelo/{id}/{novoComprimento}")
+    fun mudarComprimentoCabelo(@PathVariable id: Int, @PathVariable novoComprimento: String): ResponseEntity<Usuarios> {
+        val usuario = usuarios.find { it.id == id } // Busca o usuário pelo ID real
+
+        return if (usuario != null) {
+            usuario.tamanhoCabelo = novoComprimento
+            ResponseEntity.ok(usuario)
+        } else {
+            ResponseEntity.status(404).build()
         }
-        return ResponseEntity.status(404).build()
     }
 }
