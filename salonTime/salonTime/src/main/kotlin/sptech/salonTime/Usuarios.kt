@@ -13,9 +13,7 @@ data class Usuarios (
     var cpf: String? = null,
     var email: String? = null,
     var senha: String? = null,
-    var admin: Boolean? = null,
-    var tamanhoCabelo: String? = null,
-    var corCabelo: String? = null
+    var admin: Boolean? = null
 ) {
 
 }
