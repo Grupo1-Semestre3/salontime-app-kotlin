@@ -10,38 +10,44 @@ class UsuariosController {
     var usuarios = mutableListOf<Usuarios>()
 
 
+//    @GetMapping
+//    fun login(@RequestParam(required = false) email:String?,
+//              @RequestParam(required = false) senha:String?): ResponseEntity<List<Usuarios>> {
+//        if (email == null && senha == null) {
+//            if (usuarios.isEmpty()) {
+//                return ResponseEntity.status(204).build()
+//            }
+//            return ResponseEntity.status(200).body(usuarios)
+//        }
+//
+//        val filtraEmail = email != null
+//        val filtraSenha = senha != null
+//
+//        val listaFiltrada = mutableListOf<Usuarios>()
+//
+//        if (filtraEmail && filtraSenha) {
+//            listaFiltrada.addAll(usuarios.filter {
+//                it.email == email || it.senha == senha
+//            })
+//        }
+//        else if (filtraEmail) {
+//           listaFiltrada.addAll(usuarios.filter{ it.email == email })
+//        } else {
+//            listaFiltrada.addAll(usuarios.filter { it.senha!! == senha!! })
+//        }
+//
+//        if (listaFiltrada.isEmpty()) {
+//            return ResponseEntity.status(204).build()
+//        }
+//
+//        return ResponseEntity.status(200).body(listaFiltrada)
+//
+//    }
+
+
     @GetMapping
-    fun login(@RequestParam(required = false) email:String?,
-              @RequestParam(required = false) senha:String?): ResponseEntity<List<Usuarios>> {
-        if (email == null && senha == null) {
-            if (usuarios.isEmpty()) {
-                return ResponseEntity.status(204).build()
-            }
-            return ResponseEntity.status(200).body(usuarios)
-        }
-
-        val filtraEmail = email != null
-        val filtraSenha = senha != null
-
-        val listaFiltrada = mutableListOf<Usuarios>()
-
-        if (filtraEmail && filtraSenha) {
-            listaFiltrada.addAll(usuarios.filter {
-                it.email == email || it.senha == senha
-            })
-        }
-        else if (filtraEmail) {
-           listaFiltrada.addAll(usuarios.filter{ it.email == email })
-        } else {
-            listaFiltrada.addAll(usuarios.filter { it.senha!! == senha!! })
-        }
-
-        if (listaFiltrada.isEmpty()) {
-            return ResponseEntity.status(204).build()
-        }
-
-        return ResponseEntity.status(200).body(listaFiltrada)
-
+    fun listar(): ResponseEntity<List<Usuarios>>{
+        return ResponseEntity.status(200).body(usuarios)
     }
 
     @PostMapping
@@ -74,12 +80,12 @@ class UsuariosController {
         }
     }
 
-    @PatchMapping("/mudarSenha/{id}/{novaSenha}")
-    fun mudarSenha(@PathVariable id: Int, @PathVariable novaSenha: String): ResponseEntity<Usuarios> {
+    @PatchMapping("/mudarSenha/{id}")
+    fun mudarSenha(@RequestBody novaSenha: Usuarios, @PathVariable id: Int): ResponseEntity<Usuarios> {
         val usuario = usuarios.find { it.id == id } // Busca o usuário pelo ID real
 
         return if (usuario != null) {
-            usuario.senha = novaSenha
+            usuario.senha = novaSenha.senha
             ResponseEntity.ok(usuario)
         } else {
             ResponseEntity.status(404).build()
