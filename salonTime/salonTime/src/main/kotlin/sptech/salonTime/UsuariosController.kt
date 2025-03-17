@@ -105,27 +105,4 @@ class UsuariosController {
     }
 
 
-    @PatchMapping("/mudarCorCabelo/{id}/{novaCor}")
-    fun mudarCorCabelo(@PathVariable id: Int, @PathVariable novaCor: String): ResponseEntity<Usuarios> {
-        val usuario = usuarios.find { it.id == id } // Busca o usuário pelo ID real
-
-        return if (usuario != null) {
-            usuario.corCabelo = novaCor
-            ResponseEntity.ok(usuario)
-        } else {
-            ResponseEntity.status(404).build() // Retorna 404 se não encontrar
-        }
-    }
-
-    @PatchMapping("/mudarCompCabelo/{id}/{novoComprimento}")
-    fun mudarComprimentoCabelo(@PathVariable id: Int, @PathVariable novoComprimento: String): ResponseEntity<Usuarios> {
-        val usuario = usuarios.find { it.id == id } // Busca o usuário pelo ID real
-
-        return if (usuario != null) {
-            usuario.tamanhoCabelo = novoComprimento
-            ResponseEntity.ok(usuario)
-        } else {
-            ResponseEntity.status(404).build()
-        }
-    }
 }
