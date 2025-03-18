@@ -50,6 +50,18 @@ class UsuariosController {
         return ResponseEntity.status(200).body(usuarios)
     }
 
+    @GetMapping("/{id}")
+    fun listarPorid(@PathVariable id: Int): ResponseEntity<Usuarios>{
+
+        val usuarioEncontrado = usuarios.find { it.id == id }
+
+        if (usuarioEncontrado == null){
+            return ResponseEntity.status(404).build()
+        }
+
+        return ResponseEntity.status(200).body(usuarioEncontrado)
+    }
+
     @PostMapping
     fun criar(@RequestBody novoUsuario: Usuarios): ResponseEntity<Usuarios> {
         usuarios.add(novoUsuario)
@@ -62,9 +74,9 @@ class UsuariosController {
 
         return if (usuario != null) {
             usuarios.remove(usuario)
-            ResponseEntity.status(200).body("Usuário excluído com sucesso")
+            ResponseEntity.status(200).body("Usuário com id "+ id +" excluído com sucesso")
         } else {
-            ResponseEntity.status(404).body("Usuário não encontrado")
+            ResponseEntity.status(404).body("Usuário com id "+ id +" não encontrado")
         }
     }
 
@@ -92,8 +104,8 @@ class UsuariosController {
         }
     }
 
-    @PatchMapping("/mudarEmail/{id}/{novoEmail}")
-    fun mudarEmail(@PathVariable id: Int, @PathVariable novoEmail: String): ResponseEntity<Usuarios> {
+    @PatchMapping("/mudarEmail/{id}")
+    fun mudarEmail(@PathVariable id: Int, @RequestBody novoEmail: String): ResponseEntity<Usuarios> {
         val usuario = usuarios.find { it.id == id } // Busca pelo ID dentro do objeto
 
         return if (usuario != null) {
