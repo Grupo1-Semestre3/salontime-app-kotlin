@@ -10,18 +10,20 @@ data class Agendamento(
 
     @ManyToOne
     @JoinColumn(name = "fk_servico")
-    val servico: Servico,
+    val servico: Servico?,
 
     @ManyToOne
     @JoinColumn(name = "fk_usuario")
-    val usuario: Usuario,
+    val usuario: Usuario?,
 
     @ManyToOne
     @JoinColumn(name = "fk_status")
-    val status: StatusAgendamento,
+    val status: StatusAgendamento?,
 
-    val data: LocalDate,
-    val inicio: LocalTime,
-    val fim: LocalTime,
-    val preco: Double
-)
+    val data: LocalDate?,
+    val inicio: LocalTime?,
+    val fim: LocalTime?,
+    val preco: Double?
+){
+    constructor():this(0, null, null, null, null, null, null, 0.0)
+}
