@@ -1,19 +1,26 @@
 package sptech.salonTime.entidade
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.persistence.*
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.PositiveOrZero
+import jakarta.validation.constraints.Size
 import java.time.LocalTime
 
 @Entity
 @Table(name = "servico")
 data class Servico(
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int = 0,
-
-    val nome: String? = null,
-    val preco: Double? = null,
-    val tempo: LocalTime? = null,
-    val status: String? = null,
-    val simultaneo: Boolean? = false
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Id // do pacote jakarta.persistence- transforma em pk
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id:Int?,
+    @field:NotBlank @field:Size(min = 1, max = 20)
+    var nome: String?,
+    @field:PositiveOrZero var preco: Double?,
+    var tempo: LocalTime?,
+    /*material do reis - formatação horario*/
+    var status: String? = null,
+    var simultaneo: Boolean? = false
 ){
     constructor() : this(0, null, null, null, null, null)
 }
