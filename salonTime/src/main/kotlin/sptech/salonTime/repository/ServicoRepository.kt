@@ -18,8 +18,21 @@ A instrução de atualização é feita em JPQL
 sempre na anotação @Query
  */
 
+    @Modifying
+    @Transactional
     @Query("update Servico s set s.simultaneo = true where s.id = ?1")
-    fun atualizarSimultaneo(id: Int): Int
+    fun ativarSimultaneo(id: Int): Int
 
+    @Modifying
+    @Transactional
+    @Query("update Servico s set s.simultaneo = false where s.id = ?1")
+    fun desativarSimultaneo(id: Int): Int
+
+    @Modifying
+    @Transactional
+    @Query("update Servico s set s.status = 'INATIVO' where s.id = ?1")
+    fun mudarStatus(id: Int): Int
+
+    fun findAllByStatus(status: String): List<Servico>
 
 }

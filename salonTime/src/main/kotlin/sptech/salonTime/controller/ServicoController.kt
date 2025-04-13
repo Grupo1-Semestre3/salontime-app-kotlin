@@ -12,8 +12,8 @@ import sptech.salonTime.repository.ServicoRepository
 class ServicoController(val repositorio: ServicoRepository) {
 
     @GetMapping
-    fun get(): ResponseEntity<List<Servico>> {
-        val servicos = repositorio.findAll()
+    fun getAtivo(): ResponseEntity<List<Servico>> {
+        val servicos = repositorio.findAllByStatus("ATIVO")
         return if (servicos.isEmpty()) {
             ResponseEntity.status(204).build()
         } else {
@@ -22,17 +22,18 @@ class ServicoController(val repositorio: ServicoRepository) {
     }
 
     @GetMapping("/{id}")
-    fun get(@PathVariable id:Int):
+    fun getbYId(@PathVariable id:Int):
             ResponseEntity<Servico> {
         val servico = repositorio.findById(id)
         return ResponseEntity.of(servico)
     }
 
-    @DeleteMapping("/{id}")
+    //Seria o deletar
+    @PatchMapping("status-desativar/{id}")
     fun delete (@PathVariable id:Int):
             ResponseEntity<Void> {
         if (repositorio.existsById(id)){
-            repositorio.deleteById(id)
+            repositorio.mudarStatus(id)
             return ResponseEntity.status(204).build()
         }
         return ResponseEntity.status(404).build()
@@ -47,7 +48,6 @@ class ServicoController(val repositorio: ServicoRepository) {
 
     @PutMapping("/{id}")
     fun put (@PathVariable id:Int, @RequestBody servicoAtualizado: Servico):
-
             ResponseEntity<Servico>{
 
         if (!repositorio.existsById(id)) {
@@ -59,28 +59,29 @@ class ServicoController(val repositorio: ServicoRepository) {
 
     }
 
-//    @PatchMapping("/{id}")
-//    fun desativar(@PathVariable id: Int): ResponseEntity<Servico> {
-//        val atualizados = repositorio.atualizarStatus(id)
-//
-//        if (atualizados == 0) {
-//            return ResponseEntity.status(404).build()
-//        }
-//
-//        val servicoAtualizado = repositorio.findById(id).get()
-//        return ResponseEntity.status(200).body(servicoAtualizado)
-//    }
 
-    @PatchMapping("/{id}")
-    fun atualizarSimultaneo(@PathVariable id: Int): ResponseEntity<Servico> {
-        val atualizados = repositorio.atualizarSimultaneo(id)
+    @PatchMapping("ativar-simultaneo/{id}")
+    fun ativarSimultaneo(@PathVariable id: Int): ResponseEntity<Servico> {
 
-        if (atualizados == 0) {
+        if (repositorio.existsById(id)){
+            val atualizados = repositorio.ativarSimultaneo(id)
+            val servicoAtualizado = repositorio.findById(id).get()
+            return ResponseEntity.status(200).body(servicoAtualizado)
+        }else{
             return ResponseEntity.status(404).build()
         }
+    }
 
-        val servicoAtualizado = repositorio.findById(id).get()
-        return ResponseEntity.status(200).body(servicoAtualizado)
+    @PatchMapping("desativar-simultaneo/{id}")
+    fun desativarSimultaneo(@PathVariable id: Int): ResponseEntity<Servico> {
+
+        if (repositorio.existsById(id)){
+            val atualizados = repositorio.desativarSimultaneo(id)
+            val servicoAtualizado = repositorio.findById(id).get()
+            return ResponseEntity.status(200).body(servicoAtualizado)
+        }else{
+            return ResponseEntity.status(404).build()
+        }
     }
 
 }
