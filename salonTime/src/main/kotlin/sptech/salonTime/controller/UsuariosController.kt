@@ -54,29 +54,18 @@ class UsuariosController (val repositorio: UsuarioRepository){
         }
     }
 
-//    @PatchMapping("/mudarSenha/{id}")
-//    fun mudarSenha(@RequestBody novaSenha: Usuarios, @PathVariable id: Int): ResponseEntity<Usuarios> {
-//        val usuario = usuarios.find { it.id == id } // Busca o usuário pelo ID real
-//
-//        return if (usuario != null) {
-//            usuario.senha = novaSenha.senha
-//            ResponseEntity.ok(usuario)
-//        } else {
-//            ResponseEntity.status(404).build()
-//        }
-//    }
-//
-//    @PatchMapping("/mudarEmail/{id}")
-//    fun mudarEmail(@PathVariable id: Int, @RequestBody novoEmail: String): ResponseEntity<Usuarios> {
-//        val usuario = usuarios.find { it.id == id } // Busca pelo ID dentro do objeto
-//
-//        return if (usuario != null) {
-//            usuario.email = novoEmail
-//            ResponseEntity.ok(usuario)
-//        } else {
-//            ResponseEntity.status(404).build() // Se não encontrar, retorna 404
-//        }
-//    }
+    @PatchMapping("login/{id}")
+    fun login(@PathVariable id: Int): ResponseEntity<Usuario> {
+        return if (repositorio.existsById(id)) {
+            var usuarioEncontrado = repositorio.findById(id).get()
+            usuarioEncontrado.id = id
+            usuarioEncontrado.login = true
+            val usuarioSalvo = repositorio.save(usuarioEncontrado)
+            ResponseEntity.status(201).body(usuarioSalvo)
+        } else {
+            ResponseEntity.status(404).build()
+        }
+    }
 
 
 }

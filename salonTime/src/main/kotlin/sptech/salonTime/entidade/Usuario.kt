@@ -24,7 +24,8 @@ data class Usuario(
     val telefone: String? = null,
     val cpf: String? = null,
     val email: String? = null,
-    val senha: String? = null
+    val senha: String? = null,
+    var login: Boolean = false,
 ){
     constructor() : this(0, null, null, null, null, null, null)
 }
