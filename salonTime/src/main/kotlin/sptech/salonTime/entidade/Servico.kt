@@ -18,7 +18,6 @@ data class Servico(
     var nome: String?,
     @field:PositiveOrZero var preco: Double?,
     var tempo: LocalTime?,
-    /*material do reis - formatação horario*/
     var status: String? = null,
     var simultaneo: Boolean? = false,
     var descricao: String? = null,

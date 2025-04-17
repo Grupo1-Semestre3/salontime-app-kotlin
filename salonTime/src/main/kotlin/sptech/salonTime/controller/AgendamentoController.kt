@@ -47,7 +47,7 @@ class AgendamentoController(val repository: AgendamentoRepository, val statusAge
     @PostMapping
     fun post(@RequestBody @Valid novoAgendamento: Agendamento): ResponseEntity<Agendamento> {
         val existeAgendamento = repository.existeConflitoDeAgendamento(novoAgendamento.data, novoAgendamento.inicio, novoAgendamento.fim)
-        if (existeAgendamento) {
+        if (existeAgendamento>0) {
             return ResponseEntity.status(400).build()
         }
         val agendamento = repository.save(novoAgendamento)
@@ -65,14 +65,7 @@ class AgendamentoController(val repository: AgendamentoRepository, val statusAge
                     "inicio" -> agendamento.copy(inicio = LocalTime.parse(novoValor))
                     "fim" -> agendamento.copy(fim = LocalTime.parse(novoValor))
                     "preco" -> agendamento.copy(preco = novoValor.toDouble())
-                    "status" -> {
-                        val statusAgendamento = statusAgendamentoRepository.findById(novoValor.toInt()).orElse(null)
-                        if (statusAgendamento != null) {
-                            agendamento.copy(status = statusAgendamento)
-                        } else {
-                            return ResponseEntity.status(400).build()
-                        }
-                    }
+                    "status" -> agendamento.copy(fkStatus = novoValor.toInt())
                     else -> return ResponseEntity.status(400).build()
                 }
                 return ResponseEntity.status(200).body(repository.save(agendamentoAtualizado))

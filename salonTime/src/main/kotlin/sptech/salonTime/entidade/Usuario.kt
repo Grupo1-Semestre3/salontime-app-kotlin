@@ -16,15 +16,18 @@ data class Usuario(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int = 0,
 
-    @ManyToOne
-    @JoinColumn(name = "fk_tipo_usuario")
-    val tipoUsuario: TipoUsuario?,
+    val tipoUsuario: Int?,
 
     val nome: String? = null,
+
     val telefone: String? = null,
+
     val cpf: String? = null,
+
     val email: String? = null,
+
     val senha: String? = null,
+
     var login: Boolean = false
 ){
     constructor() : this(0, null, null, null, null, null, null)

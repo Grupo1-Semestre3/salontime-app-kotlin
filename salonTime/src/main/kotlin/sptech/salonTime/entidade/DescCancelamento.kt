@@ -10,7 +10,5 @@ data class DescCancelamento(
 
     val descricao: String? = null,
 
-    @ManyToOne
-    @JoinColumn(name = "agendamento_id")
-    val agendamento: Agendamento
+    val agendamentoId: Int?
 )

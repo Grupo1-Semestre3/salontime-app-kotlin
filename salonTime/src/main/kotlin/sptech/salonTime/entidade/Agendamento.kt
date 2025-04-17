@@ -8,21 +8,18 @@ data class Agendamento(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int = 0,
 
-    @ManyToOne
-    @JoinColumn(name = "fk_servico")
-    val servico: Servico?,
+    val fkServico: Int?,
 
-    @ManyToOne
-    @JoinColumn(name = "fk_usuario")
-    val usuario: Usuario?,
+    val fkUsuario: Int?,
 
-    @ManyToOne
-    @JoinColumn(name = "fk_status")
-    val status: StatusAgendamento?,
+    val fkStatus: Int?,
 
     val data: LocalDate?,
+
     val inicio: LocalTime?,
+
     val fim: LocalTime?,
+
     val preco: Double?
 ){
     constructor():this(0, null, null, null, null, null, null, 0.0)

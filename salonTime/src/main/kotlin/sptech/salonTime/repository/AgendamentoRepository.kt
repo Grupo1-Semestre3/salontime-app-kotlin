@@ -7,7 +7,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
-    @Query(value = "SELECT * FROM agendamento WHERE (data > CURDATE()) OR (data = CURDATE() AND inicio > CURTIME()) ORDER BY data ASC, inicio ASC LIMIT", nativeQuery = true)
+    @Query(value = "SELECT * FROM agendamento WHERE (data > CURDATE()) OR (data = CURDATE() AND inicio > CURTIME()) ORDER BY data ASC, inicio ASC", nativeQuery = true)
     fun buscarProximosAgendamentos(): List<Agendamento>
 
     @Query(
@@ -19,5 +19,5 @@ interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
     """,
         nativeQuery = true
     )
-    fun existeConflitoDeAgendamento(data: LocalDate?, inicio: LocalTime?, fim: LocalTime?): Boolean
+    fun existeConflitoDeAgendamento(data: LocalDate?, inicio: LocalTime?, fim: LocalTime?): Long
 }

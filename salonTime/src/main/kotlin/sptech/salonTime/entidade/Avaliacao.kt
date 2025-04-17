@@ -9,9 +9,8 @@ data class Avaliacao(
     @Column(name = "fk_agendamento")
     val id: Int = 0,
 
-    @OneToOne
     @JoinColumn(name = "fk_agendamento", insertable = false, updatable = false)
-    val agendamento: Agendamento,
+    val agendamento: Int,
 
     @Column(name = "nota_servico")
     val notaServico: Int,
