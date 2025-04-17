@@ -54,7 +54,7 @@ class UsuariosController (val repositorio: UsuarioRepository){
         }
     }
 
-    @PatchMapping("login/{id}")
+    @PatchMapping("/login/{id}")
     fun login(@PathVariable id: Int): ResponseEntity<Usuario> {
         return if (repositorio.existsById(id)) {
             var usuarioEncontrado = repositorio.findById(id).get()
@@ -67,5 +67,17 @@ class UsuariosController (val repositorio: UsuarioRepository){
         }
     }
 
+    @PatchMapping("/logoff/{id}")
+    fun logoff(@PathVariable id: Int): ResponseEntity<Usuario> {
+        return if (repositorio.existsById(id)) {
+            var usuarioEncontrado = repositorio.findById(id).get()
+            usuarioEncontrado.id = id
+            usuarioEncontrado.login = false
+            val usuarioSalvo = repositorio.save(usuarioEncontrado)
+            ResponseEntity.status(201).body(usuarioSalvo)
+        } else {
+            ResponseEntity.status(404).build()
+        }
+    }
 
 }
