@@ -7,7 +7,6 @@ import jakarta.persistence.*
 data class InfoSalao(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int = 0,
-
     val email: String? = null,
     val telefone: String? = null,
     val logradouro: String? = null,

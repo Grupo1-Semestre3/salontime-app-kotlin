@@ -20,7 +20,9 @@ data class Servico(
     var tempo: LocalTime?,
     /*material do reis - formatação horario*/
     var status: String? = null,
-    var simultaneo: Boolean? = false
+    var simultaneo: Boolean? = false,
+    var descricao: String? = null,
+    var foto: ByteArray? = null,
 ){
     constructor() : this(0, null, null, null, null, null)
 }

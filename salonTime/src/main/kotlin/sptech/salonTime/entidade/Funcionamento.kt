@@ -15,7 +15,6 @@ data class Funcionamento(
     @Enumerated(EnumType.STRING)
     @Column(name = "dia_semana")
     val diaSemana: DiaSemana,
-
     val inicio: LocalTime,
     val fim: LocalTime,
     val aberto: Boolean,
