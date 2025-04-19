@@ -30,10 +30,20 @@ class ServicoController(val repositorio: ServicoRepository) {
 
     //Seria o deletar
     @PatchMapping("status-desativar/{id}")
-    fun delete (@PathVariable id:Int):
+    fun desativar (@PathVariable id:Int):
             ResponseEntity<Void> {
         if (repositorio.existsById(id)){
-            repositorio.mudarStatus(id)
+            repositorio.mudarStatus(id, "INATIVO")
+            return ResponseEntity.status(204).build()
+        }
+        return ResponseEntity.status(404).build()
+    }
+
+    @PatchMapping("status-ativar/{id}")
+    fun ativar (@PathVariable id:Int):
+            ResponseEntity<Void> {
+        if (repositorio.existsById(id)){
+            repositorio.mudarStatus(id, "ATIVO")
             return ResponseEntity.status(204).build()
         }
         return ResponseEntity.status(404).build()

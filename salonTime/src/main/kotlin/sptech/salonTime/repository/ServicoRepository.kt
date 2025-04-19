@@ -30,8 +30,8 @@ sempre na anotação @Query
 
     @Modifying
     @Transactional
-    @Query("update Servico s set s.status = 'INATIVO' where s.id = ?1")
-    fun mudarStatus(id: Int): Int
+    @Query("update Servico s set s.status = ?2 where s.id = ?1")
+    fun mudarStatus(id: Int, status: String): Int
 
     fun findAllByStatus(status: String): List<Servico>
 
