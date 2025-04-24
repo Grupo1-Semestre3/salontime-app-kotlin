@@ -16,7 +16,7 @@ data class Usuario(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int = 0,
 
-    val tipoUsuario: Int?,
+    val fkTipoUsuario: Int?,
 
     val nome: String? = null,
 
@@ -24,9 +24,9 @@ data class Usuario(
 
     val cpf: String? = null,
 
-    val email: String? = null,
+    var email: String? = null,
 
-    val senha: String? = null,
+    var senha: String? = null,
 
     var login: Boolean = false
 ){

@@ -2,6 +2,8 @@ package sptech.salonTime.controller
 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import sptech.salonTime.dto.EmailDto
+import sptech.salonTime.dto.SenhaDto
 import sptech.salonTime.entidade.Usuario
 import sptech.salonTime.repository.UsuarioRepository
 import java.util.*
@@ -9,10 +11,10 @@ import java.util.*
 
 @RestController
 @RequestMapping("/usuarios")
-class UsuariosController (val repositorio: UsuarioRepository){
+class UsuariosController (val repositorio: UsuarioRepository) {
 
     @GetMapping
-    fun listar(): ResponseEntity<List<Usuario>>{
+    fun listar(): ResponseEntity<List<Usuario>> {
         return ResponseEntity.ok(repositorio.findAll())
     }
 
@@ -80,4 +82,28 @@ class UsuariosController (val repositorio: UsuarioRepository){
         }
     }
 
+    @PatchMapping("/mudarSenha/{id}")
+    fun mudarSenha(@PathVariable id: Int, @RequestBody novaSenha:SenhaDto): ResponseEntity<Usuario> {
+        return if (repositorio.existsById(id)) {
+            var usuarioEncontrado = repositorio.findById(id).get()
+            usuarioEncontrado.id = id
+            usuarioEncontrado.senha = novaSenha.senha
+            val usuarioSalvo = repositorio.save(usuarioEncontrado)
+            ResponseEntity.status(201).body(usuarioSalvo)
+        } else {
+            ResponseEntity.status(404).build()
+        }
+    }
+    @PatchMapping("/mudarEmail/{id}")
+    fun mudarEmail(@PathVariable id: Int, @RequestBody novoEmail:EmailDto): ResponseEntity<Usuario> {
+        return if (repositorio.existsById(id)) {
+            var usuarioEncontrado = repositorio.findById(id).get()
+            usuarioEncontrado.id = id
+            usuarioEncontrado.email = novoEmail.email
+            val usuarioSalvo = repositorio.save(usuarioEncontrado)
+            ResponseEntity.status(201).body(usuarioSalvo)
+        } else {
+            ResponseEntity.status(404).build()
+        }
+    }
 }
