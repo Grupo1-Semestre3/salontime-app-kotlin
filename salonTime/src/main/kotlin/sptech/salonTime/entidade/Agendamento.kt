@@ -13,6 +13,7 @@ data class Agendamento(
     val fkUsuario: Int?,
 
     val fkStatus: Int?,
+    val fkPagamento: Int?,
 
     val data: LocalDate?,
 
@@ -22,5 +23,5 @@ data class Agendamento(
 
     val preco: Double?
 ){
-    constructor():this(0, null, null, null, null, null, null, 0.0)
+    constructor():this(0, null, null, null, null, null, null, null, 0.0)
 }

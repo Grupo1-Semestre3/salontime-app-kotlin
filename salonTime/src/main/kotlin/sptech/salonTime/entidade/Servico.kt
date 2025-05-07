@@ -14,7 +14,7 @@ data class Servico(
     @Id // do pacote jakarta.persistence- transforma em pk
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id:Int?,
-    @field:NotBlank @field:Size(min = 1, max = 20)
+    @field:NotBlank @field:Size(min = 1, max = 50)
     var nome: String?,
     @field:PositiveOrZero var preco: Double?,
     var tempo: LocalTime?,

@@ -9,10 +9,10 @@ data class Pagamento (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int = 0,
-    var forma: String? = null
-
+    var forma: String? = null,
+    var taxa: Double? = null
 
 
 ){
-        constructor():this(0, null)
+        constructor():this(0, null, null)
 }
