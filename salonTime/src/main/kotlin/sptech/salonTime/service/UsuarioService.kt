@@ -6,10 +6,9 @@ import sptech.salonTime.entidade.Usuario
 import sptech.salonTime.repository.UsuarioRepository
 
 @Service
-class UsuarioService {
+class UsuarioService (val repository: UsuarioRepository?) {
 
-    @Autowired
-    val repository: UsuarioRepository? = null
+
 
     fun listar(): List<Usuario> {
         return repository?.findAll() ?: emptyList()
