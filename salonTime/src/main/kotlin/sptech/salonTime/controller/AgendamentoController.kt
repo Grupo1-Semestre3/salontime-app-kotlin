@@ -30,60 +30,23 @@ class AgendamentoController(val repository: AgendamentoRepository, val statusAge
 
     @GetMapping("/{id}")
     fun getById(@PathVariable id: Int): ResponseEntity<Agendamento> {
-        val agendamento = repository.findById(id)
-
-        return if (agendamento.isPresent()) {
-            ResponseEntity.status(200).body(agendamento.get())
-        } else {
-            ResponseEntity.status(404).build()
-        }
+        return ResponseEntity.status(200).body(service.listarPorId(id))
     }
 
     @PostMapping
-    fun post(@RequestBody @Valid novoAgendamento: Agendamento): ResponseEntity<Agendamento> {
-        val existeAgendamento = repository.existeConflitoDeAgendamento(novoAgendamento.data, novoAgendamento.inicio, novoAgendamento.fim)
-        if (existeAgendamento>0) {
-            return ResponseEntity.status(400).build()
-        }
-        val agendamento = repository.save(novoAgendamento)
-        return ResponseEntity.status(201).body(agendamento)
+    fun post(@RequestBody @Valid agendamento: Agendamento): ResponseEntity<Agendamento> {
+        return ResponseEntity.status(201).body(service.cadastrar(agendamento))
     }
+
 //O campo de fim não pode ser alterado manualmente, pois ele é um cálculo baseado no campo de início e na duração do serviço. O campo de fim é calculado automaticamente com base no horário de início e na duração do serviço associado ao agendamento. Portanto, não é necessário ou apropriado permitir que o usuário altere manualmente esse campo.
     @PatchMapping("/{atributo}/{id}/{novoValor}")
     fun patch(@PathVariable id: Int, @PathVariable atributo: String, @PathVariable novoValor:String): ResponseEntity<Agendamento> {
-        val agendamento = repository.findById(id).orElse(null)
-
-        if (agendamento != null) {
-            try {
-                val agendamentoAtualizado = when (atributo) {
-                    "data" -> agendamento.copy(data = LocalDate.parse(novoValor))
-                    "inicio" -> agendamento.copy(inicio = LocalTime.parse(novoValor))
-                    "fim" -> agendamento.copy(fim = LocalTime.parse(novoValor))
-                    "preco" -> agendamento.copy(preco = novoValor.toDouble())
-                    "status" -> agendamento.copy(statusAgendamento = novoValor.toInt().let { statusAgendamentoRepository.findById(it).orElse(null) })
-                    else -> return ResponseEntity.status(400).build()
-                }
-                return ResponseEntity.status(200).body(repository.save(agendamentoAtualizado))
-            } catch (e: Exception) {
-                return ResponseEntity.status(400).build()
-            }
-        } else {
-            return ResponseEntity.status(404).build()
-        }
+        return ResponseEntity.status(200).body(service.atualizarAtributo(id, atributo, novoValor))
     }
 
-    @GetMapping("proximos")
+    @GetMapping("/proximos")
     fun getProximosAgendamentos():ResponseEntity<List<Agendamento>>{
-        val agendamentos = repository.buscarProximosAgendamentos()
-        return ResponseEntity.status(201).body(agendamentos)
+        return ResponseEntity.status(201).body(service.buscarProximosAgendamentos())
     }
 
-    @DeleteMapping("/{id}")
-    fun deleteById(@PathVariable id: Int): ResponseEntity<Void> {
-        if (repository.existsById(id)){
-            repository.deleteById(id)
-            return ResponseEntity.status(204).build()
-        }
-        return ResponseEntity.status(404).build()
-    }
 }

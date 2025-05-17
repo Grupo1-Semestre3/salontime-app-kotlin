@@ -1,5 +1,5 @@
 package sptech.salonTime.exception
 
-class AgendamentoNaoEncontradoException(
+class AvaliacaoNaoExisteException(
     message: String
 ): RuntimeException(message)

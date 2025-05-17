@@ -1,24 +1,33 @@
 package sptech.salonTime.entidade
 import jakarta.persistence.*
+import jakarta.validation.constraints.FutureOrPresent
+import jakarta.validation.constraints.NotNull
 import java.time.LocalDateTime
 
 @Entity
 @Table(name = "avaliacao")
 data class Avaliacao(
     @Id
-    @Column(name = "fk_agendamento")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int = 0,
 
-    @JoinColumn(name = "fk_agendamento", insertable = false, updatable = false)
-    val agendamento: Int,
+    @OneToOne
+    val agendamento: Agendamento?,
 
-    @Column(name = "nota_servico")
-    val notaServico: Int,
+    @ManyToOne
+    val usuario: Usuario?,
 
-    @Column(name = "descricao_servico")
+    @NotNull
+    val notaServico: Int? = null,
+
+    @NotNull
     val descricaoServico: String? = null,
 
-    @Column(name = "data_horario")
-    val dataHorario: LocalDateTime
-)
+    @NotNull
+    @FutureOrPresent
+    val dataHorario: LocalDateTime? = null
+){
+    constructor() : this(0, null, null, null, null, null)
+}
+
 
