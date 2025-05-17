@@ -14,23 +14,18 @@ import sptech.salonTime.entidade.Agendamento
 
 import sptech.salonTime.repository.AgendamentoRepository
 import sptech.salonTime.repository.StatusAgendamentoRepository
+import sptech.salonTime.service.AgendamentoService
+import sptech.salonTime.service.UsuarioService
 import java.time.LocalDate
 import java.time.LocalTime
 
 @RestController
 @RequestMapping("/agendamento")
 
-class AgendamentoController(val repository: AgendamentoRepository, val statusAgendamentoRepository: StatusAgendamentoRepository) {
+class AgendamentoController(val repository: AgendamentoRepository, val statusAgendamentoRepository: StatusAgendamentoRepository, val service: AgendamentoService) {
     @GetMapping
     fun get():ResponseEntity<List<Agendamento>>{
-        val agendamentos = repository.findAll()
-
-        return if (agendamentos.isEmpty()){
-            ResponseEntity.status(204).build()
-        }
-        else{
-            ResponseEntity.status(200).body(agendamentos)
-        }
+        return ResponseEntity.status(200).body(service.listar())
     }
 
     @GetMapping("/{id}")
@@ -65,7 +60,7 @@ class AgendamentoController(val repository: AgendamentoRepository, val statusAge
                     "inicio" -> agendamento.copy(inicio = LocalTime.parse(novoValor))
                     "fim" -> agendamento.copy(fim = LocalTime.parse(novoValor))
                     "preco" -> agendamento.copy(preco = novoValor.toDouble())
-                    "status" -> agendamento.copy(fkStatus = novoValor.toInt())
+                    "status" -> agendamento.copy(statusAgendamento = novoValor.toInt().let { statusAgendamentoRepository.findById(it).orElse(null) })
                     else -> return ResponseEntity.status(400).build()
                 }
                 return ResponseEntity.status(200).body(repository.save(agendamentoAtualizado))
