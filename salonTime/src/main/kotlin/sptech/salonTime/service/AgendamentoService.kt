@@ -1,16 +1,12 @@
 package sptech.salonTime.service
 
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import sptech.salonTime.dto.CadastroAgendamentoDto
 import sptech.salonTime.entidade.Agendamento
-import sptech.salonTime.exception.AgendamentoNaoEncontradoException
-import sptech.salonTime.exception.AtributoInvalidoAoAtualizarException
-import sptech.salonTime.exception.ConflitoDeAgendamentoException
+import sptech.salonTime.exception.*
 import sptech.salonTime.repository.*
 import java.time.LocalDate
 import java.time.LocalTime
-import java.util.*
 
 @Service
 class AgendamentoService(private val repository: AgendamentoRepository, val pagamentoRepository: PagamentoRepository, val usuarioRepository: UsuarioRepository, val statusAgendamentoRepository: StatusAgendamentoRepository, val servicoRepository: ServicoRepository) {
@@ -43,15 +39,15 @@ class AgendamentoService(private val repository: AgendamentoRepository, val paga
             }
 
             val usuario = usuarioRepository.findById(agendamento.usuario)
-                .orElseThrow { IllegalArgumentException("Usuário não encontrado") }
+                .orElseThrow { UsuarioNaoEncontradoException("Usuário não encontrado") }
             val statusAgendamento = statusAgendamentoRepository.findById(agendamento.statusAgendamento)
-                .orElseThrow { IllegalArgumentException("Status de agendamento não encontrado") }
+                .orElseThrow { StatusAgendamentoNaoEncontradoException("Status de agendamento não encontrado") }
             val servico = servicoRepository.findById(agendamento.servico)
-                .orElseThrow { IllegalArgumentException("Serviço não encontrado") }
+                .orElseThrow { ServicoNaoEcontradoException("Serviço não encontrado") }
             val pagamento = pagamentoRepository.findById(agendamento.pagamento)
-                .orElseThrow { IllegalArgumentException("Pagamento não encontrado") }
+                .orElseThrow { PagamentoNaoEncontradoException("Pagamento não encontrado") }
             val funcinario = usuarioRepository.findById(agendamento.funcionario)
-                .orElseThrow { IllegalArgumentException("Funcionário não encontrado") }
+                .orElseThrow { UsuarioNaoEncontradoException("Funcionário não encontrado") }
 
             val novoAgendamento = Agendamento(
                 usuario = usuario,

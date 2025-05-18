@@ -48,7 +48,7 @@ class AgendamentoController(val repository: AgendamentoRepository, val statusAge
 
     @GetMapping("/proximos")
     fun getProximosAgendamentos():ResponseEntity<List<Agendamento>>{
-        return ResponseEntity.status(201).body(service.buscarProximosAgendamentos())
+        return ResponseEntity.status(200).body(service.buscarProximosAgendamentos())
     }
 
 }

@@ -1,6 +1,5 @@
 package sptech.salonTime.exception
 
-import com.mysql.cj.exceptions.CJException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -47,6 +46,42 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(CompetenciaNaoEcontradaException::class)
     fun handleCompetenciaNaoEncontrada(ex: CompetenciaNaoEcontradaException): ResponseEntity<Any> {
+        val erro = mapOf(
+            "erro" to ex.message,
+            "status" to HttpStatus.NOT_FOUND.value()
+        )
+        return ResponseEntity(erro, HttpStatus.NOT_FOUND)
+    }
+
+    @ExceptionHandler(UsuarioNaoEncontradoException::class)
+    fun handleUsuarioNaoEcontrado(ex: UsuarioNaoEncontradoException): ResponseEntity<Any> {
+        val erro = mapOf(
+            "erro" to ex.message,
+            "status" to HttpStatus.NOT_FOUND.value()
+        )
+        return ResponseEntity(erro, HttpStatus.NOT_FOUND)
+    }
+
+    @ExceptionHandler(StatusAgendamentoNaoEncontradoException::class)
+    fun handleStatusAgendamento(ex: StatusAgendamentoNaoEncontradoException): ResponseEntity<Any> {
+        val erro = mapOf(
+            "erro" to ex.message,
+            "status" to HttpStatus.NOT_FOUND.value()
+        )
+        return ResponseEntity(erro, HttpStatus.NOT_FOUND)
+    }
+
+    @ExceptionHandler(PagamentoNaoEncontradoException::class)
+    fun handlePagamentoNaoEcontrado(ex: PagamentoNaoEncontradoException): ResponseEntity<Any> {
+        val erro = mapOf(
+            "erro" to ex.message,
+            "status" to HttpStatus.NOT_FOUND.value()
+        )
+        return ResponseEntity(erro, HttpStatus.NOT_FOUND)
+    }
+
+    @ExceptionHandler(ServicoNaoEcontradoException::class)
+    fun handleServico(ex: ServicoNaoEcontradoException): ResponseEntity<Any> {
         val erro = mapOf(
             "erro" to ex.message,
             "status" to HttpStatus.NOT_FOUND.value()
