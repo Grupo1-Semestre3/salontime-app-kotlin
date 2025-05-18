@@ -16,7 +16,8 @@ data class Usuario(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int = 0,
 
-    val fkTipoUsuario: Int?,
+    @ManyToOne
+    val tipoUsuario: TipoUsuario?,
 
     val nome: String? = null,
 

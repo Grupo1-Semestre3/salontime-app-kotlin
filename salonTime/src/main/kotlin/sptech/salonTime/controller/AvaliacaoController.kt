@@ -16,18 +16,18 @@ class AvaliacaoController (private val service: AvalicaoService){
         return ResponseEntity.status(200).body(service.listar())
     }
 
-    @GetMapping
-    fun getById(id: Int): ResponseEntity<Avaliacao> {
+    @GetMapping("/{id}")
+    fun getById(@PathVariable id: Int): ResponseEntity<Avaliacao> {
         return ResponseEntity.status(200).body(service.buscarPorId(id))
     }
 
     @PostMapping
-    fun post(avaliacao: CadastroAvaliacaoDto): ResponseEntity<Avaliacao> {
+    fun post(@RequestBody avaliacao: CadastroAvaliacaoDto): ResponseEntity<Avaliacao> {
         return ResponseEntity.status(201).body(service.cadastrar(avaliacao))
     }
 
-    @PutMapping
-    fun put(id: Int, avaliacao: AtualizarAvaliacaoDto): ResponseEntity<Avaliacao> {
+    @PutMapping("/{id}")
+    fun put(@PathVariable id: Int,@RequestBody avaliacao: AtualizarAvaliacaoDto): ResponseEntity<Avaliacao> {
         return ResponseEntity.status(200).body(service.atualizar(id, avaliacao))
     }
 

@@ -14,33 +14,47 @@ data class Agendamento(
 
     @ManyToOne
     @NotNull
-    val servico: Servico?,
+    var servico: Servico? = null,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @NotNull
+    var usuario: Usuario? = null,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    var funcionario: Usuario? = null,
 
     @ManyToOne
     @NotNull
-    val usuario: Usuario?,
+    var statusAgendamento: StatusAgendamento? = null,
 
     @ManyToOne
     @NotNull
-    val statusAgendamento: StatusAgendamento?,
-
-    @ManyToOne
-    @NotNull
-    val pagamento: Pagamento?,
+    var pagamento: Pagamento? = null,
 
     @NotNull
     @FutureOrPresent
-    val data: LocalDate?,
+    val data: LocalDate? = null,
 
     @NotNull
-    val inicio: LocalTime?,
+    val inicio: LocalTime? = null,
 
     @NotNull
-    val fim: LocalTime?,
+    val fim: LocalTime? = null,
 
     @NotNull
     @DecimalMin("0.0", inclusive = false)
-    val preco: Double?
+    val preco: Double? = null
 ){
-    constructor():this(0, null, null, null, null, null, null, null, 0.0)
+    constructor() : this(
+        0,
+        Servico(),
+        Usuario(),
+        Usuario(),
+        StatusAgendamento(),
+        Pagamento(),
+        LocalDate.now(),
+        LocalTime.of(9, 0),
+        LocalTime.of(10, 0),
+        1.0
+    )
 }

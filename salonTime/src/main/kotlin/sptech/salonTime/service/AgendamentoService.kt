@@ -2,20 +2,21 @@ package sptech.salonTime.service
 
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import sptech.salonTime.dto.CadastroAgendamentoDto
 import sptech.salonTime.entidade.Agendamento
 import sptech.salonTime.exception.AgendamentoNaoEncontradoException
 import sptech.salonTime.exception.AtributoInvalidoAoAtualizarException
 import sptech.salonTime.exception.ConflitoDeAgendamentoException
-import sptech.salonTime.repository.AgendamentoRepository
-import sptech.salonTime.repository.StatusAgendamentoRepository
+import sptech.salonTime.repository.*
 import java.time.LocalDate
 import java.time.LocalTime
+import java.util.*
 
 @Service
-class AgendamentoService(private val repository: AgendamentoRepository, val statusAgendamentoRepository: StatusAgendamentoRepository) {
+class AgendamentoService(private val repository: AgendamentoRepository, val pagamentoRepository: PagamentoRepository, val usuarioRepository: UsuarioRepository, val statusAgendamentoRepository: StatusAgendamentoRepository, val servicoRepository: ServicoRepository) {
 
-    fun listar(): List<Agendamento> {
-        val agendamentos = repository.findAll()
+    fun listar(): List<Agendamento?> {
+        val agendamentos = repository.listarTudo()
 
         return agendamentos
     }
@@ -28,17 +29,43 @@ class AgendamentoService(private val repository: AgendamentoRepository, val stat
         }
     }
 
-    fun cadastrar(agendamento: Agendamento): Agendamento {
-        val existeAgendamento = repository.existeConflitoDeAgendamento(agendamento.data, agendamento.inicio, agendamento.fim)
+        fun cadastrar(agendamento: CadastroAgendamentoDto): Agendamento {
+            val existeAgendamento = repository.existeConflitoDeAgendamento(
+                agendamento.data, agendamento.inicio, agendamento.fim
+            )
 
-        if (existeAgendamento > 0) {
-            throw ConflitoDeAgendamentoException("Já existe um agendamento nesse horário.")
+            if (agendamento.data.isBefore(LocalDate.now())) {
+                throw IllegalArgumentException("A data do agendamento não pode ser anterior à data atual.")
+            }
+
+            if (existeAgendamento > 0) {
+                throw ConflitoDeAgendamentoException("Já existe um agendamento nesse horário.")
+            }
+
+            val usuario = usuarioRepository.findById(agendamento.usuario)
+                .orElseThrow { IllegalArgumentException("Usuário não encontrado") }
+            val statusAgendamento = statusAgendamentoRepository.findById(agendamento.statusAgendamento)
+                .orElseThrow { IllegalArgumentException("Status de agendamento não encontrado") }
+            val servico = servicoRepository.findById(agendamento.servico)
+                .orElseThrow { IllegalArgumentException("Serviço não encontrado") }
+            val pagamento = pagamentoRepository.findById(agendamento.pagamento)
+                .orElseThrow { IllegalArgumentException("Pagamento não encontrado") }
+            val funcinario = usuarioRepository.findById(agendamento.funcionario)
+                .orElseThrow { IllegalArgumentException("Funcionário não encontrado") }
+
+            val novoAgendamento = Agendamento(
+                usuario = usuario,
+                servico = servico,
+                funcionario = funcinario,
+                statusAgendamento = statusAgendamento,
+                pagamento = pagamento,
+                data = agendamento.data,
+                inicio = agendamento.inicio,
+                fim = agendamento.fim,
+                preco = agendamento.preco
+            )
+            return repository.save(novoAgendamento)
         }
-
-        val agendamentoSalvo = repository.save(agendamento)
-
-        return agendamentoSalvo
-    }
 
     fun atualizarAtributo(id: Int, atributo: String, novoValor: String): Agendamento {
         val agendamento = repository.findById(id).orElseThrow{AgendamentoNaoEncontradoException("Agendamento com ID $id não encontrado.") }

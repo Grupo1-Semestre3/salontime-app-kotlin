@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import sptech.salonTime.dto.CadastroAgendamentoDto
 import sptech.salonTime.entidade.Agendamento
 
 import sptech.salonTime.repository.AgendamentoRepository
@@ -18,13 +19,14 @@ import sptech.salonTime.service.AgendamentoService
 import sptech.salonTime.service.UsuarioService
 import java.time.LocalDate
 import java.time.LocalTime
+import java.util.*
 
 @RestController
 @RequestMapping("/agendamento")
 
 class AgendamentoController(val repository: AgendamentoRepository, val statusAgendamentoRepository: StatusAgendamentoRepository, val service: AgendamentoService) {
     @GetMapping
-    fun get():ResponseEntity<List<Agendamento>>{
+    fun get(): ResponseEntity<List<Agendamento?>> {
         return ResponseEntity.status(200).body(service.listar())
     }
 
@@ -34,7 +36,7 @@ class AgendamentoController(val repository: AgendamentoRepository, val statusAge
     }
 
     @PostMapping
-    fun post(@RequestBody @Valid agendamento: Agendamento): ResponseEntity<Agendamento> {
+    fun post(@RequestBody @Valid agendamento: CadastroAgendamentoDto): ResponseEntity<Agendamento> {
         return ResponseEntity.status(201).body(service.cadastrar(agendamento))
     }
 
