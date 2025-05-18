@@ -5,18 +5,15 @@ import jakarta.persistence.*
 @Entity
 class FuncionarioCompetencia(
 
-    @EmbeddedId
-    val id: FuncionarioCompetenciaId? = null,
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Int? = null,
 
     @ManyToOne
-    @MapsId("funcionarioId")
-    @JoinColumn(name = "funcionario_id")
-    val funcionario: Usuario,
+    var funcionario: Usuario? = null,
 
     @ManyToOne
-    @MapsId("servicoId")
-    @JoinColumn(name = "servico_id")
-    val servico: Servico
+    var servico: Servico? = null,
 ) {
     constructor() : this(null, Usuario(), Servico())
 }

@@ -10,7 +10,7 @@ import java.time.*
 data class Agendamento(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int = 0,
+    val id: Int? = null,
 
     @ManyToOne
     @NotNull
@@ -46,7 +46,7 @@ data class Agendamento(
     val preco: Double? = null
 ){
     constructor() : this(
-        0,
+        null,
         Servico(),
         Usuario(),
         Usuario(),

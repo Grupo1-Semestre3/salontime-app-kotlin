@@ -1,10 +1,12 @@
 package sptech.salonTime.service
 
+import org.springframework.stereotype.Service
 import sptech.salonTime.entidade.DiaSemana
 import sptech.salonTime.entidade.Funcionamento
 import sptech.salonTime.repository.FuncionamentoRepository
 import java.time.LocalTime
 
+@Service
 class FuncionamentoService(private val repository: FuncionamentoRepository) {
 
     fun listar(): List<Funcionamento> {
@@ -18,10 +20,10 @@ class FuncionamentoService(private val repository: FuncionamentoRepository) {
 
         try {
             val funcionamentoAtualizado = when (atributo) {
-                "diaSemana" -> funcionamentoExistente.copy(diaSemana = novoValor.toInt().let { DiaSemana.values()[it] })
-                "incio" -> funcionamentoExistente.copy(inicio = LocalTime.parse(novoValor))
+                "inicio" -> funcionamentoExistente.copy(inicio = LocalTime.parse(novoValor))
                 "fim" -> funcionamentoExistente.copy(fim = LocalTime.parse(novoValor))
                 "aberto" -> funcionamentoExistente.copy(aberto = novoValor.toBoolean())
+                "capacidade" -> funcionamentoExistente.copy(capacidade = novoValor.toInt())
                 else -> throw IllegalArgumentException("Atributo inválido: $atributo")
             }
             return repository.save(funcionamentoAtualizado)

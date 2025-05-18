@@ -14,9 +14,9 @@ class InfoSalaoController (private val service: InfoSalaoService) {
         return ResponseEntity.status(200).body(service.listar())
     }
 
-    @PatchMapping("/{id}/{atributo}/{novoValor}")
-    fun editarInfoSalao(@PathVariable id: Int, @PathVariable atributo: String, @PathVariable novoValor: String): ResponseEntity<InfoSalao> {
-        return ResponseEntity.status(200).body(service.editar(id, atributo, novoValor))
+    @PatchMapping("/{atributo}/{novoValor}")
+    fun editarInfoSalao(@PathVariable atributo: String, @PathVariable novoValor: String): ResponseEntity<InfoSalao> {
+        return ResponseEntity.status(200).body(service.editar(atributo, novoValor))
     }
 
 

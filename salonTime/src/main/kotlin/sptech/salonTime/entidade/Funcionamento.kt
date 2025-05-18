@@ -9,22 +9,26 @@ import java.time.LocalTime
 @Table(name = "funcionamento")
 data class Funcionamento(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int = 0,
+    val id: Int? = null,
 
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "dia_semana")
-    val diaSemana: DiaSemana,
+    val diaSemana: DiaSemana? = null,
 
     @NotNull
-    val inicio: LocalTime,
+    val inicio: LocalTime? = null,
 
     @NotNull
-    val fim: LocalTime,
+    val fim: LocalTime? = null,
 
     @NotNull
-    val aberto: Boolean,
+    val aberto: Boolean? = null,
 
     @NotNull
-    val capacidade: Int
-)
+    val capacidade: Int? = null
+){
+    constructor() : this(null, null, null, null, null, null)
+
+}
+

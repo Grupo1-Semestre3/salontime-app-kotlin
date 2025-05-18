@@ -12,8 +12,8 @@ class InfoSalaoService(private val repository: InfoSalaoRepository) {
         return repository.findAll()
     }
 
-    fun editar(id: Int, atributo: String, novoValor: String): InfoSalao {
-        val infoSalaoExistente = repository.findById(id)
+    fun editar(atributo: String, novoValor: String): InfoSalao {
+        val infoSalaoExistente = repository.findById(1)
             .orElseThrow { IllegalArgumentException("InfoSalao não encontrado") }
 
         try {

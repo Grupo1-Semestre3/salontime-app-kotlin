@@ -44,4 +44,13 @@ class GlobalExceptionHandler {
         )
         return ResponseEntity(erro, HttpStatus.CONFLICT)
     }
+
+    @ExceptionHandler(CompetenciaNaoEcontradaException::class)
+    fun handleCompetenciaNaoEncontrada(ex: CompetenciaNaoEcontradaException): ResponseEntity<Any> {
+        val erro = mapOf(
+            "erro" to ex.message,
+            "status" to HttpStatus.NOT_FOUND.value()
+        )
+        return ResponseEntity(erro, HttpStatus.NOT_FOUND)
+    }
 }
