@@ -34,7 +34,7 @@ class DescCancelamentoController (val service: DescCancelamentoService) {
 
     @PostMapping()
     fun criar(novoCancelamento: DescCancelamento): ResponseEntity<DescCancelamento> {
-        return ResponseEntity.status(201).body(service.salvar(novoCancelamento))
+        return ResponseEntity.status(201).body(service.criar(novoCancelamento))
     }
 
 }
