@@ -23,7 +23,10 @@ data class Usuario(
     var id: Int = 0,
 
     @ManyToOne
+<<<<<<< HEAD
     @NotNull
+=======
+>>>>>>> 0de2042596b636e0e303d661ba82983a1a81cb60
     val tipoUsuario: TipoUsuario?,
 
     @NotNull

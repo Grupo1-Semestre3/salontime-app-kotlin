@@ -9,5 +9,5 @@ data class StatusAgendamento(
 
     val status: String? = null
 ){
-
+    constructor() : this(0, null)
 }
