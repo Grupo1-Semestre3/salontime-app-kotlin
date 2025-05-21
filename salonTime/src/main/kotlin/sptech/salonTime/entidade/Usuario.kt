@@ -14,6 +14,7 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import org.hibernate.validator.constraints.br.CPF
 import java.sql.Date
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "usuario")
@@ -49,11 +50,14 @@ data class Usuario(
     @NotNull
     var dataNascimento: Date? = null,
 
+    @NotNull
+    val dataCriacao : LocalDateTime? = null,
+
     @Size(max = 20_971_520, message = "A foto não pode exceder 20MB")
     var foto: ByteArray? = null,
 
     @NotNull
     var login: Boolean = false
 ){
-    constructor() : this(0, null, null, null, null, null, null, null, null, false)
+    constructor() : this(0, null, null, null, null, null, null, null, null,null, false)
 }
