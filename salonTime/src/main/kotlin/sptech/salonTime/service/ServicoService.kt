@@ -1,6 +1,7 @@
 package sptech.salonTime.service
 
 import org.springframework.stereotype.Service
+import sptech.salonTime.dto.ServicoDto
 import sptech.salonTime.entidade.Servico
 import sptech.salonTime.repository.ServicoRepository
 import kotlin.math.E
@@ -8,12 +9,12 @@ import kotlin.math.E
 @Service
 class ServicoService (val repository: ServicoRepository) {
 
-    fun listarAtivos(): List<Servico> {
-        return repository.findAllByStatus("ATIVO") ?: emptyList()
+    fun listarAtivos(): List<ServicoDto> {
+        return  repository.listarTodosAtivosComMedia() ?: emptyList()
     }
 
-    fun listarPorId(id: Int): Servico? {
-        return repository.findById(id).orElse(null)
+    fun listarPorId(id: Int): ServicoDto? {
+        return repository.listarPorIdComMedia(id)
     }
 
     fun desativar(id: Int): Boolean {

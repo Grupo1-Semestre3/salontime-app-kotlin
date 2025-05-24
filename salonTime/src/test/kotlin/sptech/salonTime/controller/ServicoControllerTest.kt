@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
 import org.springframework.http.HttpStatus
+import sptech.salonTime.dto.ServicoDto
 import sptech.salonTime.entidade.Servico
 import sptech.salonTime.service.ServicoService
 import java.time.LocalTime
@@ -25,6 +26,17 @@ class ServicoControllerTest {
   descricao = "Serviço básico",
   foto = null
  )
+ private val servicoDto = ServicoDto(
+  id = 1,
+  nome = "Corte de cabelo",
+  preco = 50.0,
+  tempo = LocalTime.of(0, 30),
+  status = "ATIVO",
+  simultaneo = false,
+  descricao = "Serviço básico",
+  foto = null,
+    mediaAvaliacao = 4.5
+ )
 
  @BeforeEach
  fun setup() {
@@ -35,7 +47,7 @@ class ServicoControllerTest {
  @Test
  @DisplayName("Consulta todos os serviços ativos")
  fun listarAtivos() {
-  `when`(service.listarAtivos()).thenReturn(listOf(servico))
+  `when`(service.listarAtivos()).thenReturn(listOf(servicoDto))
 
   val response = controller.listarAtivos()
 
@@ -47,12 +59,12 @@ class ServicoControllerTest {
  @Test
  @DisplayName("Consulta serviço por ID")
  fun listarPorId() {
-  `when`(service.listarPorId(1)).thenReturn(servico)
+  `when`(service.listarPorId(1)).thenReturn(servicoDto)
 
   val response = controller.listarPorId(1)
 
   assertEquals(HttpStatus.OK, response.statusCode)
-  assertEquals(servico, response.body)
+  assertEquals(servicoDto, response.body)
   verify(service).listarPorId(1)
  }
 
@@ -93,7 +105,7 @@ class ServicoControllerTest {
  @Test
  @DisplayName("Atualiza um serviço")
  fun atualizar() {
-  `when`(service.listarPorId(1)).thenReturn(servico)
+  `when`(service.listarPorId(1)).thenReturn(servicoDto)
   `when`(service.atualizar(1, servico)).thenReturn(servico)
 
   val response = controller.atualizar(1, servico)

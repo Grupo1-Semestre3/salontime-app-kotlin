@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
+import sptech.salonTime.dto.ServicoDto
 import sptech.salonTime.entidade.Servico
 
 interface ServicoRepository: JpaRepository<Servico, Int> {
@@ -33,6 +34,32 @@ sempre na anotação @Query
     @Query("update Servico s set s.status = ?2 where s.id = ?1")
     fun mudarStatus(id: Int, status: String): Int
 
-    fun findAllByStatus(status: String): List<Servico>
+    @Query("""
+    SELECT new sptech.salonTime.dto.ServicoDto(
+        s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao, s.foto,
+        COALESCE(AVG(a.notaServico), 0.0)
+    )
+    FROM Servico s
+    LEFT JOIN Agendamento ag ON s.id = ag.servico.id
+    LEFT JOIN Avaliacao a ON ag.id = a.agendamento.id
+    WHERE s.status = 'ATIVO'
+    GROUP BY s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao, s.foto
+""")
+    fun listarTodosAtivosComMedia(): List<ServicoDto>
+
+    @Query("""
+        
+       SELECT new sptech.salonTime.dto.ServicoDto(
+        s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao, s.foto,
+        COALESCE(AVG(a.notaServico), 0.0)
+    )
+    FROM Servico s
+    LEFT JOIN Agendamento ag ON s.id = ag.servico.id
+    LEFT JOIN Avaliacao a ON ag.id = a.agendamento.id
+    WHERE s.status = 'ATIVO' AND s.id = ?1
+    GROUP BY s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao, s.foto
+    """)
+    fun listarPorIdComMedia(id: Int): ServicoDto
+
 
 }

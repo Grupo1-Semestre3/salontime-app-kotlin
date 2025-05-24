@@ -3,6 +3,7 @@ package sptech.salonTime.controller
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import sptech.salonTime.dto.ServicoDto
 import sptech.salonTime.entidade.Servico
 import sptech.salonTime.repository.ServicoRepository
 import sptech.salonTime.service.ServicoService
@@ -13,7 +14,7 @@ import sptech.salonTime.service.ServicoService
 class ServicoController(val service: ServicoService) {
 
     @GetMapping
-    fun listarAtivos(): ResponseEntity<List<Servico>> {
+    fun listarAtivos(): ResponseEntity<List<ServicoDto>> {
         val servicos = service.listarAtivos()
         return if (servicos.isEmpty()) {
             ResponseEntity.status(204).build()
@@ -23,7 +24,7 @@ class ServicoController(val service: ServicoService) {
     }
 
     @GetMapping("/{id}")
-    fun listarPorId(@PathVariable id:Int): ResponseEntity<Servico> {
+    fun listarPorId(@PathVariable id:Int): ResponseEntity<ServicoDto> {
         val servico = service.listarPorId(id)
         return if (servico != null) {
             ResponseEntity.status(200).body(servico)
