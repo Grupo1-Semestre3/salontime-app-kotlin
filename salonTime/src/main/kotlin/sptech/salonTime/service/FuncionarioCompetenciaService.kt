@@ -1,7 +1,11 @@
 package sptech.salonTime.service
 
 import org.springframework.stereotype.Service
+import sptech.salonTime.dto.FuncionarioCompetenciaDto
+import sptech.salonTime.dto.TipoUsuarioDto
+import sptech.salonTime.dto.UsuarioDto
 import sptech.salonTime.entidade.FuncionarioCompetencia
+import sptech.salonTime.entidade.Servico
 import sptech.salonTime.exception.CompetenciaNaoEcontradaException
 import sptech.salonTime.repository.FuncionarioCompetenciaRepository
 import sptech.salonTime.repository.ServicoRepository
@@ -48,6 +52,28 @@ class FuncionarioCompetenciaService(val repository: FuncionarioCompetenciaReposi
         repository.delete(funcionarioCompetenciaEncontrado)
     }
 
-    //Testar o apagar e editar no mysql
+    fun listarPorServico(id: Int): List<FuncionarioCompetenciaDto>? {
+        val funcionarioCompetenciaEncontrado = servicoRepository.findById(id)
+            .orElseThrow { CompetenciaNaoEcontradaException("Competencia funcionario nao existe") }
+
+        val competencias = repository.findCompetenciaByServicoId(id)
+
+        return competencias?.map { competencia ->
+            FuncionarioCompetenciaDto(
+                id = competencia.id,
+                funcionario = UsuarioDto(
+                    id = competencia.funcionario?.id,
+                    nome = competencia.funcionario?.nome,
+                    tipoUsuario = TipoUsuarioDto(
+                        id = competencia.funcionario?.tipoUsuario?.id,
+                        descricao = competencia.funcionario?.tipoUsuario?.descricao
+                    ),
+                    telefone = competencia.funcionario?.telefone,
+                    email = competencia.funcionario?.email,
+                    foto = competencia.funcionario?.foto.toString()
+                )
+            )
+        }
+    }
 
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import sptech.salonTime.dto.FuncionarioCompetenciaDto
 import sptech.salonTime.entidade.FuncionarioCompetencia
 import sptech.salonTime.service.FuncionarioCompetenciaService
 
@@ -20,6 +21,12 @@ class FuncionarioCompetenciaController (val service: FuncionarioCompetenciaServi
     fun listar(): ResponseEntity<List<FuncionarioCompetencia>> {
         return ResponseEntity.status(200).body(service.listar())
     }
+
+    @GetMapping("/servico/{id}")
+    fun listarPorServico(@PathVariable id: Int): ResponseEntity<List<FuncionarioCompetenciaDto>> {
+        return ResponseEntity.status(200).body(service.listarPorServico(id))
+    }
+
     @PostMapping
     fun inserir(@RequestBody funcionarioCompetencia: FuncionarioCompetencia): ResponseEntity<FuncionarioCompetencia>{
         return ResponseEntity.status(201).body(service.salvar(funcionarioCompetencia))

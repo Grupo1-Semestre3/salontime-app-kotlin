@@ -58,8 +58,8 @@ class TipoUsuarioController(
     ): ResponseEntity<TipoUsuario> {
         val tipoUsuario = service.listarPorId(id)
         return if (tipoUsuario != null) {
-            service.atualizar(id, descricao)
-            ResponseEntity.status(201).body(tipoUsuario)
+            val tipoSalvo = service.atualizar(id, descricao)
+            ResponseEntity.status(200).body(tipoSalvo)
         } else {
             ResponseEntity.status(404).build()
         }

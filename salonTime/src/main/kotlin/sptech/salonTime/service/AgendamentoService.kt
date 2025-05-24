@@ -1,31 +1,41 @@
 package sptech.salonTime.service
 
 import org.springframework.stereotype.Service
+import sptech.salonTime.dto.AgendamentoDto
 import sptech.salonTime.dto.CadastroAgendamentoDto
 import sptech.salonTime.entidade.Agendamento
 import sptech.salonTime.exception.*
+import sptech.salonTime.mapper.AgendamentoMapper
 import sptech.salonTime.repository.*
 import java.time.LocalDate
 import java.time.LocalTime
 
 @Service
-class AgendamentoService(private val repository: AgendamentoRepository, val pagamentoRepository: PagamentoRepository, val usuarioRepository: UsuarioRepository, val statusAgendamentoRepository: StatusAgendamentoRepository, val servicoRepository: ServicoRepository) {
+class AgendamentoService(private val repository: AgendamentoRepository,
+                         val pagamentoRepository: PagamentoRepository,
+                         val usuarioRepository: UsuarioRepository,
+                         val statusAgendamentoRepository: StatusAgendamentoRepository,
+                         val servicoRepository: ServicoRepository
+) {
 
-    fun listar(): List<Agendamento?> {
+    fun listar(): List<AgendamentoDto?> {
         val agendamentos = repository.listarTudo()
 
-        return agendamentos
-    }
-
-    fun listarPorId(id: Int ): Agendamento{
-        val agendamento = repository.findById(id)
-
-        return repository.findById(id).orElseThrow {
-            AgendamentoNaoEncontradoException("Agendamento com ID $id não encontrado.")
+        return agendamentos.map { agendamento ->
+            AgendamentoMapper.toDto(agendamento)
         }
     }
 
-        fun cadastrar(agendamento: CadastroAgendamentoDto): Agendamento {
+    fun listarPorId(id: Int): AgendamentoDto {
+        val agendamento = repository.findById(id)
+        val agendamentoEncontrado = repository.findById(id).orElseThrow {
+            AgendamentoNaoEncontradoException("Agendamento com ID $id não encontrado.")
+        }
+
+        return AgendamentoMapper.toDto(agendamentoEncontrado)
+    }
+
+        fun cadastrar(agendamento: CadastroAgendamentoDto): AgendamentoDto {
             val existeAgendamento = repository.existeConflitoDeAgendamento(
                 agendamento.data, agendamento.inicio, agendamento.fim
             )
@@ -60,10 +70,12 @@ class AgendamentoService(private val repository: AgendamentoRepository, val paga
                 fim = agendamento.fim,
                 preco = agendamento.preco
             )
-            return repository.save(novoAgendamento)
+            val agendamentoSalvo = repository.save(novoAgendamento)
+
+            return AgendamentoMapper.toDto(agendamentoSalvo)
         }
 
-    fun atualizarAtributo(id: Int, atributo: String, novoValor: String): Agendamento {
+    fun atualizarAtributo(id: Int, atributo: String, novoValor: String): AgendamentoDto {
         val agendamento = repository.findById(id).orElseThrow{AgendamentoNaoEncontradoException("Agendamento com ID $id não encontrado.") }
 
 
@@ -76,15 +88,23 @@ class AgendamentoService(private val repository: AgendamentoRepository, val paga
                     "status" -> agendamento.copy(statusAgendamento = novoValor.toInt().let { statusAgendamentoRepository.findById(it).orElse(null) })
                     else -> throw AtributoInvalidoAoAtualizarException("Atributo inválido: $atributo")
                 }
-                return repository.save(agendamentoAtualizado)
+                val agendamentoSalvo = repository.save(agendamentoAtualizado)
+
+                return AgendamentoMapper.toDto(agendamentoSalvo)
+
             } catch (e: Exception) {
                 throw AtributoInvalidoAoAtualizarException("Erro ao atualizar o atributo: $atributo. Verifique o valor fornecido.")
             }
 
     }
 
-    fun buscarProximosAgendamentos(): List<Agendamento>? {
-        return repository.buscarProximosAgendamentos()
+    fun buscarProximosAgendamentos(): List<AgendamentoDto>? {
+        val agendamentos = repository.buscarProximosAgendamentos()
+
+        return  agendamentos.map { agendamento ->
+            AgendamentoMapper.toDto(agendamento)
+        }
+
     }
 
 }
