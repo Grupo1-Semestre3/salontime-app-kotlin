@@ -147,17 +147,81 @@ class AgendamentoControllerTest {
     }
 
     @Test
-    @DisplayName("Consulta próximos agendamentos")
+    @DisplayName("Consulta próximos agendamentos por funcionario")
     fun getProximosAgendamentos() {
-     Mockito.`when`(service.buscarProximosAgendamentos()).thenReturn(
+     Mockito.`when`(service.buscarProximosAgendamentosPorFuncionario(2)).thenReturn(
       listOf(agendamentoDto)
      )
 
-     val response: ResponseEntity<List<AgendamentoDto>> = controller.getProximosAgendamentos()
+     val response: ResponseEntity<List<AgendamentoDto>> = controller.getProximosAgendamentos(2)
 
 
      assertEquals(200, response.statusCode.value())
      assertEquals(1, response.body?.size)
+    }
+
+    @Test
+    @DisplayName("Consulta próximos agendamentos por usuario")
+    fun getProximosAgendamentosPorUsuario() {
+        Mockito.`when`(service.buscarProximosAgendamentosPorUsuario(1)).thenReturn(agendamentoDto)
+
+        val response: ResponseEntity<AgendamentoDto> = controller.getProximosAgendamentosPorUsuario(1)
+
+
+        assertEquals(200, response.statusCode.value())
+        assertEquals(agendamentoDto, response.body)
+    }
+
+    @Test
+    @DisplayName("Consulta agendamentos passados por usuario")
+    fun getAgendamentosPassadosPorUsuario() {
+        Mockito.`when`(service.buscarAgendamentosPassadosPorUsuario(1)).thenReturn(
+            listOf(agendamentoDto)
+        )
+
+        val response: ResponseEntity<List<AgendamentoDto>> = controller.getAgendamentosPassadosPorUsuario(1)
+        assertEquals(200, response.statusCode.value())
+        assertEquals(1, response.body?.size)
+    }
+
+    @Test
+    @DisplayName("Consulta agendamentos passados por funcionario")
+    fun getAgendamentosPassadosPorFuncionario() {
+        Mockito.`when`(service.buscarAgendamentosPassadosPorFuncionario(2)).thenReturn(
+            listOf(agendamentoDto)
+        )
+
+        val response: ResponseEntity<List<AgendamentoDto>> = controller.getAgendamentosPassadosPorFuncionario(2)
+        assertEquals(200, response.statusCode.value())
+        assertEquals(1, response.body?.size)
+    }
+
+    @Test
+    @DisplayName("Atualiza o status de um agendamento")
+    fun patchStatus() {
+        val id = 1
+        val status = 2
+
+        Mockito.`when`(service.atualizarStatus(id, status)).thenReturn(agendamentoDto)
+
+        val response: ResponseEntity<AgendamentoDto> = controller.patchStatus(id, status)
+
+        assertEquals(200, response.statusCode.value())
+        assertEquals(agendamento.id, response.body?.id)
+    }
+
+    @Test
+    @DisplayName("Atualiza o valor de um agendamento")
+    fun patchValor() {
+        val id = 1
+        val valor = 60.0
+
+        Mockito.`when`(service.atualizarValor(id, valor)).thenReturn(agendamentoDto)
+
+        val response: ResponseEntity<AgendamentoDto> = controller.patchStatus(id, valor)
+
+        assertEquals(200, response.statusCode.value())
+        assertEquals(agendamento.id, response.body?.id)
     }
 
 }

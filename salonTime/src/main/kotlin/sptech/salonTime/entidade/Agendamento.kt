@@ -43,7 +43,7 @@ data class Agendamento(
 
     @NotNull
     @DecimalMin("0.0", inclusive = false)
-    val preco: Double? = null
+    var preco: Double? = null
 ){
     constructor() : this(
         null,

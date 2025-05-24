@@ -3,14 +3,18 @@ package sptech.salonTime.repository
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
+import sptech.salonTime.dto.AgendamentoDto
 import sptech.salonTime.entidade.Agendamento
 import java.time.LocalDate
 import java.time.LocalTime
 
 
 interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
-    @Query(value = "SELECT * FROM agendamento WHERE (data > CURDATE()) OR (data = CURDATE() AND inicio > CURTIME()) ORDER BY data ASC, inicio ASC", nativeQuery = true)
-    fun buscarProximosAgendamentos(): List<Agendamento>
+    @Query(value = "SELECT * FROM agendamento WHERE (data > CURDATE() AND funcionario_id = :idFunc) OR (data = CURDATE() AND inicio > CURTIME()) ORDER BY data ASC, inicio ASC", nativeQuery = true)
+    fun buscarProximosAgendamentosPorFuncionario(idFunc: Int): List<Agendamento>
+
+    @Query(value = "SELECT * FROM agendamento WHERE (data > CURDATE()) OR (data = CURDATE() AND inicio > CURTIME() AND usuario_id = :idUser) ORDER BY data ASC, inicio ASC LIMIT 1", nativeQuery = true)
+    fun buscarProximosAgendamentosPorUsuario(idUser: Int): Agendamento
 
     @Query(
         value = """
@@ -32,6 +36,16 @@ interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
     JOIN FETCH a.statusAgendamento sa
 """)
     fun listarTudo(): List<Agendamento>
+
+    @Query(nativeQuery = true, value = """
+        SELECT * FROM agendamento WHERE (data < CURDATE() AND usuario_id = :idUser) OR (data = CURDATE() AND inicio < CURTIME()) ORDER BY data ASC, inicio ASC
+    """)
+    fun buscarAgendamentosPassadosPorUsuario(idUser: Int): List<Agendamento>
+
+    @Query(nativeQuery = true, value = """
+        SELECT * FROM agendamento WHERE (data < CURDATE() AND funcionario_id = :idFunc) OR (data = CURDATE() AND inicio < CURTIME()) ORDER BY data ASC, inicio ASC
+    """)
+    fun buscarAgendamentosPassadosPorFuncionario(idFunc: Int): List<Agendamento>
 
 
 }

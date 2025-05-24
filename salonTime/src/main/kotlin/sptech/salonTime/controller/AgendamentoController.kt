@@ -47,9 +47,34 @@ class AgendamentoController(val repository: AgendamentoRepository, val statusAge
         return ResponseEntity.status(200).body(service.atualizarAtributo(id, atributo, novoValor))
     }
 
-    @GetMapping("/proximos")
-    fun getProximosAgendamentos():ResponseEntity<List<AgendamentoDto>>{
-        return ResponseEntity.status(200).body(service.buscarProximosAgendamentos())
+    @GetMapping("/proximos/{idFuncionario}")
+    fun getProximosAgendamentos(@PathVariable idFuncionario: Int):ResponseEntity<List<AgendamentoDto>>{
+        return ResponseEntity.status(200).body(service.buscarProximosAgendamentosPorFuncionario(idFuncionario))
+    }
+
+    @GetMapping("/proximo/{id}")
+    fun getProximosAgendamentosPorUsuario(@PathVariable id: Int):ResponseEntity<AgendamentoDto>{
+        return ResponseEntity.status(200).body(service.buscarProximosAgendamentosPorUsuario(id))
+    }
+
+    @GetMapping("/passados/{idFuncinario}")
+    fun getAgendamentosPassadosPorFuncionario(@PathVariable idFuncionario: Int):ResponseEntity<List<AgendamentoDto>>{
+        return ResponseEntity.status(200).body(service.buscarAgendamentosPassadosPorFuncionario(idFuncionario))
+    }
+
+    @GetMapping("/passados/{id}")
+    fun getAgendamentosPassadosPorUsuario(@PathVariable id: Int):ResponseEntity<List<AgendamentoDto>>{
+        return ResponseEntity.status(200).body(service.buscarAgendamentosPassadosPorUsuario(id))
+    }
+
+    @PatchMapping("/status/{id/{status}")
+    fun patchStatus(@PathVariable id: Int, @PathVariable status: Int): ResponseEntity<AgendamentoDto> {
+        return ResponseEntity.status(200).body(service.atualizarStatus(id, status))
+    }
+
+    @PatchMapping("/valor/{id/{valor}}")
+    fun patchStatus(@PathVariable id: Int, @PathVariable valor: Double): ResponseEntity<AgendamentoDto> {
+        return ResponseEntity.status(200).body(service.atualizarValor(id, valor))
     }
 
 }

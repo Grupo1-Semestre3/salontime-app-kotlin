@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import sptech.salonTime.dto.AgendamentoDto
 import sptech.salonTime.dto.CadastroAgendamentoDto
 import sptech.salonTime.entidade.Agendamento
+import sptech.salonTime.entidade.StatusAgendamento
 import sptech.salonTime.exception.*
 import sptech.salonTime.mapper.AgendamentoMapper
 import sptech.salonTime.repository.*
@@ -35,7 +36,7 @@ class AgendamentoService(private val repository: AgendamentoRepository,
         return AgendamentoMapper.toDto(agendamentoEncontrado)
     }
 
-        fun cadastrar(agendamento: CadastroAgendamentoDto): AgendamentoDto {
+    fun cadastrar(agendamento: CadastroAgendamentoDto): AgendamentoDto {
             val existeAgendamento = repository.existeConflitoDeAgendamento(
                 agendamento.data, agendamento.inicio, agendamento.fim
             )
@@ -98,12 +99,63 @@ class AgendamentoService(private val repository: AgendamentoRepository,
 
     }
 
-    fun buscarProximosAgendamentos(): List<AgendamentoDto>? {
-        val agendamentos = repository.buscarProximosAgendamentos()
+    fun buscarProximosAgendamentosPorFuncionario(id: Int): List<AgendamentoDto>? {
+        val agendamentos = repository.buscarProximosAgendamentosPorFuncionario(id)
 
-        return  agendamentos.map { agendamento ->
+        return agendamentos.map { agendamento ->
             AgendamentoMapper.toDto(agendamento)
         }
+    }
+
+    fun buscarProximosAgendamentosPorUsuario(id: Int): AgendamentoDto? {
+        val agendamento = repository.buscarProximosAgendamentosPorUsuario(id)
+
+        return AgendamentoMapper.toDto(agendamento)
+    }
+
+    fun buscarAgendamentosPassadosPorUsuario(id: Int): List<AgendamentoDto>? {
+        val agendamentos = repository.buscarAgendamentosPassadosPorUsuario(id)
+
+        return agendamentos.map { agendamento ->
+            AgendamentoMapper.toDto(agendamento)
+        }
+    }
+
+    fun buscarAgendamentosPassadosPorFuncionario(id: Int): List<AgendamentoDto>? {
+        val agendamentos = repository.buscarAgendamentosPassadosPorFuncionario(id)
+
+        return agendamentos.map { agendamento ->
+            AgendamentoMapper.toDto(agendamento)
+        }
+    }
+
+    fun atualizarStatus(id: Int, status: Int): AgendamentoDto? {
+        var agendamentoEcontrado = repository.findById(id).orElseThrow {
+            AgendamentoNaoEncontradoException("Agendamento não encontrado")
+        }
+
+        var statusEncontrado = statusAgendamentoRepository.findById(status).orElseThrow {
+            StatusAgendamentoNaoEncontradoException("Status de agendamento não encontrado")
+        }
+
+        agendamentoEcontrado.id = id
+        agendamentoEcontrado.statusAgendamento = statusEncontrado;
+        var agendamentoSalvo = repository.save(agendamentoEcontrado)
+
+        return AgendamentoMapper.toDto(agendamentoSalvo)
+    }
+
+    fun atualizarValor(id: Int, valor: Double): AgendamentoDto? {
+        var agendamentoEcontrado = repository.findById(id).orElseThrow {
+            AgendamentoNaoEncontradoException("Agendamento não encontrado")
+        }
+        if (valor <= 0) {
+            throw IllegalArgumentException("O valor do agendamento deve ser maior que zero.")
+        }
+
+        agendamentoEcontrado.preco = valor
+        var agendamentoSalvo = repository.save(agendamentoEcontrado)
+        return AgendamentoMapper.toDto(agendamentoSalvo)
 
     }
 
