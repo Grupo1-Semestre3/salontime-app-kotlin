@@ -218,7 +218,7 @@ class AgendamentoControllerTest {
 
         Mockito.`when`(service.atualizarValor(id, valor)).thenReturn(agendamentoDto)
 
-        val response: ResponseEntity<AgendamentoDto> = controller.patchStatus(id, valor)
+        val response: ResponseEntity<AgendamentoDto> = controller.patchValor(id, valor)
 
         assertEquals(200, response.statusCode.value())
         assertEquals(agendamento.id, response.body?.id)

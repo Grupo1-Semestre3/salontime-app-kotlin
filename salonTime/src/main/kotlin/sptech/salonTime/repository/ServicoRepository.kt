@@ -56,7 +56,7 @@ sempre na anotação @Query
     FROM Servico s
     LEFT JOIN Agendamento ag ON s.id = ag.servico.id
     LEFT JOIN Avaliacao a ON ag.id = a.agendamento.id
-    WHERE s.status = 'DESATIVADO'
+    WHERE s.status = 'INATIVO'
     GROUP BY s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao, s.foto
 """)
     fun listarDesativadosComMedia(): List<ServicoDto>
@@ -70,7 +70,7 @@ sempre na anotação @Query
     FROM Servico s
     LEFT JOIN Agendamento ag ON s.id = ag.servico.id
     LEFT JOIN Avaliacao a ON ag.id = a.agendamento.id
-    WHERE s.status = 'ATIVO' AND s.id = ?1
+    WHERE s.id = ?1
     GROUP BY s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao, s.foto
     """)
     fun listarPorIdComMedia(id: Int): ServicoDto
