@@ -6,16 +6,17 @@ import org.springframework.stereotype.Service
 import sptech.salonTime.dto.EmailDto
 import sptech.salonTime.dto.SenhaDto
 import sptech.salonTime.entidade.Usuario
+import sptech.salonTime.exception.UsuarioNaoEncontradoException
 import sptech.salonTime.repository.UsuarioRepository
 
 @Service
-class UsuarioService (val repository: UsuarioRepository) {
+class UsuarioService(val repository: UsuarioRepository) {
 
     fun listar(): List<Usuario> {
         return repository.findAll() ?: emptyList()
     }
 
-    fun salvar (usuario: Usuario): Usuario {
+    fun salvar(usuario: Usuario): Usuario {
         return repository.save(usuario) ?: throw Exception("Erro ao salvar o usuário")
     }
 
@@ -81,5 +82,21 @@ class UsuarioService (val repository: UsuarioRepository) {
         } else {
             throw Exception("Usuário não encontrado")
         }
+    }
+
+    fun atualizarFoto(id: Int, foto: ByteArray): ByteArray {
+        val usuario = repository.findById(id).orElseThrow { UsuarioNaoEncontradoException("Usuário não encontrado") }
+
+        usuario.id = id
+        usuario.foto = foto
+        repository.save(usuario)
+
+        return usuario.foto!!
+    }
+
+    fun getFoto(id: Int): ByteArray? {
+        val usuario = repository.findById(id).orElseThrow { UsuarioNaoEncontradoException("Usuário não encontrado") }
+
+        return usuario.foto
     }
 }

@@ -16,11 +16,12 @@ class ServicoController(val service: ServicoService) {
     @GetMapping
     fun listarAtivos(): ResponseEntity<List<ServicoDto>> {
         val servicos = service.listarAtivos()
-        return if (servicos.isEmpty()) {
-            ResponseEntity.status(204).build()
-        } else {
-            ResponseEntity.status(200).body(servicos)
-        }
+        return ResponseEntity.status(200).body(servicos)
+    }
+
+    @GetMapping("/listar-desativados")
+    fun listarDesativados(): ResponseEntity<List<ServicoDto>> {
+        return ResponseEntity.status(200).body(service.listarDesativados())
     }
 
     @GetMapping("/{id}")
@@ -83,6 +84,22 @@ class ServicoController(val service: ServicoService) {
             return ResponseEntity.status(204).build()
         }
         return ResponseEntity.status(404).build()
+    }
+
+    @PatchMapping("/foto/{id}")
+    fun patchFoto(@PathVariable id:Int, @RequestBody foto: ByteArray): ResponseEntity<ByteArray> {
+        return ResponseEntity.status(200).body(service.atualizarFoto(id, foto));
+    }
+
+    @GetMapping(
+        value = ["/foto/{id}"],
+        produces = ["image/png", "image/jpeg", "image/jpg"]
+    )
+
+    fun getFoto(
+        @PathVariable id:Int
+    ): ResponseEntity<ByteArray> {
+        return ResponseEntity.status(200).body(service.getFoto(id))
     }
 
 }

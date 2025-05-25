@@ -3,14 +3,19 @@ package sptech.salonTime.service
 import org.springframework.stereotype.Service
 import sptech.salonTime.dto.ServicoDto
 import sptech.salonTime.entidade.Servico
+import sptech.salonTime.exception.ServicoNaoEcontradoException
 import sptech.salonTime.repository.ServicoRepository
 import kotlin.math.E
 
 @Service
-class ServicoService (val repository: ServicoRepository) {
+class ServicoService(val repository: ServicoRepository) {
 
     fun listarAtivos(): List<ServicoDto> {
-        return  repository.listarTodosAtivosComMedia() ?: emptyList()
+        return repository.listarTodosAtivosComMedia() ?: emptyList()
+    }
+
+    fun listarDesativados(): List<ServicoDto>? {
+        return repository.listarDesativadosComMedia()
     }
 
     fun listarPorId(id: Int): ServicoDto? {
@@ -74,4 +79,21 @@ class ServicoService (val repository: ServicoRepository) {
             false
         }
     }
+
+    fun atualizarFoto(id: Int, foto: ByteArray): ByteArray {
+        val servico = repository.findById(id).orElseThrow { ServicoNaoEcontradoException("Serviço não encontrado") }
+
+        servico.foto = foto
+        repository.save(servico)
+
+        return servico.foto!!
+
+    }
+
+    fun getFoto(id: Int): ByteArray? {
+        val servico = repository.findById(id).orElseThrow { ServicoNaoEcontradoException("Serviço não encontrado") }
+        return servico.foto
+    }
+
+
 }

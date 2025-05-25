@@ -47,6 +47,20 @@ sempre na anotação @Query
 """)
     fun listarTodosAtivosComMedia(): List<ServicoDto>
 
+
+    @Query("""
+    SELECT new sptech.salonTime.dto.ServicoDto(
+        s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao, s.foto,
+        COALESCE(AVG(a.notaServico), 0.0)
+    )
+    FROM Servico s
+    LEFT JOIN Agendamento ag ON s.id = ag.servico.id
+    LEFT JOIN Avaliacao a ON ag.id = a.agendamento.id
+    WHERE s.status = 'DESATIVADO'
+    GROUP BY s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao, s.foto
+""")
+    fun listarDesativadosComMedia(): List<ServicoDto>
+
     @Query("""
         
        SELECT new sptech.salonTime.dto.ServicoDto(
@@ -60,6 +74,8 @@ sempre na anotação @Query
     GROUP BY s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao, s.foto
     """)
     fun listarPorIdComMedia(id: Int): ServicoDto
+
+
 
 
 }

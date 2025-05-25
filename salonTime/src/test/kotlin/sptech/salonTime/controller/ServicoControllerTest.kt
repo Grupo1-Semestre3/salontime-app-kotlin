@@ -57,6 +57,18 @@ class ServicoControllerTest {
  }
 
  @Test
+ @DisplayName("Consulta todos os serviços desativados")
+    fun listarDesativados() {
+    `when`(service.listarDesativados()).thenReturn(listOf(servicoDto))
+
+    val response = controller.listarDesativados()
+
+    assertEquals(HttpStatus.OK, response.statusCode)
+    assertEquals(1, response.body?.size)
+    verify(service).listarDesativados()
+    }
+
+ @Test
  @DisplayName("Consulta serviço por ID")
  fun listarPorId() {
   `when`(service.listarPorId(1)).thenReturn(servicoDto)
@@ -137,4 +149,32 @@ class ServicoControllerTest {
   assertEquals(HttpStatus.NO_CONTENT, response.statusCode)
   verify(service).desativarSimultaneo(1)
  }
+
+ @Test
+ @DisplayName("Mudar foto de um serviço")
+    fun mudarFoto() {
+  val id = 1
+  val foto: ByteArray = "nova_foto.jpg".toByteArray()
+  `when`(service.atualizarFoto(id, foto)).thenReturn(foto)
+
+  val response = controller.patchFoto(id, foto)
+
+  assertEquals(HttpStatus.OK, response.statusCode)
+  assertEquals(foto, response.body)
+  verify(service).atualizarFoto(id, foto)
+ }
+
+ @Test
+ @DisplayName("Exibir a foto de um serviço")
+    fun exibirFoto() {
+    val id = 1
+    val foto: ByteArray = "foto.jpg".toByteArray()
+    `when`(service.getFoto(id)).thenReturn(foto)
+
+    val response = controller.getFoto(id)
+
+    assertEquals(HttpStatus.OK, response.statusCode)
+    assertEquals(foto, response.body)
+    verify(service).getFoto(id)
+    }
 }

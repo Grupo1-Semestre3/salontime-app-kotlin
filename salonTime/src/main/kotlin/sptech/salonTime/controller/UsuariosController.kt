@@ -100,4 +100,22 @@ class UsuariosController(
             ResponseEntity.status(404).build()
         }
     }
+
+
+    @PatchMapping("/foto/{id}")
+    fun patchFoto(@PathVariable id:Int, @RequestBody foto: ByteArray): ResponseEntity<ByteArray> {
+        return ResponseEntity.status(200).body(service.atualizarFoto(id, foto));
+    }
+
+    @GetMapping(
+        value = ["/foto/{id}"],
+        produces = ["image/png", "image/jpeg", "image/jpg"]
+    )
+    fun getFoto(
+        @PathVariable id:Int
+    ): ResponseEntity<ByteArray> {
+        return ResponseEntity.status(200).body(service.getFoto(id))
+    }
+
+
 }
