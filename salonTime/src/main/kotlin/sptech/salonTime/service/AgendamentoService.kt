@@ -37,6 +37,7 @@ class AgendamentoService(private val repository: AgendamentoRepository,
     }
 
     fun cadastrar(agendamento: CadastroAgendamentoDto): AgendamentoDto {
+
             val existeAgendamento = repository.existeConflitoDeAgendamento(
                 agendamento.data, agendamento.inicio, agendamento.fim
             )
@@ -51,19 +52,24 @@ class AgendamentoService(private val repository: AgendamentoRepository,
 
             val usuario = usuarioRepository.findById(agendamento.usuario)
                 .orElseThrow { UsuarioNaoEncontradoException("Usuário não encontrado") }
+            val funcionario = usuarioRepository.findById(agendamento.funcionario)
+            .orElseThrow { FuncionarioNaoEcontradoException("Funcionario não encontrado") }
+
+            if (!funcionario.tipoUsuario?.id?.equals(3)!!) {
+                throw FuncionarioNaoEcontradoException("O usuário selecionado não é um funcionário.")
+            }
+
             val statusAgendamento = statusAgendamentoRepository.findById(agendamento.statusAgendamento)
                 .orElseThrow { StatusAgendamentoNaoEncontradoException("Status de agendamento não encontrado") }
             val servico = servicoRepository.findById(agendamento.servico)
                 .orElseThrow { ServicoNaoEcontradoException("Serviço não encontrado") }
             val pagamento = pagamentoRepository.findById(agendamento.pagamento)
                 .orElseThrow { PagamentoNaoEncontradoException("Pagamento não encontrado") }
-            val funcinario = usuarioRepository.findById(agendamento.funcionario)
-                .orElseThrow { UsuarioNaoEncontradoException("Funcionário não encontrado") }
 
             val novoAgendamento = Agendamento(
                 usuario = usuario,
                 servico = servico,
-                funcionario = funcinario,
+                funcionario = funcionario,
                 statusAgendamento = statusAgendamento,
                 pagamento = pagamento,
                 data = agendamento.data,
@@ -157,6 +163,13 @@ class AgendamentoService(private val repository: AgendamentoRepository,
         var agendamentoSalvo = repository.save(agendamentoEcontrado)
         return AgendamentoMapper.toDto(agendamentoSalvo)
 
+    }
+
+    fun buscarAgendamentosCancelados(): List<AgendamentoDto>? {
+        val agendamentos = repository.buscarAgendamentosCancelados()
+        return agendamentos.map { agendamento ->
+            AgendamentoMapper.toDto(agendamento)
+        }
     }
 
 }

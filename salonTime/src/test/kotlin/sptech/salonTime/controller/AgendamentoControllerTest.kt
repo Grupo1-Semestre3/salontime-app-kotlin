@@ -224,4 +224,16 @@ class AgendamentoControllerTest {
         assertEquals(agendamento.id, response.body?.id)
     }
 
+    @Test
+    @DisplayName("Consulta agendamentos cancelados")
+    fun getAgendamentosCancelados() {
+        Mockito.`when`(service.buscarAgendamentosCancelados()).thenReturn(
+            listOf(agendamentoDto)
+        )
+
+        val response: ResponseEntity<List<AgendamentoDto>> = controller.getAgendamentosCancelados()
+
+        assertEquals(200, response.statusCode.value())
+        assertEquals(1, response.body?.size)
+    }
 }

@@ -5,8 +5,10 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
 import org.springframework.http.HttpStatus
+import sptech.salonTime.dto.CadastroUsuarioDto
 import sptech.salonTime.dto.EmailDto
 import sptech.salonTime.dto.SenhaDto
+import sptech.salonTime.dto.UsuarioPublicoDto
 import sptech.salonTime.entidade.TipoUsuario
 import sptech.salonTime.entidade.Usuario
 import sptech.salonTime.service.UsuarioService
@@ -70,13 +72,29 @@ class UsuariosControllerTest {
     @Test
     @DisplayName("Cria um novo usuário")
     fun criar() {
-        `when`(service.salvar(usuario)).thenReturn(usuario)
 
-        val response = controller.criar(usuario)
+        val userDto = CadastroUsuarioDto(
+            nome = "João da Silva",
+            telefone = "11999999999",
+            email = "",
+            senha = "123456"
+        )
+
+        val respsonse = UsuarioPublicoDto(
+            id = 1,
+            tipoUsuario = tipoUsuario,
+            nome = "João da Silva",
+            email = "",
+            login = false
+        )
+
+        `when`(service.salvar(userDto)).thenReturn(respsonse)
+
+        val response = controller.criar(userDto)
 
         assertEquals(HttpStatus.CREATED, response.statusCode)
-        assertEquals(usuario, response.body)
-        verify(service).salvar(usuario)
+        assertEquals(respsonse, response.body)
+        verify(service).salvar(userDto)
     }
 
     @Test
@@ -194,5 +212,16 @@ class UsuariosControllerTest {
         assertEquals(HttpStatus.OK, response.statusCode)
         assertEquals(foto, response.body)
         verify(service).atualizarFoto(id, foto)
+    }
+
+    @Test
+    @DisplayName("Verifica email do usuário")
+    fun verificarEmail() {
+        val email = "joao@email.com"
+        `when`(service.verificarEmail(email)).thenReturn(true)
+        val response = controller.verificarEmail(email)
+        assertEquals(HttpStatus.OK, response.statusCode)
+        assertEquals(true, response.body)
+        verify(service).verificarEmail(email)
     }
 }

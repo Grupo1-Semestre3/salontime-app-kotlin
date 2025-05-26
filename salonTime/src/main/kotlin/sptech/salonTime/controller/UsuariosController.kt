@@ -3,8 +3,7 @@ package sptech.salonTime.controller
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import sptech.salonTime.dto.EmailDto
-import sptech.salonTime.dto.SenhaDto
+import sptech.salonTime.dto.*
 import sptech.salonTime.entidade.Usuario
 import sptech.salonTime.service.UsuarioService
 import java.util.*
@@ -31,7 +30,7 @@ class UsuariosController(
     }
 
     @PostMapping
-    fun criar(@RequestBody @Valid novoUsuario: Usuario): ResponseEntity<Usuario> {
+    fun criar(@RequestBody @Valid novoUsuario: CadastroUsuarioDto): ResponseEntity<UsuarioPublicoDto> {
         return ResponseEntity.status(201).body(service.salvar(novoUsuario))
     }
 
@@ -117,5 +116,9 @@ class UsuariosController(
         return ResponseEntity.status(200).body(service.getFoto(id))
     }
 
+    @GetMapping("/verificar-email/{email}")
+    fun verificarEmail(@PathVariable email: String): ResponseEntity<Boolean> {
+       return ResponseEntity.status(200).body(service.verificarEmail(email))
+    }
 
 }

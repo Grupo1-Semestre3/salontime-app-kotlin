@@ -47,5 +47,10 @@ interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
     """)
     fun buscarAgendamentosPassadosPorFuncionario(idFunc: Int): List<Agendamento>
 
+    @Query(nativeQuery = true, value = """
+        SELECT * FROM agendamento WHERE status_agendamento_id = 2 ORDER BY data ASC, inicio ASC
+    """)
+    fun buscarAgendamentosCancelados(): List<Agendamento>
+
 
 }

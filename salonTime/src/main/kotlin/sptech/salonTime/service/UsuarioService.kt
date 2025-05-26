@@ -3,10 +3,10 @@ package sptech.salonTime.service
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import sptech.salonTime.dto.EmailDto
-import sptech.salonTime.dto.SenhaDto
+import sptech.salonTime.dto.*
 import sptech.salonTime.entidade.Usuario
 import sptech.salonTime.exception.UsuarioNaoEncontradoException
+import sptech.salonTime.mapper.UsuarioMapper
 import sptech.salonTime.repository.UsuarioRepository
 
 @Service
@@ -16,8 +16,16 @@ class UsuarioService(val repository: UsuarioRepository) {
         return repository.findAll() ?: emptyList()
     }
 
-    fun salvar(usuario: Usuario): Usuario {
-        return repository.save(usuario) ?: throw Exception("Erro ao salvar o usuário")
+    fun salvar(usuario: CadastroUsuarioDto): UsuarioPublicoDto {
+
+
+        val usuarioEntity = UsuarioMapper.toEntity(usuario)
+            ?: throw Exception("Erro ao mapear o usuário")
+
+        val usuarioSalvo = repository.save(usuarioEntity)
+
+        return UsuarioMapper.toDto(usuarioSalvo)
+
     }
 
     fun listarPorId(id: Int): Usuario {
@@ -99,4 +107,18 @@ class UsuarioService(val repository: UsuarioRepository) {
 
         return usuario.foto
     }
+
+    //Funcção de verificação de email para CHATBOT
+
+    fun verificarEmail(email: String): Boolean {
+        val usuario = repository.findByEmail(email)
+
+       return if (usuario != null) {
+            true
+        } else {
+            false
+        }
+
+    }
+
 }

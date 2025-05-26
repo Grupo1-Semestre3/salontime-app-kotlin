@@ -8,6 +8,7 @@ data class UsuarioPublicoDto(
     val tipoUsuario: TipoUsuario?,
     val nome: String?,
     val email: String?,
-    val login: Boolean?
+    val login: Boolean?,
+    val telefone: String? = null
 ) {
 }

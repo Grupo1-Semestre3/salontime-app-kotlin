@@ -32,5 +32,22 @@ class FuncionamentoService(private val repository: FuncionamentoRepository) {
         }
     }
 
+    fun editarTudo(id: Int, dados:Funcionamento): Funcionamento? {
+
+        val funcionamentoExistente = repository.findById(id)
+            .orElseThrow { IllegalArgumentException("Funcionamento não encontrado") }
+
+        val funcionamentoAtualizado = funcionamentoExistente.copy(
+            inicio = dados.inicio,
+            fim = dados.fim,
+            aberto = dados.aberto,
+            capacidade = dados.capacidade,
+            diaSemana = dados.diaSemana
+        )
+
+        return repository.save(funcionamentoAtualizado)
+
+    }
+
 
 }

@@ -67,6 +67,11 @@ class AgendamentoController(val repository: AgendamentoRepository, val statusAge
         return ResponseEntity.status(200).body(service.buscarAgendamentosPassadosPorUsuario(id))
     }
 
+    @GetMapping("/cancelados")
+    fun getAgendamentosCancelados(): ResponseEntity<List<AgendamentoDto>> {
+        return ResponseEntity.status(200).body(service.buscarAgendamentosCancelados())
+    }
+
     @PatchMapping("/status/{id}/{status}")
     fun patchStatus(@PathVariable id: Int, @PathVariable status: Int): ResponseEntity<AgendamentoDto> {
         return ResponseEntity.status(200).body(service.atualizarStatus(id, status))

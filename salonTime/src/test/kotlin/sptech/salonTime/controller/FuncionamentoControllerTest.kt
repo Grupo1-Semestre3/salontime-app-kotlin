@@ -1,6 +1,7 @@
 package sptech.salonTime.controller
 
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
 import org.springframework.http.HttpStatus
@@ -43,6 +44,7 @@ class FuncionamentoControllerTest {
  }
 
  @Test
+ @DisplayName("Editar Funcionamento um unico atributo")
  fun editarFuncionamento() {
   `when`(service.editar(1, "capacidade", "20")).thenReturn(
    funcionamento.copy(capacidade = 20)
@@ -54,4 +56,18 @@ class FuncionamentoControllerTest {
   assertEquals(20, response.body?.capacidade)
   verify(service).editar(1, "capacidade", "20")
  }
+
+ @Test
+ @DisplayName("Editar Funcionamento com dados completos")
+    fun editarFuncionamentoCompleto() {
+    val novoFuncionamento = funcionamento.copy(capacidade = 20, aberto = false)
+    `when`(service.editarTudo(1, novoFuncionamento)).thenReturn(novoFuncionamento)
+
+    val response = controller.editarFuncionamento(1, novoFuncionamento)
+
+    assertEquals(HttpStatus.OK, response.statusCode)
+    assertEquals(novoFuncionamento, response.body)
+    verify(service).editarTudo(1, novoFuncionamento)
+    }
+
 }

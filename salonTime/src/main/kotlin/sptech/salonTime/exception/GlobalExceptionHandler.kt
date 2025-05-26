@@ -88,4 +88,13 @@ class GlobalExceptionHandler {
         )
         return ResponseEntity(erro, HttpStatus.NOT_FOUND)
     }
+
+    @ExceptionHandler(FuncionarioNaoEcontradoException::class)
+    fun handleFuncionarioNaoEcontrado(ex: FuncionarioNaoEcontradoException): ResponseEntity<Any> {
+        val erro = mapOf(
+            "erro" to ex.message,
+            "status" to HttpStatus.NOT_FOUND.value()
+        )
+        return ResponseEntity(erro, HttpStatus.NOT_FOUND)
+    }
 }
