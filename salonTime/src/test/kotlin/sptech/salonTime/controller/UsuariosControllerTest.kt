@@ -88,13 +88,13 @@ class UsuariosControllerTest {
             login = false
         )
 
-        `when`(service.salvar(userDto)).thenReturn(respsonse)
+        `when`(service.salvarUsuario(userDto)).thenReturn(respsonse)
 
         val response = controller.criar(userDto)
 
         assertEquals(HttpStatus.CREATED, response.statusCode)
         assertEquals(respsonse, response.body)
-        verify(service).salvar(userDto)
+        verify(service).salvarUsuario(userDto)
     }
 
     @Test

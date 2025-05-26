@@ -25,7 +25,7 @@ data class Usuario(
 
     @ManyToOne
     @NotNull
-    val tipoUsuario: TipoUsuario?,
+    var tipoUsuario: TipoUsuario?,
 
     @NotNull
     @Size(min = 3, max = 50)

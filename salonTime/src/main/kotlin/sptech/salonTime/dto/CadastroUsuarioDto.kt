@@ -4,5 +4,5 @@ data class CadastroUsuarioDto(
     val nome: String,
     val email: String,
     val senha: String,
-    val telefone: String? = null
+    val telefone: String
 )

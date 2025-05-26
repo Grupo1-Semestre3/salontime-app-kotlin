@@ -29,9 +29,13 @@ class UsuariosController(
         }
     }
 
-    @PostMapping
+    @PostMapping("/cadastro")
     fun criar(@RequestBody @Valid novoUsuario: CadastroUsuarioDto): ResponseEntity<UsuarioPublicoDto> {
-        return ResponseEntity.status(201).body(service.salvar(novoUsuario))
+        return ResponseEntity.status(201).body(service.salvarUsuario(novoUsuario))
+    }
+    @PostMapping
+    fun criarFuncionario(@RequestBody @Valid novoUsuario: CadastroUsuarioDto): ResponseEntity<UsuarioPublicoDto> {
+        return ResponseEntity.status(201).body(service.salvarFuncionario(novoUsuario))
     }
 
     @DeleteMapping("/{id}")

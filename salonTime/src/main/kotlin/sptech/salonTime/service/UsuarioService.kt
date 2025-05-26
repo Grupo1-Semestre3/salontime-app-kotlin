@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import sptech.salonTime.dto.*
+import sptech.salonTime.entidade.TipoUsuario
 import sptech.salonTime.entidade.Usuario
 import sptech.salonTime.exception.UsuarioNaoEncontradoException
 import sptech.salonTime.mapper.UsuarioMapper
@@ -16,12 +17,26 @@ class UsuarioService(val repository: UsuarioRepository) {
         return repository.findAll() ?: emptyList()
     }
 
-    fun salvar(usuario: CadastroUsuarioDto): UsuarioPublicoDto {
+    fun salvarUsuario(usuario: CadastroUsuarioDto): UsuarioPublicoDto {
 
 
         val usuarioEntity = UsuarioMapper.toEntity(usuario)
             ?: throw Exception("Erro ao mapear o usuário")
 
+        usuarioEntity.tipoUsuario = TipoUsuario(2, "CLIENTE")// Definindo o tipo de usuário como FUNCIONARIO
+        val usuarioSalvo = repository.save(usuarioEntity)
+
+        return UsuarioMapper.toDto(usuarioSalvo)
+
+    }
+
+    fun salvarFuncionario(usuario: CadastroUsuarioDto): UsuarioPublicoDto {
+
+
+        val usuarioEntity = UsuarioMapper.toEntity(usuario)
+            ?: throw Exception("Erro ao mapear o usuário")
+
+        usuarioEntity.tipoUsuario = TipoUsuario(3, "FUNCIONARIO")// Definindo o tipo de usuário como FUNCIONARIO
         val usuarioSalvo = repository.save(usuarioEntity)
 
         return UsuarioMapper.toDto(usuarioSalvo)

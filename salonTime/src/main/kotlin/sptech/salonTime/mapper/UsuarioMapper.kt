@@ -33,5 +33,7 @@ class UsuarioMapper {
                 tipoUsuario = TipoUsuario(id = 2, descricao = "CLIENTE") // Default to Cliente
             )
         }
+
+
     }
 }
