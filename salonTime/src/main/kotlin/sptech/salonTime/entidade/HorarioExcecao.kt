@@ -1,5 +1,7 @@
 package sptech.salonTime.entidade
 import jakarta.persistence.*
+import jakarta.validation.constraints.FutureOrPresent
+import jakarta.validation.constraints.NotNull
 import java.time.*
 
 @Entity
@@ -7,15 +9,20 @@ import java.time.*
 data class HorarioExcecao(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int = 0,
-
-    @Column(name = "data_inicio")
+    @NotNull
+    @FutureOrPresent
     val dataInicio: LocalDate,
-
-    @Column(name = "data_fim")
+    @NotNull
+    @FutureOrPresent
     val dataFim: LocalDate,
-
+    @NotNull
+    @FutureOrPresent
     val inicio: LocalTime,
+    @NotNull
+    @FutureOrPresent
     val fim: LocalTime,
+    @NotNull
     val aberto: Boolean,
+    @NotNull
     val capacidade: Int
 )

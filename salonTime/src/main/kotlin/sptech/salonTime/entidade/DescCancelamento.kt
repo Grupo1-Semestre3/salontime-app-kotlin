@@ -7,9 +7,9 @@ import jakarta.validation.constraints.*
 @Table(name = "desc_cancelamento")
 data class DescCancelamento(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int = 0,
+    var id: Int = 0,
     @Size(max = 250)
-    val descricao: String? = null,
+    var descricao: String? = null,
     @NotNull
-    val agendamento: Int?
+    var agendamento: Int?
 )
