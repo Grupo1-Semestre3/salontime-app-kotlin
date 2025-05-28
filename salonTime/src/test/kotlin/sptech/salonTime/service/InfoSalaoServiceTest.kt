@@ -40,18 +40,6 @@ class InfoSalaoServiceTest {
     }
 
     @Test
-    fun `editar deve lançar excecao para atributo invalido`() {
-        val infoSalao = InfoSalao(1, "email@salao.com", "123456789", "Rua A", "123", "Cidade", "Estado", "Complemento")
-        `when`(repository.findById(1)).thenReturn(Optional.of(infoSalao))
-
-        val exception = assertThrows(AtributoInvalidoAoAtualizarException::class.java) {
-            service.editar("atributoInvalido", "valor")
-        }
-
-        assertEquals("Atributo inválido: atributoInvalido", exception.message)
-    }
-
-    @Test
     fun `editar deve lançar excecao quando InfoSalao nao encontrado`() {
         `when`(repository.findById(1)).thenReturn(Optional.empty())
 

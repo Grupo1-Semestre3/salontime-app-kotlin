@@ -7,10 +7,11 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
 import org.springframework.http.HttpStatus
 import sptech.salonTime.entidade.DescCancelamento
+import sptech.salonTime.service.DescCancelamentoService
 import sptech.salonTime.service.DescCancelamentoServiceTest
 
 class DescCancelamentoControllerTest {
- private lateinit var service: DescCancelamentoServiceTest
+ private lateinit var service: DescCancelamentoService
  private lateinit var controller: DescCancelamentoController
 
  private val cancelamento = DescCancelamento(
@@ -21,7 +22,7 @@ class DescCancelamentoControllerTest {
 
  @BeforeEach
  fun setup() {
-  service = mock(DescCancelamentoServiceTest::class.java)
+  service = mock(DescCancelamentoService::class.java)
   controller = DescCancelamentoController(service)
  }
 

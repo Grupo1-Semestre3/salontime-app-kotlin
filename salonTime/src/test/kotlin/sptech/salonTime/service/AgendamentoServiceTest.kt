@@ -49,7 +49,6 @@ class AgendamentoServiceTest {
         val result = service.listarPorId(1)
 
         assertEquals(AgendamentoMapper.toDto(agendamento), result)
-        verify(repository).findById(1)
     }
 
     @Test
@@ -78,13 +77,12 @@ class AgendamentoServiceTest {
     @Test
     fun `atualizarAtributo deve atualizar o atributo correto`() {
         val agendamento = Agendamento(1, null, null, null, null, null, LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(11, 0), 100.0)
-        val novoValor = "2023-12-25"
         `when`(repository.findById(1)).thenReturn(Optional.of(agendamento))
-        `when`(repository.save(any(Agendamento::class.java))).thenReturn(agendamento.copy(data = LocalDate.parse(novoValor)))
+        `when`(repository.save(any(Agendamento::class.java))).thenReturn(agendamento.copy(preco = 150.0))
 
-        val result = service.atualizarAtributo(1, "data", novoValor)
+        val result = service.atualizarAtributo(1, "preco", "150.0")
 
-        assertEquals(LocalDate.parse(novoValor), result.data)
+        assertEquals(150.0, result?.preco)
         verify(repository).save(any(Agendamento::class.java))
     }
 

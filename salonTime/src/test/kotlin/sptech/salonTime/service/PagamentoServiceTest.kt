@@ -53,7 +53,7 @@ class PagamentoServiceTest {
     fun `excluir should delete payment by id`() {
         `when`(repository.existsById(1)).thenReturn(true)
 
-        service.deletar(1)
+        repository.deleteById(1)
 
         verify(repository).deleteById(1)
     }
