@@ -9,13 +9,13 @@ import sptech.salonTime.dto.avalicao.CadastroAvaliacaoDto
 import sptech.salonTime.entidade.Agendamento
 import sptech.salonTime.entidade.Avaliacao
 import sptech.salonTime.entidade.Usuario
-import sptech.salonTime.service.AvalicaoService
+import sptech.salonTime.service.AvaliacaoService
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
 class AvaliacaoControllerTest {
 
- private lateinit var service: AvalicaoService
+ private lateinit var service: AvaliacaoService
  private lateinit var controller: AvaliacaoController
 
  private val avaliacao = Avaliacao(
@@ -29,7 +29,7 @@ class AvaliacaoControllerTest {
 
  @BeforeEach
  fun setup() {
-  service = mock(AvalicaoService::class.java)
+  service = mock(AvaliacaoService::class.java)
   controller = AvaliacaoController(service)
  }
 

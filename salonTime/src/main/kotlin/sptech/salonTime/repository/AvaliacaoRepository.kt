@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository
 import sptech.salonTime.entidade.Avaliacao
 
 @Repository
-interface AvalicaoRepository : JpaRepository<Avaliacao, Int>{
+interface AvaliacaoRepository : JpaRepository<Avaliacao, Int>{
 }

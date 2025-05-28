@@ -5,11 +5,11 @@ import org.springframework.web.bind.annotation.*
 import sptech.salonTime.dto.avalicao.AtualizarAvaliacaoDto
 import sptech.salonTime.dto.avalicao.CadastroAvaliacaoDto
 import sptech.salonTime.entidade.Avaliacao
-import sptech.salonTime.service.AvalicaoService
+import sptech.salonTime.service.AvaliacaoService
 
 @RestController
 @RequestMapping("/avaliacao")
-class AvaliacaoController (private val service: AvalicaoService){
+class AvaliacaoController (private val service: AvaliacaoService){
 
     @GetMapping
     fun get(): ResponseEntity<List<Avaliacao>> {

@@ -6,12 +6,12 @@ import sptech.salonTime.dto.avalicao.AtualizarAvaliacaoDto
 import sptech.salonTime.dto.avalicao.CadastroAvaliacaoDto
 import sptech.salonTime.entidade.Avaliacao
 import sptech.salonTime.exception.AvaliacaoNaoExisteException
-import sptech.salonTime.repository.AvalicaoRepository
+import sptech.salonTime.repository.AvaliacaoRepository
 import java.time.LocalDateTime
 
 @Service
-class AvalicaoService @Autowired constructor(
-    private val repository: AvalicaoRepository
+class AvaliacaoService @Autowired constructor(
+    private val repository: AvaliacaoRepository
 ) {
 
     fun listar(): List<Avaliacao> {
