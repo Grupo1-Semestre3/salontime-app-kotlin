@@ -1,12 +1,15 @@
 package sptech.salonTime.service;
 
+import org.springframework.stereotype.Service
 import sptech.salonTime.entidade.CupomDestinado
 import sptech.salonTime.repository.CupomDestinadoRepository
+import sptech.salonTime.repository.CupomRepository
 import sptech.salonTime.repository.UsuarioRepository
 
-
+@Service
 class CupomDestinadoService (
     val repository: CupomDestinadoRepository,
+    val cupomRepository: CupomRepository,
     val usuarioRepository: UsuarioRepository
 ){
     fun salvar(cupomDestinado: CupomDestinado): CupomDestinado {
@@ -40,13 +43,11 @@ class CupomDestinadoService (
     }
 
     fun deletar(id:Int){
-        val existingCupomDestinado = repository.findById(id).orElseThrow { RuntimeException("Cupom Destinado not found") }
-        repository.delete(existingCupomDestinado)
+        val CupomDestinadoEncontrado = repository.findById(id).orElseThrow { RuntimeException("Cupom Destinado not found") }
+        repository.delete(CupomDestinadoEncontrado)
     }
 
-    fun listar(): List<CupomDestinado> {
-        return repository.findAll()
-    }
+    fun listar(): List<CupomDestinado> = repository.findAll()
 
 
 

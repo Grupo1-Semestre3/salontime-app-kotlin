@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import sptech.salonTime.entidade.CupomDestinado
-import sptech.salonTime.entidade.FuncionarioCompetencia
 import sptech.salonTime.service.CupomDestinadoService
 
 
@@ -25,13 +24,13 @@ class CupomDestinadoController(val service: CupomDestinadoService) {
     }
 
     @PostMapping
-    fun inserir(@RequestBody funcionarioCompetencia: FuncionarioCompetencia): ResponseEntity<FuncionarioCompetencia>{
+    fun inserir(@RequestBody cupomDestinado: CupomDestinado): ResponseEntity<CupomDestinado>{
         return ResponseEntity.status(201).body(service.salvar(cupomDestinado))
     }
 
     @PutMapping("/{id}")
     fun editar(@PathVariable id:Int, cupomDestinado: CupomDestinado): ResponseEntity<CupomDestinado> {
-        return ResponseEntity.status(200).body(service.editar(cupomDestinado))
+        return ResponseEntity.status(200).body(service.editar(id, cupomDestinado))
     }
 
     @PatchMapping("/{id}/{usado}")
