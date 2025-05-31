@@ -125,13 +125,13 @@ class UsuarioService(val repository: UsuarioRepository) {
 
     //Funcção de verificação de email para CHATBOT
 
-    fun verificarEmail(email: String): Boolean {
+    fun verificarEmail(email: String): Usuario {
         val usuario = repository.findByEmail(email)
 
        return if (usuario != null) {
-            true
+            usuario
         } else {
-            false
+           throw Exception("Usuário não encontrado com o email: $email")
         }
 
     }

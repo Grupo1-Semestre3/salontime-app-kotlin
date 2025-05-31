@@ -121,7 +121,7 @@ class UsuariosController(
     }
 
     @GetMapping("/verificar-email/{email}")
-    fun verificarEmail(@PathVariable email: String): ResponseEntity<Boolean> {
+    fun verificarEmail(@PathVariable email: String): ResponseEntity<Usuario> {
        return ResponseEntity.status(200).body(service.verificarEmail(email))
     }
 
