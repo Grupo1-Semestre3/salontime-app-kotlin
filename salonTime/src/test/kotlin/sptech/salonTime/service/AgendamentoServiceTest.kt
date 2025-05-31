@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
 import sptech.salonTime.dto.AgendamentoDto
 import sptech.salonTime.dto.CadastroAgendamentoDto
+import sptech.salonTime.dto.UsuarioPublicoDto
 import sptech.salonTime.entidade.*
 import sptech.salonTime.exception.*
 import sptech.salonTime.mapper.AgendamentoMapper
@@ -53,25 +54,44 @@ class AgendamentoServiceTest {
 
     @Test
     fun `cadastrar deve salvar e retornar o agendamento`() {
-        val cadastroDto = CadastroAgendamentoDto(1, 1, 1, 1, 1, LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(11, 0), 100.0)
+        val cadastroDto = CadastroAgendamentoDto(
+            usuario = 1,
+            servico = 1,
+            funcionario = 2,
+            statusAgendamento = 1,
+            pagamento = 1,
+            data = LocalDate.now(),
+            inicio = LocalTime.of(10, 0),
+            fim = LocalTime.of(11, 0),
+            preco = 100.0
+        )
+
         val usuario = Usuario()
         val servico = Servico()
-        val funcionario = Usuario()
-        val status = StatusAgendamento(1, "Status")
+        val funcionario = Usuario().apply {
+            tipoUsuario = TipoUsuario(3, "FUNCIONARIO")
+        }
+        val status = StatusAgendamento(1, "AGENDADO")
         val pagamento = Pagamento(1, "Pagamento")
-        val agendamento = Agendamento(1, servico, usuario, funcionario, status, pagamento, cadastroDto.data, cadastroDto.inicio, cadastroDto.fim, cadastroDto.preco)
+        val agendamento = Agendamento(
+            id = 1, servico = servico, usuario = usuario, funcionario = funcionario,
+            statusAgendamento = status, pagamento = pagamento, data = cadastroDto.data,
+            inicio = cadastroDto.inicio, fim = cadastroDto.fim, preco = cadastroDto.preco
+        )
 
         `when`(usuarioRepository.findById(1)).thenReturn(Optional.of(usuario))
-        `when`(servicoRepository.findById(1)).thenReturn(Optional.of(servico))
         `when`(usuarioRepository.findById(2)).thenReturn(Optional.of(funcionario))
+        `when`(servicoRepository.findById(1)).thenReturn(Optional.of(servico))
         `when`(statusAgendamentoRepository.findById(1)).thenReturn(Optional.of(status))
         `when`(pagamentoRepository.findById(1)).thenReturn(Optional.of(pagamento))
         `when`(repository.save(any(Agendamento::class.java))).thenReturn(agendamento)
+        `when`(repository.existeConflitoDeAgendamento(any(), any(), any())).thenReturn(0)
 
         val result = service.cadastrar(cadastroDto)
 
         assertEquals(AgendamentoMapper.toDto(agendamento), result)
         verify(repository).save(any(Agendamento::class.java))
+
     }
 
     @Test

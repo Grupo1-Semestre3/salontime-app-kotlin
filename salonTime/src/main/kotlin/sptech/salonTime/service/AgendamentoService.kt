@@ -3,8 +3,9 @@ package sptech.salonTime.service
 import org.springframework.stereotype.Service
 import sptech.salonTime.dto.AgendamentoDto
 import sptech.salonTime.dto.CadastroAgendamentoDto
+import sptech.salonTime.dto.HorarioDisponivelDto
+import sptech.salonTime.dto.HorariosOcupadosDto
 import sptech.salonTime.entidade.Agendamento
-import sptech.salonTime.entidade.StatusAgendamento
 import sptech.salonTime.exception.*
 import sptech.salonTime.mapper.AgendamentoMapper
 import sptech.salonTime.repository.*
@@ -37,6 +38,8 @@ class AgendamentoService(private val repository: AgendamentoRepository,
     }
 
     fun cadastrar(agendamento: CadastroAgendamentoDto): AgendamentoDto {
+
+            //Validação de existencia e aplicabilidade de cupom
 
             val existeAgendamento = repository.existeConflitoDeAgendamento(
                 agendamento.data, agendamento.inicio, agendamento.fim
@@ -172,4 +175,37 @@ class AgendamentoService(private val repository: AgendamentoRepository,
         }
     }
 
+    fun obterHorariosDisponiveis(idServico: Int, data: LocalDate): List<HorarioDisponivelDto> {
+        val horariosOcupados = repository.buscarHorariosOcupados(data)
+        return gerarHorariosDisponiveis(horariosOcupados)
+    }
+
+    private fun gerarHorariosDisponiveis(horariosOcupados: List<HorariosOcupadosDto>): List<HorarioDisponivelDto> {
+        val abertura = LocalTime.of(9, 0)
+        val fechamento = LocalTime.of(18, 0)
+        val intervaloMinutos = 30
+
+        val horariosDisponiveis = mutableListOf<HorarioDisponivelDto>()
+        var horarioAtual = abertura
+
+        while (horarioAtual.plusMinutes(intervaloMinutos.toLong()) <= fechamento) {
+            val proximoHorario = horarioAtual.plusMinutes(intervaloMinutos.toLong())
+
+            val conflita = horariosOcupados.any { ocupado ->
+                horarioAtual < ocupado.getFim() && proximoHorario > ocupado.getInicio()
+            }
+
+            if (!conflita) {
+                horariosDisponiveis.add(
+                    HorarioDisponivelDto(
+                        inicio = horarioAtual.toString().substring(0, 5),  // "HH:mm"
+                        fim = proximoHorario.toString().substring(0, 5)
+                    )
+                )
+            }
+            horarioAtual = proximoHorario
+        }
+
+        return horariosDisponiveis
+    }
 }

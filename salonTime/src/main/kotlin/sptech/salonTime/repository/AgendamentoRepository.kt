@@ -1,9 +1,9 @@
 package sptech.salonTime.repository
 
-import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
-import sptech.salonTime.dto.AgendamentoDto
+import org.springframework.data.repository.query.Param
+import sptech.salonTime.dto.HorariosOcupadosDto
 import sptech.salonTime.entidade.Agendamento
 import java.time.LocalDate
 import java.time.LocalTime
@@ -51,6 +51,16 @@ interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
         SELECT * FROM agendamento WHERE status_agendamento_id = 2 ORDER BY data ASC, inicio ASC
     """)
     fun buscarAgendamentosCancelados(): List<Agendamento>
+
+    @Query(value = """
+    SELECT a.inicio, a.fim,
+        (SELECT f.capacidade FROM funcionamento f WHERE f.funcionario_id = a.funcionario_id LIMIT 1) AS capacidade
+    FROM agendamento a
+    WHERE a.data = :data
+""", nativeQuery = true)
+    fun buscarHorariosOcupados(@Param("data") data: LocalDate): List<HorariosOcupadosDto>
+
+
 
 
 }

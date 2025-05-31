@@ -26,7 +26,10 @@ data class Funcionamento(
     val aberto: Boolean? = null,
 
     @NotNull
-    val capacidade: Int? = null
+    val capacidade: Int? = null,
+
+    @ManyToOne
+    val funcionario: Usuario? = null
 ){
     constructor() : this(null, null, null, null, null, null)
 

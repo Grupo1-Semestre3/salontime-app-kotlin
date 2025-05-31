@@ -24,5 +24,7 @@ data class HorarioExcecao(
     @NotNull
     val aberto: Boolean,
     @NotNull
-    val capacidade: Int
+    val capacidade: Int,
+    @ManyToOne
+    val funcionario: Usuario? = null
 )
