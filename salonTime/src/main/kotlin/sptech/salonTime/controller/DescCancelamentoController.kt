@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import sptech.salonTime.dto.DescCancelamentoDto
+import sptech.salonTime.dto.NovaDescricaoCancelamentoDto
 import sptech.salonTime.entidade.DescCancelamento
 import sptech.salonTime.service.DescCancelamentoService
 
@@ -18,7 +20,7 @@ import sptech.salonTime.service.DescCancelamentoService
 class DescCancelamentoController (val service: DescCancelamentoService) {
 
     @GetMapping
-    fun listar(): ResponseEntity<List<DescCancelamento>> {
+    fun listar(): ResponseEntity<List<DescCancelamentoDto>> {
         val cancelamentos = service.listar()
         return if (cancelamentos.isEmpty()) {
             ResponseEntity.status(204).build()
@@ -28,7 +30,7 @@ class DescCancelamentoController (val service: DescCancelamentoService) {
     }
 
     @GetMapping("/{id}")
-    fun listarPorId(@PathVariable id: Int): ResponseEntity<DescCancelamento> {
+    fun listarPorId(@PathVariable id: Int): ResponseEntity<DescCancelamentoDto> {
         val cancelamento = service.listarPorId(id)
         return if (cancelamento != null) {
             ResponseEntity.status(200).body(cancelamento)
@@ -43,13 +45,13 @@ class DescCancelamentoController (val service: DescCancelamentoService) {
     }
 
     @PutMapping("/{id}")
-    fun atualizar(@PathVariable id: Int, novoCancelamento: DescCancelamento): ResponseEntity<DescCancelamento> {
+    fun atualizar(@PathVariable id: Int, novoCancelamento: DescCancelamento): ResponseEntity<DescCancelamentoDto> {
         return ResponseEntity.status(200).body(service.atualizar(id, novoCancelamento))
     }
 
     @PatchMapping("/mudar-descricao/{id}")
-    fun atualizarDescricao(@PathVariable id: Int, @RequestBody novaDescricao: String): ResponseEntity<DescCancelamento> {
-        return ResponseEntity.status(200).body(service.atualizarDescricao(id, novaDescricao))
+    fun atualizarDescricao(@PathVariable id: Int, @RequestBody descricao: NovaDescricaoCancelamentoDto): ResponseEntity<DescCancelamentoDto> {
+        return ResponseEntity.status(200).body(service.atualizarDescricao(id, descricao))
     }
 
     @DeleteMapping("/{id}")

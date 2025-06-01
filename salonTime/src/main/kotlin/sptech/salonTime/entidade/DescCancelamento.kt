@@ -10,6 +10,8 @@ data class DescCancelamento(
     var id: Int = 0,
     @Size(max = 250)
     var descricao: String? = null,
-    @NotNull
-    var agendamento: Int?
-)
+    @ManyToOne
+    var agendamento: Agendamento?
+){
+    constructor() : this(0, null, null)
+}
