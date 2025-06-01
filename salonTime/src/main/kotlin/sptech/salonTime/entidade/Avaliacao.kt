@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 data class Avaliacao(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int = 0,
+    var id: Int = 0,
 
     @OneToOne
     val agendamento: Agendamento?,
@@ -18,10 +18,10 @@ data class Avaliacao(
     val usuario: Usuario?,
 
     @NotNull
-    val notaServico: Int? = null,
+    var notaServico: Int? = null,
 
     @NotNull
-    val descricaoServico: String? = null,
+    var descricaoServico: String? = null,
 
     @NotNull
     @FutureOrPresent
