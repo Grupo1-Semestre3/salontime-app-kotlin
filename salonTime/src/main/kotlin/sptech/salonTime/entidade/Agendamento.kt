@@ -24,6 +24,9 @@ data class Agendamento(
     var funcionario: Usuario? = null,
 
     @ManyToOne
+    var cupom: Cupom? = null,
+
+    @ManyToOne
     @NotNull
     var statusAgendamento: StatusAgendamento? = null,
 
@@ -50,6 +53,7 @@ data class Agendamento(
         Servico(),
         Usuario(),
         Usuario(),
+        Cupom(),
         StatusAgendamento(),
         Pagamento(),
         LocalDate.now(),

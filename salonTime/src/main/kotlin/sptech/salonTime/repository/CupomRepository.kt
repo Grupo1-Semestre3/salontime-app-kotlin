@@ -7,4 +7,5 @@ import sptech.salonTime.entidade.Cupom
 interface CupomRepository : JpaRepository<Cupom, Int> {
     @Query("SELECT c FROM Cupom c WHERE c.ativo = true AND c.fim > CURRENT_TIME")
     fun listarAtivos(): List<Cupom>
+    fun findByCodigo(cupom: String?): Cupom?
 }

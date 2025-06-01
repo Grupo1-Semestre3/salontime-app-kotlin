@@ -9,6 +9,7 @@ data class CadastroAgendamentoDto(
     val funcionario: Int,
     val statusAgendamento: Int,
     val pagamento: Int,
+    val cupom: String? = null,
     val data: LocalDate,
     val inicio: LocalTime,
     val fim: LocalTime,

@@ -3,6 +3,7 @@ package sptech.salonTime.mapper
 import sptech.salonTime.dto.AgendamentoDto
 import sptech.salonTime.dto.UsuarioPublicoDto
 import sptech.salonTime.entidade.Agendamento
+import sptech.salonTime.entidade.Cupom
 import sptech.salonTime.service.TipoUsuarioService
 
 class AgendamentoMapper {
@@ -27,6 +28,7 @@ class AgendamentoMapper {
                 ),
                 statusAgendamento = agendamento.statusAgendamento,
                 pagamento = agendamento.pagamento,
+                cupom = agendamento.cupom ?: Cupom(),
                 data = agendamento.data.toString(),
                 inicio = agendamento.inicio.toString(),
                 fim = agendamento.fim.toString(),
