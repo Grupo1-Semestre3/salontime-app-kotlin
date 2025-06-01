@@ -2,6 +2,8 @@ package sptech.salonTime.service;
 
 import org.springframework.stereotype.Service
 import sptech.salonTime.entidade.CupomDestinado
+import sptech.salonTime.exception.CupomNaoEncontradoException
+import sptech.salonTime.exception.UsuarioNaoEncontradoException
 import sptech.salonTime.repository.CupomDestinadoRepository
 import sptech.salonTime.repository.CupomRepository
 import sptech.salonTime.repository.UsuarioRepository
@@ -14,8 +16,8 @@ class CupomDestinadoService (
 ){
     fun salvar(cupomDestinado: CupomDestinado): CupomDestinado {
 
-        val cupom = cupomDestinado.cupom?.id?.let { cupomRepository.findById(it).orElse(null) }
-        val usuario = cupomDestinado.usuario?.id?.let { usuarioRepository.findById(it).orElse(null) }
+        val cupom = cupomDestinado.cupom?.id?.let { cupomRepository.findById(it).orElseThrow { CupomNaoEncontradoException("Cupom não encontrado") } }
+        val usuario = cupomDestinado.usuario?.id?.let { usuarioRepository.findById(it).orElseThrow { UsuarioNaoEncontradoException("Usuário não encontrado") } }
 
         cupomDestinado.cupom = cupom
         cupomDestinado.usuario = usuario
@@ -27,11 +29,11 @@ class CupomDestinadoService (
     fun editar(id: Int, cupomDestinado: CupomDestinado): CupomDestinado {
         val CupomDestinadoEncontrado = repository.findById(id).orElseThrow { RuntimeException("Cupom Destinado not found") }
 
-        cupomDestinado.cupom = CupomDestinadoEncontrado.cupom
-        cupomDestinado.usuario = CupomDestinadoEncontrado.usuario
-        cupomDestinado.usado = CupomDestinadoEncontrado.usado
+        CupomDestinadoEncontrado.cupom = cupomDestinado.cupom
+        CupomDestinadoEncontrado.usuario = cupomDestinado.usuario
+        CupomDestinadoEncontrado.usado = cupomDestinado.usado
 
-        return repository.save(cupomDestinado)
+        return repository.save(CupomDestinadoEncontrado)
     }
 
     fun atualizarUsado (id:Int, usado:Boolean): CupomDestinado {

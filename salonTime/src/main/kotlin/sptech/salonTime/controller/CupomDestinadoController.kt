@@ -29,7 +29,7 @@ class CupomDestinadoController(val service: CupomDestinadoService) {
     }
 
     @PutMapping("/{id}")
-    fun editar(@PathVariable id:Int, cupomDestinado: CupomDestinado): ResponseEntity<CupomDestinado> {
+    fun editar(@PathVariable id:Int, @RequestBody cupomDestinado: CupomDestinado): ResponseEntity<CupomDestinado> {
         return ResponseEntity.status(200).body(service.editar(id, cupomDestinado))
     }
 
