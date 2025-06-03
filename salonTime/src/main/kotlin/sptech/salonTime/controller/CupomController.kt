@@ -22,8 +22,9 @@ class CupomController(val service: CupomService) {
         return if (ativos.isNotEmpty()) ResponseEntity.ok(ativos)
         else ResponseEntity.noContent().build()
     }
+    
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     fun atualizar(@PathVariable id: Int, @RequestBody cupom: Cupom): ResponseEntity<Cupom> {
         val atualizado = service.atualizar(id, cupom)
         return if (atualizado != null) ResponseEntity.ok(atualizado)
