@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import sptech.salonTime.dto.CupomDestinadoDto
 import sptech.salonTime.entidade.CupomDestinado
 import sptech.salonTime.service.CupomDestinadoService
 
@@ -19,22 +20,22 @@ import sptech.salonTime.service.CupomDestinadoService
 class CupomDestinadoController(val service: CupomDestinadoService) {
 
     @GetMapping
-    fun listar(): ResponseEntity<List<CupomDestinado>> {
+    fun listar(): ResponseEntity<List<CupomDestinadoDto>> {
         return ResponseEntity.status(200).body(service.listar())
     }
 
     @PostMapping
-    fun inserir(@RequestBody cupomDestinado: CupomDestinado): ResponseEntity<CupomDestinado>{
+    fun inserir(@RequestBody cupomDestinado: CupomDestinado): ResponseEntity<CupomDestinadoDto>{
         return ResponseEntity.status(201).body(service.salvar(cupomDestinado))
     }
 
     @PutMapping("/{id}")
-    fun editar(@PathVariable id:Int, @RequestBody cupomDestinado: CupomDestinado): ResponseEntity<CupomDestinado> {
+    fun editar(@PathVariable id:Int, @RequestBody cupomDestinado: CupomDestinado): ResponseEntity<CupomDestinadoDto> {
         return ResponseEntity.status(200).body(service.editar(id, cupomDestinado))
     }
 
     @PatchMapping("/{id}/{usado}")
-    fun atualizarUsado(@PathVariable id: Int, @PathVariable usado: Boolean): ResponseEntity<CupomDestinado> {
+    fun atualizarUsado(@PathVariable id: Int, @PathVariable usado: Boolean): ResponseEntity<CupomDestinadoDto> {
         return ResponseEntity.status(200).body(service.atualizarUsado(id, usado))
     }
 
