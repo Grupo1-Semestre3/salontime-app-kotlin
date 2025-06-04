@@ -24,6 +24,11 @@ class AgendamentoControllerTest {
     val service = mock(AgendamentoService::class.java)
     val statusAgendamentoRepository = mock(StatusAgendamentoRepository::class.java)
     val controller = AgendamentoController(repository, statusAgendamentoRepository, service)
+    val cupom = Cupom(
+        id = 1,
+        codigo = "DESCONTO10",
+        ativo = true
+    )
 
 
     lateinit var agendamento: Agendamento
@@ -67,7 +72,8 @@ class AgendamentoControllerTest {
             data = agendamento.data.toString(),
             inicio = agendamento.inicio.toString(),
             fim = agendamento.fim.toString(),
-            preco = agendamento.preco
+            preco = agendamento.preco,
+            cupom = cupom
         )
     }
 
