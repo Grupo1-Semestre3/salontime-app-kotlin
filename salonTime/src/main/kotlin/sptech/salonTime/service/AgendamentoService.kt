@@ -31,7 +31,6 @@ class AgendamentoService(
     }
 
     fun listarPorId(id: Int): AgendamentoDto {
-        val agendamento = repository.findById(id)
         val agendamentoEncontrado = repository.findById(id).orElseThrow {
             AgendamentoNaoEncontradoException("Agendamento com ID $id não encontrado.")
         }
