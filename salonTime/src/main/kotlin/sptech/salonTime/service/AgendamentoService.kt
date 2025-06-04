@@ -118,8 +118,12 @@ class AgendamentoService(
 
     }
 
-    fun buscarProximosAgendamentosPorFuncionario(id: Int): List<AgendamentoDto>? {
+    fun buscarProximosAgendamentosPorFuncionario(id: Int): List<AgendamentoDto> {
         val agendamentos = repository.buscarProximosAgendamentosPorFuncionario(id)
+
+        if (agendamentos == null) {
+            throw AgendamentoNaoEncontradoException("Nenhum agendamento encontrado para o funcionário com ID $id.")
+        }
 
         return agendamentos.map { agendamento ->
             AgendamentoMapper.toDto(agendamento)
@@ -128,6 +132,10 @@ class AgendamentoService(
 
     fun buscarProximosAgendamentosPorUsuario(id: Int): AgendamentoDto? {
         val agendamento = repository.buscarProximosAgendamentosPorUsuario(id)
+
+        if (agendamento == null) {
+            throw AgendamentoNaoEncontradoException("Nenhum agendamento encontrado para o usuário com ID $id.")
+        }
 
         return AgendamentoMapper.toDto(agendamento)
     }
@@ -189,6 +197,11 @@ class AgendamentoService(
         val horariosOcupados = repository.buscarHorariosOcupados(data)
         return gerarHorariosDisponiveis(horariosOcupados)
     }
+
+
+
+
+
 
     private fun gerarHorariosDisponiveis(horariosOcupados: List<HorariosOcupadosDto>): List<HorarioDisponivelDto> {
         val abertura = LocalTime.of(9, 0)

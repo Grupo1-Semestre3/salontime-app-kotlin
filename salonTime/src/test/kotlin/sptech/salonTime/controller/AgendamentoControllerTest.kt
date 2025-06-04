@@ -39,6 +39,7 @@ class AgendamentoControllerTest {
             funcionario = Usuario(2, TipoUsuario(2, "funcionario"), "Maria", "maria@email.com", "maria123", "senha", null, null),
             statusAgendamento = StatusAgendamento(1, "Confirmado"),
             pagamento = Pagamento(1, "Cartão"),
+            cupom = Cupom(1, "DESCONTO10", "10% de desconto", "codiguin", true),
             data = LocalDate.now(),
             inicio = LocalTime.of(10, 0),
             fim = LocalTime.of(11, 0),
@@ -67,6 +68,7 @@ class AgendamentoControllerTest {
             data = agendamento.data.toString(),
             inicio = agendamento.inicio.toString(),
             fim = agendamento.fim.toString(),
+            cupom = agendamento.cupom,
             preco = agendamento.preco
         )
     }

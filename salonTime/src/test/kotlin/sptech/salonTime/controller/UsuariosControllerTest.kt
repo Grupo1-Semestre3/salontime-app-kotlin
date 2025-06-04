@@ -218,10 +218,10 @@ class UsuariosControllerTest {
     @DisplayName("Verifica email do usuário")
     fun verificarEmail() {
         val email = "joao@email.com"
-        `when`(service.verificarEmail(email)).thenReturn(true)
+        `when`(service.verificarEmail(email)).thenReturn(usuario)
         val response = controller.verificarEmail(email)
         assertEquals(HttpStatus.OK, response.statusCode)
-        assertEquals(true, response.body)
+        assertEquals(usuario, response.body)
         verify(service).verificarEmail(email)
     }
 }

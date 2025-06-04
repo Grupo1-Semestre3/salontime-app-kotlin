@@ -1,23 +1,31 @@
-package sptech.salonTime.controller
-
-import org.junit.jupiter.api.Assertions.assertEquals
+import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import sptech.salonTime.controller.DescCancelamentoController
+import sptech.salonTime.dto.DescCancelamentoDto
+import sptech.salonTime.entidade.Agendamento
 import sptech.salonTime.entidade.DescCancelamento
 import sptech.salonTime.service.DescCancelamentoService
-import sptech.salonTime.service.DescCancelamentoServiceTest
 
 class DescCancelamentoControllerTest {
+
  private lateinit var service: DescCancelamentoService
  private lateinit var controller: DescCancelamentoController
 
- private val cancelamento = DescCancelamento(
+ private val cancelamentoDto = DescCancelamentoDto(
   id = 1,
   descricao = "Cliente não compareceu",
-  agendamento = 10
+  agendamentoId = 10,
+  nomeServico = "Corte de cabelo",
+  dataServico = "2025-06-01T10:00:00",
+  nomeCliente = "João",
+  emailCliente = "joao@email.com",
+  nomeFuncionario = "Carlos",
+  emailFuncionario = "carlos@email.com"
  )
 
  @BeforeEach
@@ -29,24 +37,25 @@ class DescCancelamentoControllerTest {
  @Test
  @DisplayName("Consulta todos os cancelamentos")
  fun listar() {
-  `when`(service.listar()).thenReturn(listOf(cancelamento))
+  `when`(service.listar()).thenReturn(listOf(cancelamentoDto))
 
   val response = controller.listar()
 
   assertEquals(HttpStatus.OK, response.statusCode)
   assertEquals(1, response.body?.size)
+  assertEquals(cancelamentoDto, response.body?.get(0))
   verify(service).listar()
  }
 
  @Test
  @DisplayName("Consulta cancelamento por ID")
  fun listarPorId() {
-  `when`(service.listarPorId(1)).thenReturn(cancelamento)
+  `when`(service.listarPorId(1)).thenReturn(cancelamentoDto)
 
   val response = controller.listarPorId(1)
 
   assertEquals(HttpStatus.OK, response.statusCode)
-  assertEquals(cancelamento, response.body)
+  assertEquals(cancelamentoDto, response.body)
   verify(service).listarPorId(1)
  }
 
@@ -55,16 +64,21 @@ class DescCancelamentoControllerTest {
  fun criar() {
   val novoCancelamento = DescCancelamento(
    descricao = "Cliente desistiu",
-   agendamento = 20
+   agendamento = mock(Agendamento::class.java)
   )
 
-  `when`(service.criar(novoCancelamento)).thenReturn(cancelamento)
+  val criado = DescCancelamento(
+   id = 2,
+   descricao = "Cliente desistiu",
+   agendamento = novoCancelamento.agendamento
+  )
+
+  `when`(service.criar(novoCancelamento)).thenReturn(criado)
 
   val response = controller.criar(novoCancelamento)
 
   assertEquals(HttpStatus.CREATED, response.statusCode)
-  assertEquals(cancelamento, response.body)
+  assertEquals(criado, response.body)
   verify(service).criar(novoCancelamento)
  }
-
- }
+}

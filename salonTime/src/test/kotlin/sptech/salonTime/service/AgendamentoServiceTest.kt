@@ -19,6 +19,7 @@ class AgendamentoServiceTest {
     private val repository = mock(AgendamentoRepository::class.java)
     private val pagamentoRepository = mock(PagamentoRepository::class.java)
     private val usuarioRepository = mock(UsuarioRepository::class.java)
+    private val cupomRepository = mock(CupomRepository::class.java)
     private val statusAgendamentoRepository = mock(StatusAgendamentoRepository::class.java)
     private val servicoRepository = mock(ServicoRepository::class.java)
     private val service = AgendamentoService(
@@ -26,13 +27,14 @@ class AgendamentoServiceTest {
         pagamentoRepository,
         usuarioRepository,
         statusAgendamentoRepository,
-        servicoRepository
+        servicoRepository,
+        cupomRepository
     )
 
     @Test
     fun `listar deve retornar todos os agendamentos`() {
         val agendamentos = listOf(
-            Agendamento(1, null, null, null, null, null, LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(11, 0), 100.0)
+            Agendamento(1, null, null, null, null, null, null,LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(11, 0), 100.0)
         )
         `when`(repository.listarTudo()).thenReturn(agendamentos)
 
@@ -44,7 +46,7 @@ class AgendamentoServiceTest {
 
     @Test
     fun `listarPorId deve retornar o agendamento correto`() {
-        val agendamento = Agendamento(1, null, null, null, null, null, LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(11, 0), 100.0)
+        val agendamento = Agendamento(1, null, null, null, null, null, null,LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(11, 0), 100.0)
         `when`(repository.findById(1)).thenReturn(Optional.of(agendamento))
 
         val result = service.listarPorId(1)
@@ -60,6 +62,7 @@ class AgendamentoServiceTest {
             funcionario = 2,
             statusAgendamento = 1,
             pagamento = 1,
+            cupom = "CUPOM10",
             data = LocalDate.now(),
             inicio = LocalTime.of(10, 0),
             fim = LocalTime.of(11, 0),
@@ -73,10 +76,20 @@ class AgendamentoServiceTest {
         }
         val status = StatusAgendamento(1, "AGENDADO")
         val pagamento = Pagamento(1, "Pagamento")
+        val cupom = Cupom(1, "CUPOM10", "") // Use a classe correta com atributos correspondentes
+
         val agendamento = Agendamento(
-            id = 1, servico = servico, usuario = usuario, funcionario = funcionario,
-            statusAgendamento = status, pagamento = pagamento, data = cadastroDto.data,
-            inicio = cadastroDto.inicio, fim = cadastroDto.fim, preco = cadastroDto.preco
+            id = 1,
+            servico = servico,
+            usuario = usuario,
+            funcionario = funcionario,
+            cupom = cupom,
+            statusAgendamento = status,
+            pagamento = pagamento,
+            data = cadastroDto.data,
+            inicio = cadastroDto.inicio,
+            fim = cadastroDto.fim,
+            preco = cadastroDto.preco
         )
 
         `when`(usuarioRepository.findById(1)).thenReturn(Optional.of(usuario))
@@ -84,19 +97,19 @@ class AgendamentoServiceTest {
         `when`(servicoRepository.findById(1)).thenReturn(Optional.of(servico))
         `when`(statusAgendamentoRepository.findById(1)).thenReturn(Optional.of(status))
         `when`(pagamentoRepository.findById(1)).thenReturn(Optional.of(pagamento))
-        `when`(repository.save(any(Agendamento::class.java))).thenReturn(agendamento)
+        `when`(cupomRepository.findByCodigo("CUPOM10")).thenReturn(cupom)
         `when`(repository.existeConflitoDeAgendamento(any(), any(), any())).thenReturn(0)
+        `when`(repository.save(any(Agendamento::class.java))).thenReturn(agendamento)
 
         val result = service.cadastrar(cadastroDto)
 
         assertEquals(AgendamentoMapper.toDto(agendamento), result)
         verify(repository).save(any(Agendamento::class.java))
-
     }
 
     @Test
     fun `atualizarAtributo deve atualizar o atributo correto`() {
-        val agendamento = Agendamento(1, null, null, null, null, null, LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(11, 0), 100.0)
+        val agendamento = Agendamento(1, null, null, null, null, null, null,LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(11, 0), 100.0)
         `when`(repository.findById(1)).thenReturn(Optional.of(agendamento))
         `when`(repository.save(any(Agendamento::class.java))).thenReturn(agendamento.copy(preco = 150.0))
 
@@ -108,7 +121,7 @@ class AgendamentoServiceTest {
 
     @Test
     fun `atualizarStatus deve atualizar o status corretamente`() {
-        val agendamento = Agendamento(1, null, null, null, null, null, LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(11, 0), 100.0)
+        val agendamento = Agendamento(1, null, null, null, null, null, null,LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(11, 0), 100.0)
         val status = StatusAgendamento(2, "Novo Status")
         `when`(repository.findById(1)).thenReturn(Optional.of(agendamento))
         `when`(statusAgendamentoRepository.findById(2)).thenReturn(Optional.of(status))
@@ -122,7 +135,7 @@ class AgendamentoServiceTest {
 
     @Test
     fun `atualizarValor deve atualizar o valor corretamente`() {
-        val agendamento = Agendamento(1, null, null, null, null, null, LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(11, 0), 100.0)
+        val agendamento = Agendamento(1, null, null, null, null, null, null,LocalDate.now(), LocalTime.of(10, 0), LocalTime.of(11, 0), 100.0)
         val novoValor = 150.0
         `when`(repository.findById(1)).thenReturn(Optional.of(agendamento))
         `when`(repository.save(any(Agendamento::class.java))).thenReturn(agendamento.copy(preco = novoValor))

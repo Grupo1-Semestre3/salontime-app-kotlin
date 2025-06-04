@@ -37,7 +37,7 @@ class AgendamentoController(val repository: AgendamentoRepository, val statusAge
         return ResponseEntity.status(200).body(service.listarPorId(id))
     }
 
-    @GetMapping("/listagem/horarios/{idServico}/{data}")
+    @GetMapping("/horarios-disponiveis/{idServico}/{data}")
     fun getHorariosDisponiveis(
         @PathVariable idServico: Int,
         @PathVariable data: String

@@ -13,7 +13,7 @@ data class AgendamentoDto(
     val funcionario: UsuarioPublicoDto?,
     val statusAgendamento: StatusAgendamento?,
     val pagamento: Pagamento?,
-    val cupom: Cupom,
+    val cupom: Cupom?,
     val data: String?,
     val inicio: String?,
     val fim: String?,
