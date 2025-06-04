@@ -10,11 +10,11 @@ import java.time.LocalTime
 
 
 interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
-    @Query(value = "SELECT * FROM agendamento WHERE (data > CURDATE() AND funcionario_id = :idFunc) OR (data = CURDATE() AND inicio > CURTIME()) ORDER BY data ASC, inicio ASC", nativeQuery = true)
+    @Query(value = "SELECT * FROM agendamento WHERE ((data > CURDATE()) OR (data = CURDATE() AND inicio > CURTIME())) AND funcionario_id = :idFunc ORDER BY data ASC, inicio ASC", nativeQuery = true)
     fun buscarProximosAgendamentosPorFuncionario(idFunc: Int): List<Agendamento>
 
-    @Query(value = "SELECT * FROM agendamento WHERE (data > CURDATE()) OR (data = CURDATE() AND inicio > CURTIME() AND usuario_id = :idUser) ORDER BY data ASC, inicio ASC LIMIT 1", nativeQuery = true)
-    fun buscarProximosAgendamentosPorUsuario(idUser: Int): Agendamento
+    @Query(value = "SELECT * FROM agendamento WHERE ((data > CURDATE()) OR (data = CURDATE() AND inicio > CURTIME())) AND usuario_id = :idUser ORDER BY data ASC, inicio ASC LIMIT 1", nativeQuery = true)
+    fun buscarProximosAgendamentosPorUsuario(idUser: Int): Agendamento?
 
     @Query(
         value = """

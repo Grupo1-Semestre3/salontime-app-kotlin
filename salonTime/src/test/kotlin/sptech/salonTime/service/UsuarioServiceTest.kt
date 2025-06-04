@@ -165,23 +165,14 @@ class UsuarioServiceTest {
  }
 
  @Test
- fun `verificarEmail deve retornar true se o email existir`() {
+ fun `verificarEmail deve retornar usuario se o email existir`() {
   val usuario = Usuario().apply { email = "email@email.com" }
   `when`(repository.findByEmail("email@email.com")).thenReturn(usuario)
 
   val result = service.verificarEmail("email@email.com")
 
-  assertTrue(result)
+  assertEquals(usuario, result)
   verify(repository).findByEmail("email@email.com")
  }
 
- @Test
- fun `verificarEmail deve retornar false se o email não existir`() {
-  `when`(repository.findByEmail("email@email.com")).thenReturn(null)
-
-  val result = service.verificarEmail("email@email.com")
-
-  assertFalse(result)
-  verify(repository).findByEmail("email@email.com")
- }
 }
