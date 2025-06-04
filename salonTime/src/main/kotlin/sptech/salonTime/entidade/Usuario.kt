@@ -51,7 +51,7 @@ data class Usuario(
     var dataNascimento: Date? = null,
 
     @NotNull
-    val dataCriacao : LocalDateTime? = null,
+    var dataCriacao : LocalDateTime? = LocalDateTime.now(),
 
     @Size(max = 20_971_520, message = "A foto não pode exceder 20MB")
     var foto: ByteArray? = null,
@@ -59,5 +59,5 @@ data class Usuario(
     @NotNull
     var login: Boolean = false
 ){
-    constructor() : this(0, null, null, null, null, null, null, null, null,null, false)
+    constructor() : this(0, null, null, null, null, null, null, null, LocalDateTime.now(),null, false)
 }

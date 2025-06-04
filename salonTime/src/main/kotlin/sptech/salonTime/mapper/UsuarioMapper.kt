@@ -30,8 +30,8 @@ class UsuarioMapper {
                 email = usuario.email,
                 senha = usuario.senha,
                 telefone = usuario.telefone,
-                tipoUsuario = TipoUsuario(id = 2, descricao = "CLIENTE") // Default to Cliente
-            )
+                tipoUsuario = TipoUsuario(id = 2, descricao = "CLIENTE"), // Default to Cliente
+                )
         }
 
 

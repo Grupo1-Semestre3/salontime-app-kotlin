@@ -9,6 +9,7 @@ import sptech.salonTime.entidade.Usuario
 import sptech.salonTime.exception.UsuarioNaoEncontradoException
 import sptech.salonTime.mapper.UsuarioMapper
 import sptech.salonTime.repository.UsuarioRepository
+import java.time.LocalDateTime
 
 @Service
 class UsuarioService(val repository: UsuarioRepository) {
@@ -24,6 +25,7 @@ class UsuarioService(val repository: UsuarioRepository) {
             ?: throw Exception("Erro ao mapear o usuário")
 
         usuarioEntity.tipoUsuario = TipoUsuario(2, "CLIENTE")// Definindo o tipo de usuário como FUNCIONARIO
+        usuarioEntity.dataCriacao = LocalDateTime.now()  // Definindo a data de criação do usuário
         val usuarioSalvo = repository.save(usuarioEntity)
 
         return UsuarioMapper.toDto(usuarioSalvo)
@@ -37,6 +39,7 @@ class UsuarioService(val repository: UsuarioRepository) {
             ?: throw Exception("Erro ao mapear o usuário")
 
         usuarioEntity.tipoUsuario = TipoUsuario(3, "FUNCIONARIO")// Definindo o tipo de usuário como FUNCIONARIO
+        usuarioEntity.dataCriacao = LocalDateTime.now()
         val usuarioSalvo = repository.save(usuarioEntity)
 
         return UsuarioMapper.toDto(usuarioSalvo)
