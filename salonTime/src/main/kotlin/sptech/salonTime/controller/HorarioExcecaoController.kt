@@ -11,7 +11,7 @@ import sptech.salonTime.service.HorarioExcecaoService
 
 @RestController
 @RequestMapping("/horario-execao")
-class HorarioExecaoController (val service: HorarioExcecaoService){
+class HorarioExcecaoController (val service: HorarioExcecaoService){
     @GetMapping
     fun listar() : ResponseEntity<List<HorarioExcecao>> {
         return ResponseEntity.status(200).body(service.listar())
