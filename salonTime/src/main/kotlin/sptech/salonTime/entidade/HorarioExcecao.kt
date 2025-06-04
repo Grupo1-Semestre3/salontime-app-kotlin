@@ -8,23 +8,23 @@ import java.time.*
 @Table(name = "horario_excecao")
 data class HorarioExcecao(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int = 0,
+    var id: Int = 0,
     @NotNull
     @FutureOrPresent
-    val dataInicio: LocalDate,
+    var dataInicio: LocalDate,
     @NotNull
     @FutureOrPresent
-    val dataFim: LocalDate,
+    var dataFim: LocalDate,
     @NotNull
     @FutureOrPresent
-    val inicio: LocalTime,
+    var inicio: LocalTime,
     @NotNull
     @FutureOrPresent
-    val fim: LocalTime,
+    var fim: LocalTime,
     @NotNull
-    val aberto: Boolean,
+    var aberto: Boolean,
     @NotNull
-    val capacidade: Int,
+    var capacidade: Int,
     @ManyToOne
-    val funcionario: Usuario? = null
+    var funcionario: Usuario? = null
 )
