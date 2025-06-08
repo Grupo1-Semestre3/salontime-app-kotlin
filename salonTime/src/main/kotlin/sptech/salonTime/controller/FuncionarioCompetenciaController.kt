@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import sptech.salonTime.dto.CadastroCompetenciaFuncionario
 import sptech.salonTime.dto.FuncionarioCompetenciaDto
 import sptech.salonTime.entidade.FuncionarioCompetencia
 import sptech.salonTime.service.FuncionarioCompetenciaService
@@ -28,12 +29,12 @@ class FuncionarioCompetenciaController (val service: FuncionarioCompetenciaServi
     }
 
     @PostMapping
-    fun inserir(@RequestBody funcionarioCompetencia: FuncionarioCompetencia): ResponseEntity<FuncionarioCompetencia>{
+    fun inserir(@RequestBody funcionarioCompetencia: CadastroCompetenciaFuncionario): ResponseEntity<FuncionarioCompetencia>{
         return ResponseEntity.status(201).body(service.salvar(funcionarioCompetencia))
     }
 
     @PutMapping("/{id}")
-    fun editar(@PathVariable id: Int, @RequestBody funcionarioCompetencia: FuncionarioCompetencia): ResponseEntity<FuncionarioCompetencia>{
+    fun editar(@PathVariable id: Int, @RequestBody funcionarioCompetencia: CadastroCompetenciaFuncionario): ResponseEntity<FuncionarioCompetencia>{
         return ResponseEntity.status(200).body(service.editar(id, funcionarioCompetencia))
     }
 

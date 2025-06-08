@@ -1,6 +1,7 @@
 package sptech.salonTime.service
 
 import org.springframework.stereotype.Service
+import sptech.salonTime.dto.CadastroCompetenciaFuncionario
 import sptech.salonTime.dto.FuncionarioCompetenciaDto
 import sptech.salonTime.dto.TipoUsuarioDto
 import sptech.salonTime.dto.UsuarioDto
@@ -18,32 +19,27 @@ class FuncionarioCompetenciaService(val repository: FuncionarioCompetenciaReposi
         return repository.findAll()
     }
 
-    fun salvar(funcionarioCompetencia: FuncionarioCompetencia): FuncionarioCompetencia {
+    fun salvar(funcionarioCompetencia: CadastroCompetenciaFuncionario): FuncionarioCompetencia {
+        val servico = servicoRepository.findById(funcionarioCompetencia.servico).orElseThrow { CompetenciaNaoEcontradaException("Servico não existe") }
+        val funcionario = usuarioRepository.findById(funcionarioCompetencia.funcionario).orElseThrow { CompetenciaNaoEcontradaException("Funcionario não existe") }
 
-        val servico = funcionarioCompetencia.servico?.id
-            ?.let { servicoRepository.findById(it).orElse(null) }
-        val funcionario = funcionarioCompetencia.funcionario?.id
-            ?.let { usuarioRepository.findById(it).orElse(null) }
-
+        val funcionarioCompetencia = FuncionarioCompetencia()
         funcionarioCompetencia.servico = servico
         funcionarioCompetencia.funcionario = funcionario
 
         return repository.save(funcionarioCompetencia)
     }
 
-    fun editar(id: Int, funcionarioCompetencia: FuncionarioCompetencia): FuncionarioCompetencia{
+    fun editar(id: Int, funcionarioCompetencia: CadastroCompetenciaFuncionario): FuncionarioCompetencia{
         val competenciaEncontrada = repository.findById(id).orElseThrow { CompetenciaNaoEcontradaException("Competencia funcionario nao existe") }
+        val servico = servicoRepository.findById(funcionarioCompetencia.servico).orElseThrow { CompetenciaNaoEcontradaException("Servico não existe") }
+        val funcionario = usuarioRepository.findById(funcionarioCompetencia.funcionario).orElseThrow { CompetenciaNaoEcontradaException("Funcionario não existe") }
 
-        var servico = funcionarioCompetencia.servico?.id
-            ?.let { servicoRepository.findById(it).orElse(null) }
-        var funcionario = funcionarioCompetencia.funcionario?.id
-            ?.let { usuarioRepository.findById(it).orElse(null) }
+        competenciaEncontrada.id = id
+        competenciaEncontrada.servico = servico
+        competenciaEncontrada.funcionario = funcionario
 
-        funcionarioCompetencia.id = id
-        funcionarioCompetencia.servico = servico
-        funcionarioCompetencia.funcionario = funcionario
-
-        return repository.save(funcionarioCompetencia)
+        return repository.save(competenciaEncontrada)
 
     }
 

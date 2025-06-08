@@ -7,13 +7,13 @@ class FuncionarioCompetencia(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Int? = null,
+    var id: Int,
 
     @ManyToOne
-    var funcionario: Usuario? = null,
+    var funcionario: Usuario,
 
     @ManyToOne
-    var servico: Servico? = null,
+    var servico: Servico,
 ) {
-    constructor() : this(null, Usuario(), Servico())
+    constructor() : this(0, Usuario(), Servico())
 }

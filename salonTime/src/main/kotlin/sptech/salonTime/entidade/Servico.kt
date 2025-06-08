@@ -12,7 +12,7 @@ data class Servico(
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Id // do pacote jakarta.persistence- transforma em pk
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id:Int?,
+    var id:Int,
     @NotBlank
     @Size(min = 1, max = 50)
     var nome: String?,
