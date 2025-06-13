@@ -59,8 +59,4 @@ interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
     WHERE a.data = :data
 """, nativeQuery = true)
     fun buscarHorariosOcupados(@Param("data") data: LocalDate): List<HorariosOcupadosDto>
-
-
-
-
 }

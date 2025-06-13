@@ -130,4 +130,12 @@ class GlobalExceptionHandler {
         )
         return ResponseEntity(erro, HttpStatus.NOT_FOUND)
     }
+    @ExceptionHandler(TipoUsuarioNaoEncontradoException::class)
+    fun handleCupomConfiguracaoNaoEncontrado(ex: CupomConfiguracaoException): ResponseEntity<Any> {
+        val erro = mapOf(
+            "erro" to ex.message,
+            "status" to HttpStatus.NOT_FOUND.value()
+        )
+        return ResponseEntity(erro, HttpStatus.NOT_FOUND)
+    }
 }

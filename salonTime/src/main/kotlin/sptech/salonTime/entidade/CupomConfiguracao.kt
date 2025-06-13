@@ -7,11 +7,11 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name = "cupom_configuracao")
-data class cupomConfiguracao(
+data class CupomConfiguracao(
 
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
-    val id: Int? = null,
-    val intervaloAtendimento: Int? = null,
-    val porcetagemDesconto: Int? = null
+    var id: Int? = null,
+    var intervaloAtendimento: Int? = null,
+    var porcetagemDesconto: Int? = null
 ){}
