@@ -38,7 +38,7 @@ class UsuariosController(
         return ResponseEntity.status(201).body(service.salvarFuncionario(novoUsuario))
     }
 
-    @DeleteMapping("/{id}")
+    @PatchMapping("/deletar/{id}")
     fun excluir(@PathVariable id: Int): ResponseEntity<String> {
         val usuario = service.listarPorId(id)
         return if (!usuario.equals(null)) {
@@ -54,7 +54,7 @@ class UsuariosController(
     val usuario = service.listarPorId(id)
         return if (!usuario.equals(null)) {
             service.atualizar(id, usuarioAtualizado)
-            ResponseEntity.status(201).body(usuarioAtualizado)
+            ResponseEntity.status(200).body(usuarioAtualizado)
         } else {
             ResponseEntity.status(404).build()
         }
@@ -65,7 +65,7 @@ class UsuariosController(
         val usuario = service.listarPorId(id)
         return if (!usuario.equals(null)) {
             service.login(id)
-            ResponseEntity.status(201).body(usuario)
+            ResponseEntity.status(200).body(usuario)
         } else {
             ResponseEntity.status(404).build()
         }
@@ -76,7 +76,7 @@ class UsuariosController(
         val usuario = service.listarPorId(id)
         return if (!usuario.equals(null)) {
             service.logoff(id)
-            ResponseEntity.status(201).body(usuario)
+            ResponseEntity.status(200).body(usuario)
         } else {
             ResponseEntity.status(404).build()
         }
@@ -87,7 +87,7 @@ class UsuariosController(
         val usuario = service.listarPorId(id)
         return if (!usuario.equals(null)) {
             service.mudarSenha(id, novaSenha)
-            ResponseEntity.status(201).body(usuario)
+            ResponseEntity.status(200).body(usuario)
         } else {
             ResponseEntity.status(404).build()
         }
@@ -98,7 +98,7 @@ class UsuariosController(
         val usuario = service.listarPorId(id)
         return if (!usuario.equals(null)) {
             service.mudarEmail(id, novoEmail)
-            ResponseEntity.status(201).body(usuario)
+            ResponseEntity.status(200).body(usuario)
         } else {
             ResponseEntity.status(404).build()
         }

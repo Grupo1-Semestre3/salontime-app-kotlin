@@ -11,20 +11,30 @@ data class HorarioExcecao(
     var id: Int = 0,
     @NotNull
     @FutureOrPresent
-    var dataInicio: LocalDate,
+    var dataInicio: LocalDate? = null,
     @NotNull
     @FutureOrPresent
-    var dataFim: LocalDate,
+    var dataFim: LocalDate? = null,
     @NotNull
     @FutureOrPresent
-    var inicio: LocalTime,
+    var inicio: LocalTime? = null,
     @NotNull
     @FutureOrPresent
-    var fim: LocalTime,
-    @NotNull
-    var aberto: Boolean,
-    @NotNull
-    var capacidade: Int,
+    var fim: LocalTime? = null,
+    var aberto: Boolean? = null,
+
+    var capacidade: Int? = null,
     @ManyToOne
     var funcionario: Usuario? = null
-)
+){
+    constructor() : this(
+        0,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+    )
+}

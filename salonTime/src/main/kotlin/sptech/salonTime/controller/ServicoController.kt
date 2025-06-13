@@ -58,15 +58,8 @@ class ServicoController(val service: ServicoService) {
     }
 
     @PutMapping("/{id}")
-    fun atualizar(@PathVariable id:Int, @RequestBody servicoAtualizado: Servico):
-            ResponseEntity<Servico>{
-        val servico = service.listarPorId(id)
-        return if (servico != null) {
-            service.atualizar(id, servicoAtualizado)
-            ResponseEntity.status(200).body(servicoAtualizado)
-        } else {
-            ResponseEntity.status(404).build()
-        }
+    fun atualizar(@PathVariable id:Int, @RequestBody servicoAtualizado: Servico): ResponseEntity<Servico>{
+        return ResponseEntity.status(200).body(service.atualizar(id, servicoAtualizado))
     }
 
 

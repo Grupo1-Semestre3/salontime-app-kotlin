@@ -57,7 +57,10 @@ data class Usuario(
     var foto: ByteArray? = null,
 
     @NotNull
-    var login: Boolean = false
+    var login: Boolean = false,
+
+    @NotNull
+    var ativo: Boolean = true
 ){
-    constructor() : this(0, null, null, null, null, null, null, null, LocalDateTime.now(),null, false)
+    constructor() : this(0, null, null, null, null, null, null, null, LocalDateTime.now(),null, false, true)
 }

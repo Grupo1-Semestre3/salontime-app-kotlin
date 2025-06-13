@@ -49,13 +49,11 @@ class ServicoService(val repository: ServicoRepository) {
     }
 
     fun atualizar(id: Int, servicoAtualizado: Servico): Servico? {
-        val servico = repository.findById(id).orElse(null)
-        return if (servico != null) {
-            servicoAtualizado.id = id
-            repository.save(servicoAtualizado)
-        } else {
-            throw Exception("Serviço não encontrado")
-        }
+        val servico = repository.findById(id).orElseThrow { ServicoNaoEcontradoException("Serviço não econtrado") }
+
+        servicoAtualizado.id = id
+        return  repository.save(servicoAtualizado)
+
     }
 
     fun ativarSimultaneo(id: Int): Boolean {

@@ -114,4 +114,20 @@ class GlobalExceptionHandler {
         )
         return ResponseEntity(erro, HttpStatus.NOT_FOUND)
     }
+    @ExceptionHandler(UsuarioEstaDesativadoException::class)
+    fun handleUsuarioEstaDesativado(ex: UsuarioEstaDesativadoException): ResponseEntity<Any> {
+        val erro = mapOf(
+            "erro" to ex.message,
+            "status" to HttpStatus.UNAUTHORIZED.value()
+        )
+        return ResponseEntity(erro, HttpStatus.UNAUTHORIZED)
+    }
+    @ExceptionHandler(TipoUsuarioNaoEncontradoException::class)
+    fun handleTipoUsuarioNaoEncontrado(ex: TipoUsuarioNaoEncontradoException): ResponseEntity<Any> {
+        val erro = mapOf(
+            "erro" to ex.message,
+            "status" to HttpStatus.NOT_FOUND.value()
+        )
+        return ResponseEntity(erro, HttpStatus.NOT_FOUND)
+    }
 }

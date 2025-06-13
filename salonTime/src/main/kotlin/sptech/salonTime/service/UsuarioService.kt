@@ -6,16 +6,19 @@ import org.springframework.stereotype.Service
 import sptech.salonTime.dto.*
 import sptech.salonTime.entidade.TipoUsuario
 import sptech.salonTime.entidade.Usuario
+import sptech.salonTime.exception.TipoUsuarioNaoEncontradoException
+import sptech.salonTime.exception.UsuarioEstaDesativadoException
 import sptech.salonTime.exception.UsuarioNaoEncontradoException
 import sptech.salonTime.mapper.UsuarioMapper
+import sptech.salonTime.repository.TipoUsuarioRepository
 import sptech.salonTime.repository.UsuarioRepository
 import java.time.LocalDateTime
 
 @Service
-class UsuarioService(val repository: UsuarioRepository) {
+class UsuarioService(val repository: UsuarioRepository, val tipoUsuarioRepository: TipoUsuarioRepository) {
 
     fun listar(): List<Usuario> {
-        return repository.findAll() ?: emptyList()
+        return repository.findAllByAtivoTrue() ?: emptyList()
     }
 
     fun salvarUsuario(usuario: CadastroUsuarioDto): UsuarioPublicoDto {
@@ -47,17 +50,20 @@ class UsuarioService(val repository: UsuarioRepository) {
     }
 
     fun listarPorId(id: Int): Usuario {
-        return repository.findById(id).orElse(null)
+        return repository.findById(id).orElseThrow{UsuarioNaoEncontradoException("Usuário não encontrado")}
     }
 
     fun excluir(id: Int) {
-        if (repository.existsById(id)) {
-            repository.deleteById(id)
-        }
+        val usuario = repository.findById(id).orElseThrow{UsuarioNaoEncontradoException("Usuário não encontrado")}
+        usuario.ativo = false
+        usuario.id = id
+        repository.save(usuario)
     }
 
     fun atualizar(id: Int, usuarioAtualizado: Usuario): Usuario {
-        val usuario = repository.findById(id).orElse(null)
+        val usuario = repository.findById(id).orElseThrow{UsuarioNaoEncontradoException("Usuário não encontrado")}
+        val tipoUsuario = usuarioAtualizado.tipoUsuario?.let { tipoUsuarioRepository.findById(it.id).orElseThrow { TipoUsuarioNaoEncontradoException("Tipo de usuário não encontrado") } }
+
         return if (usuario != null) {
             usuarioAtualizado.id = id
             repository.save(usuarioAtualizado)
@@ -67,18 +73,18 @@ class UsuarioService(val repository: UsuarioRepository) {
     }
 
     fun login(id: Int): Usuario {
-        val usuario = repository.findById(id).orElse(null)
-        return if (usuario != null) {
-            usuario.id = id
-            usuario.login = true
-            repository.save(usuario)
-        } else {
-            throw Exception("Usuário não encontrado")
+        val usuario = repository.findById(id).orElseThrow { UsuarioNaoEncontradoException("Usuário não encontrado") }
+
+        if (usuario.ativo == false){
+            throw UsuarioEstaDesativadoException("Usuário está inativo")
         }
+
+        usuario.login = true
+        return repository.save(usuario )
     }
 
     fun logoff(id: Int): Usuario {
-        val usuario = repository.findById(id).orElse(null)
+        val usuario = repository.findById(id).orElseThrow { UsuarioNaoEncontradoException("Usuário não encontrado") }
         return if (usuario != null) {
             usuario.id = id
             usuario.login = false
@@ -89,7 +95,7 @@ class UsuarioService(val repository: UsuarioRepository) {
     }
 
     fun mudarSenha(id: Int, novaSenha: SenhaDto): Usuario {
-        var usuario = repository.findById(id).orElse(null)
+        val usuario = repository.findById(id).orElseThrow { UsuarioNaoEncontradoException("Usuário não encontrado") }
         return if (usuario != null) {
             usuario.id = id
             usuario.senha = novaSenha.senha
@@ -100,7 +106,7 @@ class UsuarioService(val repository: UsuarioRepository) {
     }
 
     fun mudarEmail(id: Int, novoEmail: EmailDto): Usuario {
-        var usuario = repository.findById(id).orElse(null)
+        val usuario = repository.findById(id).orElseThrow { UsuarioNaoEncontradoException("Usuário não encontrado") }
         return if (usuario != null) {
             usuario.id = id
             usuario.email = novoEmail.email
