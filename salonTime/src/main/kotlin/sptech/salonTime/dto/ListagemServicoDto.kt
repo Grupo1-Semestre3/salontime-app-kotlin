@@ -1,9 +1,8 @@
 package sptech.salonTime.dto
 
-import sptech.salonTime.entidade.Servico
 import java.time.LocalTime
 
-data class ServicoDto(
+data class ListagemServicoDto(
     val id: Int,
     val nome: String,
     val preco: Double,
@@ -11,5 +10,5 @@ data class ServicoDto(
     val status: String,
     val simultaneo: Boolean,
     val descricao: String?,
-    val mediaAvaliacao: Double
+    val mediaAvaliacao: Double?
 )

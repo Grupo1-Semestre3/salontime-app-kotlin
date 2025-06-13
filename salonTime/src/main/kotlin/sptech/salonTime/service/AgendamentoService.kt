@@ -42,6 +42,11 @@ class AgendamentoService(
 
         val cupom = cupomRepository.findByCodigo(agendamento.cupom)
 
+
+        if (agendamento.data < LocalDate.now()) {
+            throw DataErradaException("A data do agendamento não pode ser anterior à data atual.")
+        }
+
         if (cupom == null) {
             throw CupomNaoEncontradoException("Cupom não encontrado ou inválido.")
         }
@@ -118,11 +123,13 @@ class AgendamentoService(
     }
 
     fun buscarProximosAgendamentosPorFuncionario(id: Int): List<AgendamentoDto> {
+
+        val funcionario = usuarioRepository.findById(id).orElseThrow {
+            FuncionarioNaoEcontradoException("Funcionário com ID $id não encontrado.")
+        }
+
         val agendamentos = repository.buscarProximosAgendamentosPorFuncionario(id)
 
-        if (agendamentos == null) {
-            throw AgendamentoNaoEncontradoException("Nenhum agendamento encontrado para o funcionário com ID $id.")
-        }
 
         return agendamentos.map { agendamento ->
             AgendamentoMapper.toDto(agendamento)
@@ -130,6 +137,11 @@ class AgendamentoService(
     }
 
     fun buscarProximosAgendamentosPorUsuario(id: Int): AgendamentoDto? {
+
+        val usuario = usuarioRepository.findById(id).orElseThrow {
+            UsuarioNaoEncontradoException("Usuário com ID $id não encontrado.")
+        }
+
         val agendamento = repository.buscarProximosAgendamentosPorUsuario(id)
 
         if (agendamento == null) {
@@ -140,6 +152,11 @@ class AgendamentoService(
     }
 
     fun buscarAgendamentosPassadosPorUsuario(id: Int): List<AgendamentoDto>? {
+
+        val usuario = usuarioRepository.findById(id).orElseThrow {
+            UsuarioNaoEncontradoException("Usuário com ID $id não encontrado.")
+        }
+
         val agendamentos = repository.buscarAgendamentosPassadosPorUsuario(id)
 
         return agendamentos.map { agendamento ->
@@ -148,6 +165,11 @@ class AgendamentoService(
     }
 
     fun buscarAgendamentosPassadosPorFuncionario(id: Int): List<AgendamentoDto>? {
+
+        val funcionario = usuarioRepository.findById(id).orElseThrow {
+            FuncionarioNaoEcontradoException("Funcionário com ID $id não encontrado.")
+        }
+
         val agendamentos = repository.buscarAgendamentosPassadosPorFuncionario(id)
 
         return agendamentos.map { agendamento ->

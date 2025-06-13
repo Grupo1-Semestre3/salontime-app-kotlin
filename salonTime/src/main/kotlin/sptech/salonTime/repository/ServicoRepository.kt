@@ -36,42 +36,42 @@ sempre na anotação @Query
 
     @Query("""
     SELECT new sptech.salonTime.dto.ServicoDto(
-        s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao, s.foto,
+        s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao,
         COALESCE(AVG(a.notaServico), 0.0)
     )
     FROM Servico s
     LEFT JOIN Agendamento ag ON s.id = ag.servico.id
     LEFT JOIN Avaliacao a ON ag.id = a.agendamento.id
     WHERE s.status = 'ATIVO'
-    GROUP BY s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao, s.foto
+    GROUP BY s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao
 """)
     fun listarTodosAtivosComMedia(): List<ServicoDto>
 
 
     @Query("""
     SELECT new sptech.salonTime.dto.ServicoDto(
-        s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao, s.foto,
+        s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao,
         COALESCE(AVG(a.notaServico), 0.0)
     )
     FROM Servico s
     LEFT JOIN Agendamento ag ON s.id = ag.servico.id
     LEFT JOIN Avaliacao a ON ag.id = a.agendamento.id
     WHERE s.status = 'INATIVO'
-    GROUP BY s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao, s.foto
+    GROUP BY s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao
 """)
     fun listarDesativadosComMedia(): List<ServicoDto>
 
     @Query("""
         
        SELECT new sptech.salonTime.dto.ServicoDto(
-        s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao, s.foto,
+        s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao,
         COALESCE(AVG(a.notaServico), 0.0)
     )
     FROM Servico s
     LEFT JOIN Agendamento ag ON s.id = ag.servico.id
     LEFT JOIN Avaliacao a ON ag.id = a.agendamento.id
     WHERE s.id = ?1
-    GROUP BY s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao, s.foto
+    GROUP BY s.id, s.nome, s.preco, s.tempo, s.status, s.simultaneo, s.descricao
     """)
     fun listarPorIdComMedia(id: Int): ServicoDto
 

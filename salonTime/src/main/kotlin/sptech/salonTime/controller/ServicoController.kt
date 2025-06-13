@@ -3,6 +3,7 @@ package sptech.salonTime.controller
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import sptech.salonTime.dto.ListagemServicoDto
 import sptech.salonTime.dto.ServicoDto
 import sptech.salonTime.entidade.Servico
 import sptech.salonTime.repository.ServicoRepository
