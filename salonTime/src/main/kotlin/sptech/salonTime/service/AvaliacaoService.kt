@@ -7,13 +7,18 @@ import sptech.salonTime.dto.avalicao.AtualizarAvaliacaoDto
 import sptech.salonTime.dto.avalicao.CadastroAvaliacaoDto
 import sptech.salonTime.entidade.Avaliacao
 import sptech.salonTime.exception.AvaliacaoNaoExisteException
+import sptech.salonTime.exception.UsuarioNaoEncontradoException
 import sptech.salonTime.mapper.AvaliacaoMapper
+import sptech.salonTime.repository.AgendamentoRepository
 import sptech.salonTime.repository.AvaliacaoRepository
+import sptech.salonTime.repository.UsuarioRepository
 import java.time.LocalDateTime
 
 @Service
 class AvaliacaoService @Autowired constructor(
-    private val repository: AvaliacaoRepository
+    private val repository: AvaliacaoRepository,
+    private val usuarioRepository: UsuarioRepository,
+    private val agendamentoRepository: AgendamentoRepository,
 ) {
 
     fun listar(): List<AvaliacaoDto> {
@@ -31,6 +36,15 @@ class AvaliacaoService @Autowired constructor(
     }
 
     fun cadastrar(avaliacao: CadastroAvaliacaoDto): Avaliacao {
+
+        if (!usuarioRepository.existsById(avaliacao.usuario.id)) {
+            throw UsuarioNaoEncontradoException("Usuário não encontrado")
+        }
+
+        if (!agendamentoRepository.existsById(avaliacao.agendamento.id
+                ?: throw IllegalArgumentException("ID do agendamento não pode ser nulo"))) {
+            throw AvaliacaoNaoExisteException("Agendamento não encontrado")
+        }
 
         val novaAvaliacao = Avaliacao(
             agendamento = avaliacao.agendamento,
