@@ -144,6 +144,15 @@ class GlobalExceptionHandler {
             "erro" to ex.message,
             "status" to HttpStatus.BAD_REQUEST.value()
         )
+        return ResponseEntity(erro, HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(DescCancelamentoNaoEncontradoException::class)
+    fun handleDescCancelamentoNaoEncontradoException(ex: DescCancelamentoNaoEncontradoException): ResponseEntity<Any> {
+        val erro = mapOf(
+            "erro" to ex.message,
+            "status" to HttpStatus.NOT_FOUND.value()
+        )
         return ResponseEntity(erro, HttpStatus.NOT_FOUND)
     }
 }

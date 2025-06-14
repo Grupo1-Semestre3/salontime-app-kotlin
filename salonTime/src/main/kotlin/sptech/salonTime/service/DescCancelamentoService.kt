@@ -18,7 +18,7 @@ class DescCancelamentoService (var repository: DescCancelamentoRepository) {
     }
 
     fun listarPorId(id: Int): DescCancelamentoDto? {
-        var cancelamentoAchado = repository.findById(id).orElse(null)
+        var cancelamentoAchado = repository.findById(id).orElseThrow(DescCancelamentoNaoEncontradoException("Cancelamento com ID $id não encontrado."))
 
         return DescCancelamentoMapper.toDTO(cancelamentoAchado)
     }
