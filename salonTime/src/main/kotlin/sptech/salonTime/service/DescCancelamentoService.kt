@@ -4,12 +4,15 @@ import org.springframework.stereotype.Service
 import sptech.salonTime.dto.DescCancelamentoDto
 import sptech.salonTime.dto.NovaDescricaoCancelamentoDto
 import sptech.salonTime.entidade.DescCancelamento
+import sptech.salonTime.exception.AgendamentoNaoEncontradoException
+import sptech.salonTime.exception.DescCancelamentoNaoEncontradoException
 import sptech.salonTime.mapper.AvaliacaoMapper
 import sptech.salonTime.mapper.DescCancelamentoMapper
+import sptech.salonTime.repository.AgendamentoRepository
 import sptech.salonTime.repository.DescCancelamentoRepository
 
 @Service
-class DescCancelamentoService (var repository: DescCancelamentoRepository) {
+class DescCancelamentoService (var repository: DescCancelamentoRepository, val agendamentoRepository: AgendamentoRepository) {
 
     fun listar(): List<DescCancelamentoDto> {
         var cancelamento = repository.findAll()
@@ -18,26 +21,29 @@ class DescCancelamentoService (var repository: DescCancelamentoRepository) {
     }
 
     fun listarPorId(id: Int): DescCancelamentoDto? {
-        var cancelamentoAchado = repository.findById(id).orElseThrow(DescCancelamentoNaoEncontradoException("Cancelamento com ID $id não encontrado."))
+        var cancelamentoAchado = repository.findById(id).orElseThrow{DescCancelamentoNaoEncontradoException("Cancelamento não encontrado.")}
 
         return DescCancelamentoMapper.toDTO(cancelamentoAchado)
     }
 
-    fun criar(descCancelamento: DescCancelamento): DescCancelamento {
-        return repository.save(descCancelamento)
+    fun criar(descCancelamento: DescCancelamento): DescCancelamentoDto? {
+
+        var agendamento = descCancelamento.agendamento?.id?.let { agendamentoRepository.findById(it).orElseThrow { AgendamentoNaoEncontradoException("Agendamento não encontrado") } }
+
+
+        val descCancelamentoSalvo = repository.save(descCancelamento)
+
+        return DescCancelamentoMapper.toDTO(descCancelamentoSalvo)
+
     }
 
     fun atualizar(id: Int, descCancelamento: DescCancelamento): DescCancelamentoDto? {
-       var cancelamento = repository.findById(id).orElse(null)
-        if (cancelamento != null) {
-            cancelamento.id = id
-            cancelamento.descricao = descCancelamento.descricao
-            cancelamento.agendamento = descCancelamento.agendamento
-            var cancelamentoSalvo = repository.save(cancelamento)
-            return DescCancelamentoMapper.toDTO(cancelamentoSalvo)
-        } else {
-            return null
-        }
+       var cancelamento = repository.findById(id).orElseThrow { DescCancelamentoNaoEncontradoException("Cancelamento não encontrado") }
+
+        descCancelamento.id = id
+        repository.save(descCancelamento)
+        return DescCancelamentoMapper.toDTO(descCancelamento)
+
     }
 
     fun atualizarDescricao(id: Int, novaDescricao: NovaDescricaoCancelamentoDto): DescCancelamentoDto? {

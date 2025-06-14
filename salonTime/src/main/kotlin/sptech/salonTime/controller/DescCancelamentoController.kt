@@ -40,19 +40,21 @@ class DescCancelamentoController (val service: DescCancelamentoService) {
     }
 
     @PostMapping()
-    fun criar(@RequestBody novoCancelamento: DescCancelamento): ResponseEntity<DescCancelamento> {
+    fun criar(@RequestBody novoCancelamento: DescCancelamento): ResponseEntity<DescCancelamentoDto> {
         return ResponseEntity.status(201).body(service.criar(novoCancelamento))
     }
 
-    @PutMapping("/{id}")
-    fun atualizar(@PathVariable id: Int, novoCancelamento: DescCancelamento): ResponseEntity<DescCancelamentoDto> {
-        return ResponseEntity.status(200).body(service.atualizar(id, novoCancelamento))
-    }
+    //TIRADO POR CONTA DA REGRA DE NEGÓCIO NÃO PERMITIR ALTERAÇÃO DE DESCRIÇÃO
+//    @PutMapping("/{id}")
+//    fun atualizar(@PathVariable id: Int, novoCancelamento: DescCancelamento): ResponseEntity<DescCancelamentoDto> {
+//        return ResponseEntity.status(200).body(service.atualizar(id, novoCancelamento))
+//    }
 
-    @PatchMapping("/mudar-descricao/{id}")
-    fun atualizarDescricao(@PathVariable id: Int, @RequestBody descricao: NovaDescricaoCancelamentoDto): ResponseEntity<DescCancelamentoDto> {
-        return ResponseEntity.status(200).body(service.atualizarDescricao(id, descricao))
-    }
+    //TIRADO POR CONTA DA REGRA DE NEGÓCIO NÃO PERMITIR ALTERAÇÃO DE DESCRIÇÃO
+//    @PatchMapping("/mudar-descricao/{id}")
+//    fun atualizarDescricao(@PathVariable id: Int, @RequestBody descricao: NovaDescricaoCancelamentoDto): ResponseEntity<DescCancelamentoDto> {
+//        return ResponseEntity.status(200).body(service.atualizarDescricao(id, descricao))
+//    }
 
     @DeleteMapping("/{id}")
     fun deletar(@PathVariable id: Int): ResponseEntity<Void> {

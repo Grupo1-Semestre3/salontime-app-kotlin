@@ -31,7 +31,7 @@ class CupomDestinadoService (
     }
 
     fun editar(id: Int, cupomDestinado: CupomDestinado): CupomDestinadoDto {
-        val CupomDestinadoEncontrado = repository.findById(id).orElseThrow { RuntimeException("Cupom Destinado not found") }
+        val CupomDestinadoEncontrado = repository.findById(id).orElseThrow { CupomDestinadoNaoEncontradoException("Cupom Destinado not found") }
 
         CupomDestinadoEncontrado.cupom = cupomDestinado.cupom
         CupomDestinadoEncontrado.usuario = cupomDestinado.usuario
@@ -41,7 +41,7 @@ class CupomDestinadoService (
     }
 
     fun atualizarUsado (id:Int, usado:Boolean): CupomDestinadoDto {
-        val CupomDestinadoEncontrado = repository.findById(id).orElseThrow { RuntimeException("Cupom Destinado not found") }
+        val CupomDestinadoEncontrado = repository.findById(id).orElseThrow { CupomDestinadoNaoEncontradoException("Cupom Destinado not found") }
 
         CupomDestinadoEncontrado.usado = usado
 
