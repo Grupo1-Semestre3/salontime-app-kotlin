@@ -88,8 +88,7 @@ class AgendamentoService(
             pagamento = pagamento,
             data = agendamento.data,
             inicio = agendamento.inicio,
-            fim = agendamento.fim,
-            preco = agendamento.preco
+            fim = agendamento.fim
         )
         val agendamentoSalvo = repository.save(novoAgendamento)
 
@@ -197,11 +196,15 @@ class AgendamentoService(
         var agendamentoEcontrado = repository.findById(id).orElseThrow {
             AgendamentoNaoEncontradoException("Agendamento não encontrado")
         }
-        if (valor <= 0) {
-            throw IllegalArgumentException("O valor do agendamento deve ser maior que zero.")
+
+        val tipoPagamento = agendamentoEcontrado.pagamento?.id?.let { pagamentoRepository.findById(it).orElseThrow { PagamentoNaoEncontradoException("Pagamento Não encontrado") } }
+
+        val taxa = tipoPagamento?.taxa
+
+        if (taxa != null) {
+            agendamentoEcontrado.preco = valor - (valor * taxa / 100)
         }
 
-        agendamentoEcontrado.preco = valor
         var agendamentoSalvo = repository.save(agendamentoEcontrado)
         return AgendamentoMapper.toDto(agendamentoSalvo)
 
