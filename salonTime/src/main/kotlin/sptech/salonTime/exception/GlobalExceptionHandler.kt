@@ -155,4 +155,22 @@ class GlobalExceptionHandler {
         )
         return ResponseEntity(erro, HttpStatus.NOT_FOUND)
     }
+
+    @ExceptionHandler(FuncionamentoNaoEncontradoException::class)
+    fun handleFuncionarioNaoEcontradoException(ex: FuncionamentoNaoEncontradoException): ResponseEntity<Any> {
+        val erro = mapOf(
+            "erro" to ex.message,
+            "status" to HttpStatus.NOT_FOUND.value()
+        )
+        return ResponseEntity(erro, HttpStatus.NOT_FOUND)
+    }
+
+    @ExceptionHandler(AtributoInvalidoPatchException::class)
+    fun handleAtributoInvalidoPatchException(ex: AtributoInvalidoPatchException): ResponseEntity<Any> {
+        val erro = mapOf(
+            "erro" to ex.message,
+            "status" to HttpStatus.BAD_REQUEST.value()
+        )
+        return ResponseEntity(erro, HttpStatus.BAD_REQUEST)
+    }
 }
