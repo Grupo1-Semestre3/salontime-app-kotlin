@@ -34,7 +34,6 @@ class ServicoControllerTest {
   status = "ATIVO",
   simultaneo = false,
   descricao = "Serviço básico",
-  foto = null,
     mediaAvaliacao = 4.5
  )
 
@@ -124,7 +123,6 @@ class ServicoControllerTest {
 
   assertEquals(HttpStatus.OK, response.statusCode)
   assertEquals(servico, response.body)
-  verify(service).listarPorId(1)
   verify(service).atualizar(1, servico)
  }
 

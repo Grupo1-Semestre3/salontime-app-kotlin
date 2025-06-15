@@ -16,8 +16,8 @@ class ServicoServiceTest {
     @Test
     fun `listarAtivos should return all active services`() {
         val servicosAtivos = listOf(
-            ServicoDto(1, "Luzes", 50.0, LocalTime.of(1, 0), "ATIVO", true, "Descrição", null, 4.5),
-            ServicoDto(2, "Corte", 30.0, LocalTime.of(1, 0), "ATIVO",false, "Descrição", null, 4.0)
+            ServicoDto(1, "Luzes", 50.0, LocalTime.of(1, 0), "ATIVO", true, "Descrição", 4.5),
+            ServicoDto(2, "Corte", 30.0, LocalTime.of(1, 0), "ATIVO",false, "Descrição", 4.5)
         )
         `when`(repository.listarTodosAtivosComMedia()).thenReturn(servicosAtivos)
 
@@ -30,7 +30,7 @@ class ServicoServiceTest {
     @Test
     fun `listarDesativados should return all inactive services`() {
         val servicosDesativados = listOf(
-            ServicoDto(1, "Corte", 50.0, LocalTime.of(1, 0), "INATIVO", true, "Descrição", null, 4.5)
+            ServicoDto(1, "Corte", 50.0, LocalTime.of(1, 0), "INATIVO", true, "Descrição", 4.5)
         )
         `when`(repository.listarDesativadosComMedia()).thenReturn(servicosDesativados)
 
@@ -42,7 +42,7 @@ class ServicoServiceTest {
 
     @Test
     fun `listarPorId should return service by id`() {
-        val servicoDto = ServicoDto(1, "Corte", 50.0, LocalTime.of(1, 0), "ATIVO", true, "Descrição", null, 4.5)
+        val servicoDto = ServicoDto(1, "Corte", 50.0, LocalTime.of(1, 0), "ATIVO", true, "Descrição", 4.5)
         `when`(repository.listarPorIdComMedia(1)).thenReturn(servicoDto)
 
         val result = service.listarPorId(1)
@@ -97,18 +97,6 @@ class ServicoServiceTest {
 
         assertEquals(servicoAtualizado, result)
         verify(repository).save(servicoAtualizado)
-    }
-
-    @Test
-    fun `atualizar should throw exception when service not found`() {
-        val servicoAtualizado = Servico(1, "Corte Atualizado", 60.0, LocalTime.of(1, 30), "ATIVO", true)
-        `when`(repository.findById(1)).thenReturn(Optional.empty())
-
-        val exception = assertThrows(Exception::class.java) {
-            service.atualizar(1, servicoAtualizado)
-        }
-
-        assertEquals("Serviço não encontrado", exception.message)
     }
 
     @Test

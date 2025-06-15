@@ -33,7 +33,7 @@ class CupomConfiguracaoService(
     fun editarPorcentagem(id: Int, novaPorcentagem: Int): CupomConfiguracao {
         val cupom = repository.findById(id)
             .orElseThrow { CupomConfiguracaoException("Cupom de configuração com ID $id não encontrado.") }
-        cupom.porcetagemDesconto = novaPorcentagem
+        cupom.porcentagemDesconto = novaPorcentagem
         return repository.save(cupom)
     }
 

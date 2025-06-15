@@ -13,5 +13,5 @@ data class CupomConfiguracao(
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     var id: Int? = null,
     var intervaloAtendimento: Int? = null,
-    var porcetagemDesconto: Int? = null
+    var porcentagemDesconto: Int? = null
 ){}

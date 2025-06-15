@@ -9,8 +9,11 @@ import sptech.salonTime.dto.FuncionarioCompetenciaDto
 import sptech.salonTime.entidade.FuncionarioCompetencia
 import sptech.salonTime.service.FuncionarioCompetenciaService
 import org.springframework.http.HttpStatus
+import sptech.salonTime.dto.CadastroCompetenciaFuncionario
 import sptech.salonTime.dto.TipoUsuarioDto
 import sptech.salonTime.dto.UsuarioDto
+import sptech.salonTime.entidade.Servico
+import sptech.salonTime.entidade.Usuario
 
 class FuncionarioCompetenciaControllerTest {
 
@@ -19,9 +22,16 @@ class FuncionarioCompetenciaControllerTest {
 
  private val funcionarioCompetencia = FuncionarioCompetencia(
   id = 1,
-  funcionario = null,
-  servico = null
+  funcionario = mock(Usuario::class.java),
+  servico = mock(Servico::class.java)
  )
+
+
+ private val funcionarioCompetenciaDto = CadastroCompetenciaFuncionario(
+  funcionario = 1,
+  servico = 1
+ )
+
 
  @BeforeEach
  fun setup() {
@@ -58,25 +68,25 @@ class FuncionarioCompetenciaControllerTest {
  @Test
  @DisplayName("Cria um novo registro de FuncionarioCompetencia")
  fun inserir() {
-  `when`(service.salvar(funcionarioCompetencia)).thenReturn(funcionarioCompetencia)
+  `when`(service.salvar(funcionarioCompetenciaDto)).thenReturn(funcionarioCompetencia)
 
-  val response = controller.inserir(funcionarioCompetencia)
+  val response = controller.inserir(funcionarioCompetenciaDto)
 
   assertEquals(HttpStatus.CREATED, response.statusCode)
   assertEquals(funcionarioCompetencia, response.body)
-  verify(service).salvar(funcionarioCompetencia)
+  verify(service).salvar(funcionarioCompetenciaDto)
  }
 
  @Test
  @DisplayName("Atualiza um registro de FuncionarioCompetencia")
  fun editar() {
-  `when`(service.editar(1, funcionarioCompetencia)).thenReturn(funcionarioCompetencia)
+  `when`(service.editar(1, funcionarioCompetenciaDto)).thenReturn(funcionarioCompetencia)
 
-  val response = controller.editar(1, funcionarioCompetencia)
+  val response = controller.editar(1, funcionarioCompetenciaDto)
 
   assertEquals(HttpStatus.OK, response.statusCode)
   assertEquals(funcionarioCompetencia, response.body)
-  verify(service).editar(1, funcionarioCompetencia)
+  verify(service).editar(1, funcionarioCompetenciaDto)
  }
 
  @Test

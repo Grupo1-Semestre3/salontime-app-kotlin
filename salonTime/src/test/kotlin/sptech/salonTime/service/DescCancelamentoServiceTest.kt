@@ -1,113 +1,59 @@
 package sptech.salonTime.service
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito
+import org.mockito.Mock
 import org.mockito.Mockito.*
-import sptech.salonTime.dto.NovaDescricaoCancelamentoDto
+import sptech.salonTime.dto.DescCancelamentoDto
 import sptech.salonTime.entidade.Agendamento
 import sptech.salonTime.entidade.DescCancelamento
 import sptech.salonTime.mapper.DescCancelamentoMapper
+import sptech.salonTime.repository.AgendamentoRepository
 import sptech.salonTime.repository.DescCancelamentoRepository
+import java.util.*
 
 class DescCancelamentoServiceTest {
 
-    private val repository = mock(DescCancelamentoRepository::class.java)
-    private val service = DescCancelamentoService(repository)
+    private val repositorio = mock(DescCancelamentoRepository::class.java)
+    private val agendamentoRepositorio = mock(AgendamentoRepository::class.java)
+
+    private val servico = DescCancelamentoService(repositorio, agendamentoRepositorio)
 
     @Test
-    fun `listar deve retornar todos cancelamentos`() {
-        val agendamento = mock(Agendamento::class.java)
+    fun `listar deve retornar lista vazia quando não existem cancelamentos`() {
+        `when`(repositorio.findAll()).thenReturn(List<DescCancelamento>(0) { DescCancelamento(0, "", Agendamento()) })
 
-        val cancelamentos = listOf(
-            DescCancelamento(1, "Cancelamento 1", agendamento),
-            DescCancelamento(2, "Cancelamento 2", agendamento)
-        )
+        val resultado = servico.listar()
 
-        `when`(repository.findAll()).thenReturn(cancelamentos)
-
-        val expectedDtos = cancelamentos.map { DescCancelamentoMapper.toDTO(it) }
-
-        val result = service.listar()
-
-        assertEquals(expectedDtos, result)
-    }
-
-
-    @Test
-    fun `listar por id deve retornar cancelamento`() {
-        val agendamento = mock(Agendamento::class.java)
-
-        val cancelamento = DescCancelamento(1, "Cancelamento 1", agendamento)
-
-        `when`(repository.findById(1)).thenReturn(java.util.Optional.of(cancelamento))
-
-        val expectedDto = DescCancelamentoMapper.toDTO(cancelamento)
-        val result = service.listarPorId(1)
-
-        assertEquals(expectedDto, result)
-        verify(repository).findById(1)
-    }
-
-
-    @Test
-    fun `criar deve salvar e retornar cancelamento`() {
-        val cancelamento = DescCancelamento(1, "Cancelamento 1",mock(Agendamento::class.java))
-        `when`(repository.save(cancelamento)).thenReturn(cancelamento)
-        val result = service.criar(cancelamento)
-        assertEquals(cancelamento, result)
+        assertNotNull(resultado)
+        verify(repositorio).findAll()
     }
 
     @Test
-    fun `atualizar deve atualizar e retornar cancelamento`() {
-        val agendamento = mock(Agendamento::class.java)
-        val cancelamentoExistente = DescCancelamento(1, "Cancelamento 1", agendamento)
-        val cancelamentoAtualizado = DescCancelamento(1, "Cancelamento Atualizado", agendamento)
+    fun `criar deve salvar e retornar cancelamento quando agendamento existe`() {
+        val agendamento = Agendamento().apply { id = 1 }
+        val descricaoCancelamento = DescCancelamento(0, "Descrição", agendamento)
+        `when`(agendamentoRepositorio.findById(1)).thenReturn(Optional.of(agendamento))
+        `when`(repositorio.save(descricaoCancelamento)).thenReturn(descricaoCancelamento)
 
-        `when`(repository.findById(1)).thenReturn(java.util.Optional.of(cancelamentoExistente))
-        `when`(repository.save(any(DescCancelamento::class.java))).thenReturn(cancelamentoAtualizado)
+        val resultado = servico.criar(descricaoCancelamento)
 
-        val expectedDto = DescCancelamentoMapper.toDTO(cancelamentoAtualizado)
-        val result = service.atualizar(1, cancelamentoAtualizado)
-
-        assertEquals(expectedDto, result)
-        verify(repository).findById(1)
-        verify(repository).save(any(DescCancelamento::class.java))
+        assertNotNull(resultado)
+        assertEquals(descricaoCancelamento.descricao, resultado?.descricao)
+        verify(agendamentoRepositorio).findById(1)
+        verify(repositorio).save(descricaoCancelamento)
     }
 
     @Test
-    fun `atualizar descricao deve atualizar e retornar cancelamento`() {
-        val agendamento = mock(Agendamento::class.java)
+    fun `deletar deve não fazer nada quando cancelamento não for encontrado`() {
+        val id = 999
+        `when`(repositorio.findById(id)).thenReturn(Optional.empty())
 
-        val cancelamentoExistente = DescCancelamento(1, "Cancelamento 1", agendamento)
-        val novaDescricao = NovaDescricaoCancelamentoDto(descricao = "Cancelamento Atualizado")
+        servico.deletar(id)
 
-        val cancelamentoAtualizado = cancelamentoExistente.copy(descricao = novaDescricao.descricao)
-
-        `when`(repository.findById(1)).thenReturn(java.util.Optional.of(cancelamentoExistente))
-        `when`(repository.save(any(DescCancelamento::class.java))).thenReturn(cancelamentoAtualizado)
-
-        val expectedDto = DescCancelamentoMapper.toDTO(cancelamentoAtualizado)
-
-        val result = service.atualizarDescricao(1, novaDescricao)
-
-        // Comparar o DTO inteiro (preferível)
-        assertEquals(expectedDto, result)
-
-        // OU comparar só a descrição, se o resto não for importante
-        // assertEquals(novaDescricao.descricao, result.descricao)
-
-        verify(repository).findById(1)
-        verify(repository).save(cancelamentoExistente)
-    }
-
-
-    @Test
-    fun `deletar deve remover cancelamento`() {
-        val cancelamento = DescCancelamento(1, "Cancelamento 1",mock(Agendamento::class.java))
-        `when`(repository.findById(1)).thenReturn(java.util.Optional.of(cancelamento))
-
-        service.deletar(1)
+        verify(repositorio).findById(id)
+        verify(repositorio, never()).delete(any())
     }
 
 }

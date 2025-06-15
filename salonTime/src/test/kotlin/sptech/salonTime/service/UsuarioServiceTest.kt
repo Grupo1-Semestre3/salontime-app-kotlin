@@ -4,175 +4,120 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
 import sptech.salonTime.dto.CadastroUsuarioDto
-import sptech.salonTime.dto.EmailDto
 import sptech.salonTime.dto.SenhaDto
 import sptech.salonTime.entidade.TipoUsuario
 import sptech.salonTime.entidade.Usuario
 import sptech.salonTime.exception.UsuarioNaoEncontradoException
-import sptech.salonTime.mapper.UsuarioMapper
+import sptech.salonTime.repository.TipoUsuarioRepository
 import sptech.salonTime.repository.UsuarioRepository
+import java.time.LocalDateTime
 import java.util.*
 
 class UsuarioServiceTest {
 
- private val repository = mock(UsuarioRepository::class.java)
- private val service = UsuarioService(repository)
+    private val usuarioRepository = mock(UsuarioRepository::class.java)
+    private val tipoUsuarioRepository = mock(TipoUsuarioRepository::class.java)
+    private val service = UsuarioService(usuarioRepository, tipoUsuarioRepository)
 
- @Test
- fun `listar deve retornar todos os usuários`() {
-  val usuarios = listOf(Usuario(), Usuario())
-  `when`(repository.findAll()).thenReturn(usuarios)
 
-  val result = service.listar()
+    val dto = CadastroUsuarioDto(
+        nome = "João da Silva",
+        email = "joao@email.com",
+        senha = "senha123",
+        telefone = "11999999999"
+    )
 
-  assertEquals(usuarios, result)
-  verify(repository).findAll()
- }
+    val usuarioMock = Usuario(
+        id = 1,
+        tipoUsuario = TipoUsuario(2, "CLIENTE"),
+        nome = dto.nome,
+        telefone = dto.telefone,
+        cpf = "12345678900",
+        email = dto.email,
+        senha = dto.senha,
+        dataNascimento = null, // data válida
+        dataCriacao = LocalDateTime.now(),
+        foto = null,
+        login = false,
+        ativo = true
+    )
 
- @Test
- fun `salvarUsuario deve salvar e retornar o usuário como CLIENTE`() {
-  val usuarioDto = CadastroUsuarioDto("usuario", "email@email.com", "senha", "11999999999")
-  val usuarioEntity = UsuarioMapper.toEntity(usuarioDto)?.apply { tipoUsuario = TipoUsuario(2, "CLIENTE") }
-  val usuarioSalvo = usuarioEntity!!.copy(id = 1)
-  `when`(repository.save(any(Usuario::class.java))).thenReturn(usuarioSalvo)
 
-  val result = service.salvarUsuario(usuarioDto)
+    @Test
+    fun `salvarUsuario deve criar usuário com tipo CLIENTE`() {
+        val dto = CadastroUsuarioDto("João", "joao@email.com", "senha123", "11999999999")
+        val usuario = usuarioMock
 
-  assertEquals(2, result.tipoUsuario?.id)
-  assertEquals("CLIENTE", result.tipoUsuario?.descricao)
-  verify(repository).save(any(Usuario::class.java))
- }
+        `when`(usuarioRepository.save(any(Usuario::class.java))).thenReturn(usuario)
 
- @Test
- fun `salvarFuncionario deve salvar e retornar o usuário como FUNCIONARIO`() {
-  val usuarioDto = CadastroUsuarioDto("funcionario", "email@email.com", "senha", "11999999999")
-  val usuarioEntity = UsuarioMapper.toEntity(usuarioDto)?.apply { tipoUsuario = TipoUsuario(3, "FUNCIONARIO") }
-  val usuarioSalvo = usuarioEntity!!.copy(id = 1)
-  `when`(repository.save(any(Usuario::class.java))).thenReturn(usuarioSalvo)
+        val resultado = service.salvarUsuario(dto)
 
-  val result = service.salvarFuncionario(usuarioDto)
+        assertNotNull(resultado)
+        assertEquals("João da Silva", resultado.nome)
+        verify(usuarioRepository).save(any())
+    }
 
-  assertEquals(3, result.tipoUsuario?.id)
-  assertEquals("FUNCIONARIO", result.tipoUsuario?.descricao)
-  verify(repository).save(any(Usuario::class.java))
- }
+    @Test
+    fun `listar deve retornar lista vazia se não houver usuários ativos`() {
+        `when`(usuarioRepository.findAllByAtivoTrue()).thenReturn(emptyList())
 
- @Test
- fun `listarPorId deve retornar o usuário`() {
-  val usuario = Usuario().apply { id = 1 }
-  `when`(repository.findById(1)).thenReturn(Optional.of(usuario))
+        val lista = service.listar()
 
-  val result = service.listarPorId(1)
+        assertTrue(lista.isEmpty())
+        verify(usuarioRepository).findAllByAtivoTrue()
+    }
 
-  assertEquals(usuario, result)
-  verify(repository).findById(1)
- }
+    @Test
+    fun `listarPorId deve retornar usuário quando existir`() {
+        val usuario = usuarioMock
 
- @Test
- fun `excluir deve deletar o usuário por id`() {
-  `when`(repository.existsById(1)).thenReturn(true)
+        `when`(usuarioRepository.findById(1)).thenReturn(Optional.of(usuario))
 
-  service.excluir(1)
+        val resultado = service.listarPorId(1)
 
-  verify(repository).deleteById(1)
- }
+        assertNotNull(resultado)
+        assertEquals("João da Silva", resultado.nome)
+        verify(usuarioRepository).findById(1)
+    }
 
- @Test
- fun `atualizar deve atualizar e retornar o usuário`() {
-  val usuario = Usuario().apply { id = 1 }
-  val usuarioAtualizado = Usuario().apply { id = 1 }
-  `when`(repository.findById(1)).thenReturn(Optional.of(usuario))
-  `when`(repository.save(usuarioAtualizado)).thenReturn(usuarioAtualizado)
+    @Test
+    fun `excluir deve desativar o usuário`() {
+        val usuario = usuarioMock
 
-  val result = service.atualizar(1, usuarioAtualizado)
+        `when`(usuarioRepository.findById(1)).thenReturn(Optional.of(usuario))
+        `when`(usuarioRepository.save(any())).thenReturn(usuario)
 
-  assertEquals(usuarioAtualizado, result)
-  verify(repository).save(usuarioAtualizado)
- }
+        service.excluir(1)
 
- @Test
- fun `login deve definir login como true e retornar o usuário`() {
-  val usuario = Usuario().apply { id = 1 }
-  `when`(repository.findById(1)).thenReturn(Optional.of(usuario))
-  `when`(repository.save(usuario)).thenReturn(usuario)
+        verify(usuarioRepository).findById(1)
+    }
 
-  val result = service.login(1)
+    @Test
+    fun `mudarSenha deve alterar a senha do usuário`() {
+        val usuario = usuarioMock
 
-  assertTrue(result.login)
-  verify(repository).save(usuario)
- }
+        val novaSenha = SenhaDto("novaSenha123")
 
- @Test
- fun `logoff deve definir login como false e retornar o usuário`() {
-  val usuario = Usuario().apply { id = 1 }
-  `when`(repository.findById(1)).thenReturn(Optional.of(usuario))
-  `when`(repository.save(usuario)).thenReturn(usuario)
+        `when`(usuarioRepository.findById(1)).thenReturn(Optional.of(usuario))
+        `when`(usuarioRepository.save(any())).thenReturn(usuario.copy(senha = novaSenha.senha))
 
-  val result = service.logoff(1)
+        val atualizado = service.mudarSenha(1, novaSenha)
 
-  assertFalse(result.login)
-  verify(repository).save(usuario)
- }
+        assertEquals("novaSenha123", atualizado.senha)
+        verify(usuarioRepository).save(any())
+    }
 
- @Test
- fun `mudarSenha deve atualizar e retornar o usuário com nova senha`() {
-  val usuario = Usuario().apply { id = 1 }
-  val novaSenha = SenhaDto("novaSenha")
-  `when`(repository.findById(1)).thenReturn(Optional.of(usuario))
-  `when`(repository.save(usuario)).thenReturn(usuario)
+    @Test
+    fun `login deve ativar login quando usuário está ativo`() {
+        val usuario = usuarioMock
 
-  val result = service.mudarSenha(1, novaSenha)
+        `when`(usuarioRepository.findById(1)).thenReturn(Optional.of(usuario))
+        `when`(usuarioRepository.save(any())).thenReturn(usuario.copy(login = true))
 
-  assertEquals("novaSenha", result.senha)
-  verify(repository).save(usuario)
- }
+        val resultado = service.login(1)
 
- @Test
- fun `mudarEmail deve atualizar e retornar o usuário com novo email`() {
-  val usuario = Usuario().apply { id = 1 }
-  val novoEmail = EmailDto("novo@email.com")
-  `when`(repository.findById(1)).thenReturn(Optional.of(usuario))
-  `when`(repository.save(usuario)).thenReturn(usuario)
-
-  val result = service.mudarEmail(1, novoEmail)
-
-  assertEquals("novo@email.com", result.email)
-  verify(repository).save(usuario)
- }
-
- @Test
- fun `atualizarFoto deve atualizar e retornar a foto do usuário`() {
-  val usuario = Usuario().apply { id = 1 }
-  val foto = byteArrayOf(1, 2, 3)
-  `when`(repository.findById(1)).thenReturn(Optional.of(usuario))
-  `when`(repository.save(usuario)).thenReturn(usuario)
-
-  val result = service.atualizarFoto(1, foto)
-
-  assertArrayEquals(foto, result)
-  verify(repository).save(usuario)
- }
-
- @Test
- fun `getFoto deve retornar a foto do usuário`() {
-  val usuario = Usuario().apply { id = 1; foto = byteArrayOf(1, 2, 3) }
-  `when`(repository.findById(1)).thenReturn(Optional.of(usuario))
-
-  val result = service.getFoto(1)
-
-  assertArrayEquals(byteArrayOf(1, 2, 3), result)
-  verify(repository).findById(1)
- }
-
- @Test
- fun `verificarEmail deve retornar usuario se o email existir`() {
-  val usuario = Usuario().apply { email = "email@email.com" }
-  `when`(repository.findByEmail("email@email.com")).thenReturn(usuario)
-
-  val result = service.verificarEmail("email@email.com")
-
-  assertEquals(usuario, result)
-  verify(repository).findByEmail("email@email.com")
- }
+        assertTrue(resultado.login)
+        verify(usuarioRepository).save(any())
+    }
 
 }

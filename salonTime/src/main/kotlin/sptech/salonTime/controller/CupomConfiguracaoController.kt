@@ -41,7 +41,7 @@ class CupomConfiguracaoController (val service: CupomConfiguracaoService) {
     fun editarPorcentagem(@RequestBody cupomConfiguracao: CupomConfiguracao): ResponseEntity<CupomConfiguracao> {
         val updatedCupom = service.editarPorcentagem(
             cupomConfiguracao.id ?: throw IllegalArgumentException("ID não pode ser nulo"),
-            cupomConfiguracao.porcetagemDesconto ?: throw IllegalArgumentException("Porcentagem não pode ser nula")
+            cupomConfiguracao.porcentagemDesconto ?: throw IllegalArgumentException("Porcentagem não pode ser nula")
         )
         return ResponseEntity.ok(updatedCupom)
     }

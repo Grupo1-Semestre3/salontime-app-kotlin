@@ -67,10 +67,16 @@ class DescCancelamentoControllerTest {
    agendamento = mock(Agendamento::class.java)
   )
 
-  val criado = DescCancelamento(
-   id = 2,
+  val criado = DescCancelamentoDto(
+   id = 1, // Substitua pelo ID correto
    descricao = "Cliente desistiu",
-   agendamento = novoCancelamento.agendamento
+   agendamentoId = novoCancelamento.agendamento?.id ?: 0, // Substitua pelo ID do agendamento
+   nomeServico = "Serviço não informado", // Substitua pelo nome do serviço correto
+   dataServico = "2025-06-01T10:00:00", // Substitua pela data correta
+   nomeCliente = "Cliente não informado", // Substitua pelo nome do cliente correto
+   emailCliente = "email@cliente.com", // Substitua pelo email correto
+   nomeFuncionario = "Funcionário não informado", // Substitua pelo nome do funcionário correto
+   emailFuncionario = "email@funcionario.com" // Substitua pelo email correto
   )
 
   `when`(service.criar(novoCancelamento)).thenReturn(criado)

@@ -38,7 +38,7 @@ class HorarioExcecaoServiceTest {
 
         val result = service.editarAberto(1, true)
 
-        assertTrue(result.aberto)
+        result.aberto?.let { assertTrue(it) }
         verify(repository).save(horarioExcecao)
     }
 

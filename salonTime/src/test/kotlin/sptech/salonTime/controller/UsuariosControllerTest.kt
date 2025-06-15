@@ -127,7 +127,7 @@ class UsuariosControllerTest {
 
         val response = controller.atualizar(1, usuario)
 
-        assertEquals(HttpStatus.CREATED, response.statusCode)
+        assertEquals(HttpStatus.OK, response.statusCode)
         assertEquals(usuario, response.body)
         verify(service).atualizar(1, usuario)
     }
@@ -140,7 +140,7 @@ class UsuariosControllerTest {
 
         val response = controller.login(1)
 
-        assertEquals(HttpStatus.CREATED, response.statusCode)
+        assertEquals(HttpStatus.OK, response.statusCode)
         assertEquals(usuario, response.body)
         verify(service).login(1)
     }
@@ -153,7 +153,7 @@ class UsuariosControllerTest {
 
         val response = controller.logoff(1)
 
-        assertEquals(HttpStatus.CREATED, response.statusCode)
+        assertEquals(HttpStatus.OK, response.statusCode)
         assertEquals(usuario, response.body)
         verify(service).logoff(1)
     }
@@ -167,7 +167,7 @@ class UsuariosControllerTest {
 
         val response = controller.mudarSenha(1, novaSenha)
 
-        assertEquals(HttpStatus.CREATED, response.statusCode)
+        assertEquals(HttpStatus.OK, response.statusCode)
         assertEquals(usuario, response.body)
         verify(service).mudarSenha(1, novaSenha)
     }
@@ -181,7 +181,7 @@ class UsuariosControllerTest {
 
         val response = controller.mudarEmail(1, novoEmail)
 
-        assertEquals(HttpStatus.CREATED, response.statusCode)
+        assertEquals(HttpStatus.OK, response.statusCode)
         assertEquals(usuario, response.body)
         verify(service).mudarEmail(1, novoEmail)
     }
