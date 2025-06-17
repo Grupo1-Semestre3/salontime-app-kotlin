@@ -1,6 +1,7 @@
 package sptech.salonTime.controller
 
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
 import org.springframework.http.HttpStatus
@@ -32,6 +33,7 @@ class CupomControllerTest {
  }
 
  @Test
+ @DisplayName("Deve criar um novo cupom e retornar status 201 com o cupom criado")
  fun criar() {
   `when`(service.criar(cupom)).thenReturn(cupom)
 
@@ -43,6 +45,7 @@ class CupomControllerTest {
  }
 
  @Test
+ @DisplayName("Deve listar cupons ativos e retornar status 200 com a lista")
  fun listarAtivos() {
   `when`(service.listarAtivos()).thenReturn(listOf(cupom))
 
@@ -54,6 +57,7 @@ class CupomControllerTest {
  }
 
  @Test
+ @DisplayName("Deve atualizar um cupom existente e retornar status 200 com o cupom atualizado")
  fun atualizar() {
   `when`(service.atualizar(1, cupom)).thenReturn(cupom)
 
@@ -65,6 +69,7 @@ class CupomControllerTest {
  }
 
  @Test
+ @DisplayName("Deve deletar um cupom e retornar status 204 (No Content)")
  fun deletar() {
   `when`(service.deletar(1)).thenReturn(true)
 

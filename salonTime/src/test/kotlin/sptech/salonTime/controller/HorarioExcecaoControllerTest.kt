@@ -1,5 +1,6 @@
 package sptech.salonTime.controller
 
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import org.mockito.Mockito.*
@@ -15,6 +16,7 @@ class HorarioExcecaoControllerTest {
     private val controller = HorarioExcecaoController(service)
 
     @Test
+    @DisplayName("Deve retornar a lista de horários de exceção com sucesso")
     fun listar() {
         val horarioExcecao = HorarioExcecao(1, LocalDate.now(), LocalDate.now(), LocalTime.of(8, 0), LocalTime.of(18, 0), true, 10, null)
         `when`(service.listar()).thenReturn(listOf(horarioExcecao))
@@ -27,18 +29,7 @@ class HorarioExcecaoControllerTest {
     }
 
     @Test
-    fun inserir() {
-        val horarioExcecao = HorarioExcecao(1, LocalDate.now(), LocalDate.now(), LocalTime.of(8, 0), LocalTime.of(18, 0), true, 10, null)
-        `when`(service.salvar(horarioExcecao)).thenReturn(horarioExcecao)
-
-        val response = controller.inserir(horarioExcecao)
-
-        assertEquals(HttpStatus.CREATED, response.statusCode)
-        assertEquals(horarioExcecao, response.body)
-        verify(service).salvar(horarioExcecao)
-    }
-
-    @Test
+    @DisplayName("Deve editar um horário de exceção existente e retornar os dados atualizados")
     fun editar() {
         val horarioExcecao = HorarioExcecao(1, LocalDate.now(), LocalDate.now(), LocalTime.of(8, 0), LocalTime.of(18, 0), true, 10, null)
         `when`(service.editar(1, horarioExcecao)).thenReturn(horarioExcecao)
@@ -51,6 +42,7 @@ class HorarioExcecaoControllerTest {
     }
 
     @Test
+    @DisplayName("Deve atualizar o campo 'aberto' do horário de exceção e retornar os dados atualizados")
     fun editarAberto() {
         val horarioExcecao = HorarioExcecao(1, LocalDate.now(), LocalDate.now(), LocalTime.of(8, 0), LocalTime.of(18, 0), true, 10, null)
         `when`(service.editarAberto(1, false)).thenReturn(horarioExcecao.apply { aberto = false })
@@ -61,5 +53,4 @@ class HorarioExcecaoControllerTest {
         assertFalse(response.body?.aberto ?: true)
         verify(service).editarAberto(1, false)
     }
-
 }

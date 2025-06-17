@@ -1,6 +1,7 @@
 package sptech.salonTime.controller
 
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
 import org.springframework.http.HttpStatus
@@ -31,6 +32,7 @@ class InfoSalaoControllerTest {
  }
 
  @Test
+ @DisplayName("Deve listar informações do salão e retornar status 200 com a lista")
  fun listarInfoSalao() {
   `when`(service.listar()).thenReturn(mutableListOf(infoMock))
 
@@ -43,6 +45,7 @@ class InfoSalaoControllerTest {
  }
 
  @Test
+ @DisplayName("Deve editar campo específico das informações do salão e retornar dados atualizados")
  fun editarInfoSalao() {
   val novoValor = "novo@email.com"
   `when`(service.editar("email", novoValor)).thenReturn(infoMock.copy(email = novoValor))

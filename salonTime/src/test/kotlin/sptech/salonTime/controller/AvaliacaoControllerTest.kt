@@ -1,4 +1,5 @@
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
 import org.springframework.http.HttpStatus
@@ -36,6 +37,7 @@ class AvaliacaoControllerTest {
  }
 
  @Test
+ @DisplayName("Deve retornar a lista de avaliações com sucesso")
  fun get() {
   `when`(service.listar()).thenReturn(listOf(avaliacaoDto))
 
@@ -48,6 +50,7 @@ class AvaliacaoControllerTest {
  }
 
  @Test
+ @DisplayName("Deve retornar uma avaliação pelo ID com sucesso")
  fun getById() {
   `when`(service.buscarPorId(1)).thenReturn(avaliacaoDto)
 
@@ -59,6 +62,7 @@ class AvaliacaoControllerTest {
  }
 
  @Test
+ @DisplayName("Deve cadastrar uma nova avaliação e retornar status 201")
  fun post() {
   val dto = CadastroAvaliacaoDto(
    agendamento = Agendamento(),
@@ -87,6 +91,7 @@ class AvaliacaoControllerTest {
  }
 
  @Test
+ @DisplayName("Deve atualizar uma avaliação existente e retornar os dados atualizados")
  fun put() {
   val dto = AtualizarAvaliacaoDto(
    notaServico = 3,

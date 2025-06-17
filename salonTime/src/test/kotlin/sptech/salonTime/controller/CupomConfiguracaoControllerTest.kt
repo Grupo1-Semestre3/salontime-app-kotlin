@@ -1,6 +1,7 @@
 package sptech.salonTime.controller
 
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
 import org.springframework.http.HttpStatus
@@ -20,13 +21,14 @@ class CupomConfiguracaoControllerTest {
  )
 
  @BeforeEach
- fun setUp() {
+ fun initMocks() {
   service = mock(CupomConfiguracaoService::class.java)
   controller = CupomConfiguracaoController(service)
  }
 
  @Test
- fun criarCupomConfiguracao() {
+ @DisplayName("Deve criar uma nova configuração de cupom")
+ fun deveCriarConfiguracao() {
   `when`(service.salvar(config)).thenReturn(config)
 
   val response = controller.criarCupomConfiguracao(config)
@@ -37,7 +39,8 @@ class CupomConfiguracaoControllerTest {
  }
 
  @Test
- fun editarCupomConfiguracao() {
+ @DisplayName("Deve editar uma configuração existente por completo")
+ fun deveEditarConfiguracaoCompleta() {
   `when`(service.editar(1, config)).thenReturn(config)
 
   val response = controller.editarCupomConfiguracao(config)
@@ -48,7 +51,8 @@ class CupomConfiguracaoControllerTest {
  }
 
  @Test
- fun editarIntervalo() {
+ @DisplayName("Deve atualizar apenas o intervalo de atendimento")
+ fun deveEditarSomenteIntervalo() {
   val novoIntervalo = 45
   val atualizado = config.copy(intervaloAtendimento = novoIntervalo)
 
@@ -62,7 +66,8 @@ class CupomConfiguracaoControllerTest {
  }
 
  @Test
- fun editarPorcentagem() {
+ @DisplayName("Deve atualizar apenas a porcentagem de desconto")
+ fun deveEditarSomentePorcentagem() {
   val novaPorcentagem = 20
   val atualizado = config.copy(porcentagemDesconto = novaPorcentagem)
 
@@ -76,7 +81,8 @@ class CupomConfiguracaoControllerTest {
  }
 
  @Test
- fun listarTodos() {
+ @DisplayName("Deve listar todas as configurações salvas")
+ fun deveListarTodasConfiguracoes() {
   `when`(service.listarTodos()).thenReturn(listOf(config))
 
   val response = controller.listarTodos()

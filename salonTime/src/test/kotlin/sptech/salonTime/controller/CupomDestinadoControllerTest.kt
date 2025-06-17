@@ -1,7 +1,8 @@
 package sptech.salonTime.controller
 
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
 import org.springframework.http.HttpStatus
 import sptech.salonTime.dto.CupomDestinadoDto
@@ -17,6 +18,7 @@ class CupomDestinadoControllerTest {
  private val cupomDestinadoDto = CupomDestinadoDto(1, mock(Cupom::class.java), mock(UsuarioPublicoDto::class.java), true)
 
  @Test
+ @DisplayName("Deve listar todos os cupons destinados com sucesso")
  fun listar() {
   `when`(service.listar()).thenReturn(listOf(cupomDestinadoDto))
 
@@ -28,6 +30,7 @@ class CupomDestinadoControllerTest {
  }
 
  @Test
+ @DisplayName("Deve inserir um novo cupom destinado e retornar status 201")
  fun inserir() {
   val cupomDestinado = CupomDestinado()
   `when`(service.salvar(cupomDestinado)).thenReturn(cupomDestinadoDto)
@@ -40,6 +43,7 @@ class CupomDestinadoControllerTest {
  }
 
  @Test
+ @DisplayName("Deve editar um cupom destinado existente e retornar os dados atualizados")
  fun editar() {
   val cupomDestinado = CupomDestinado()
   `when`(service.editar(1, cupomDestinado)).thenReturn(cupomDestinadoDto)
@@ -52,6 +56,7 @@ class CupomDestinadoControllerTest {
  }
 
  @Test
+ @DisplayName("Deve atualizar o status de uso do cupom destinado e retornar os dados atualizados")
  fun atualizarUsado() {
   `when`(service.atualizarUsado(1, true)).thenReturn(cupomDestinadoDto)
 
@@ -63,6 +68,7 @@ class CupomDestinadoControllerTest {
  }
 
  @Test
+ @DisplayName("Deve deletar um cupom destinado pelo ID e retornar status 204")
  fun deletar() {
   doNothing().`when`(service).deletar(1)
 
