@@ -21,11 +21,16 @@ interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
         SELECT COUNT(*) > 0 
         FROM agendamento 
         WHERE data = :data 
-          AND ((:inicio BETWEEN inicio AND fim) OR (:fim BETWEEN inicio AND fim) OR (inicio BETWEEN :inicio AND :fim))
+          AND (:inicio < fim AND :fim > inicio)
     """,
         nativeQuery = true
     )
-    fun existeConflitoDeAgendamento(data: LocalDate?, inicio: LocalTime?, fim: LocalTime?): Long
+    fun existeConflitoDeAgendamento(
+        data: LocalDate?,
+        inicio: LocalTime?,
+        fim: LocalTime?
+    ): Long
+
 
     @Query("""
     SELECT a FROM Agendamento a
@@ -59,4 +64,9 @@ interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
     WHERE a.data = :data
 """, nativeQuery = true)
     fun buscarHorariosOcupados(@Param("data") data: LocalDate): List<HorariosOcupadosDto>
+
+    @Query(value = """
+        SELECT * FROM agendamento WHERE funcionario_id = :idFuncionario
+    """, nativeQuery = true)
+    fun listarCalendarioPorFuncionario(idFuncionario: Int): List<Agendamento>
 }

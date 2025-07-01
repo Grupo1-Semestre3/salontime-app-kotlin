@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import sptech.salonTime.dto.AgendamentoDto
 import sptech.salonTime.dto.CadastroAgendamentoDto
+import sptech.salonTime.dto.CalendarioDto
 import sptech.salonTime.dto.HorarioDisponivelDto
 import sptech.salonTime.entidade.Agendamento
 
@@ -31,6 +32,12 @@ class AgendamentoController(val repository: AgendamentoRepository, val statusAge
     fun get(): ResponseEntity<List<AgendamentoDto?>> {
         return ResponseEntity.status(200).body(service.listar())
     }
+
+    @GetMapping("/calendario/{idFuncionario}")
+    fun getCalendario(@PathVariable idFuncionario: Int): ResponseEntity<List<CalendarioDto?>> {
+        return ResponseEntity.status(200).body(service.listarCalendario(idFuncionario))
+    }
+
 
     @GetMapping("/{id}")
     fun getById(@PathVariable id: Int): ResponseEntity<AgendamentoDto> {

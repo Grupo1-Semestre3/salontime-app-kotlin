@@ -1,10 +1,7 @@
 package sptech.salonTime.service
 
 import org.springframework.stereotype.Service
-import sptech.salonTime.dto.AgendamentoDto
-import sptech.salonTime.dto.CadastroAgendamentoDto
-import sptech.salonTime.dto.HorarioDisponivelDto
-import sptech.salonTime.dto.HorariosOcupadosDto
+import sptech.salonTime.dto.*
 import sptech.salonTime.entidade.Agendamento
 import sptech.salonTime.exception.*
 import sptech.salonTime.mapper.AgendamentoMapper
@@ -40,16 +37,20 @@ class AgendamentoService(
 
     fun cadastrar(agendamento: CadastroAgendamentoDto): AgendamentoDto {
 
-        val cupom = cupomRepository.findByCodigo(agendamento.cupom)
+        val cupom = if (agendamento.cupom != null) {
+            cupomRepository.findByCodigo(agendamento.cupom)
+                ?: throw CupomNaoEncontradoException("Cupom não encontrado ou inválido.")
+        } else {
+            null
+        }
+
 
 
         if (agendamento.data < LocalDate.now()) {
             throw DataErradaException("A data do agendamento não pode ser anterior à data atual.")
         }
 
-        if (cupom == null) {
-            throw CupomNaoEncontradoException("Cupom não encontrado ou inválido.")
-        }
+
 
         val existeAgendamento = repository.existeConflitoDeAgendamento(
             agendamento.data, agendamento.inicio, agendamento.fim
@@ -78,6 +79,7 @@ class AgendamentoService(
             .orElseThrow { ServicoNaoEcontradoException("Serviço não encontrado") }
         val pagamento = pagamentoRepository.findById(agendamento.pagamento)
             .orElseThrow { PagamentoNaoEncontradoException("Pagamento não encontrado") }
+
 
         val novoAgendamento = Agendamento(
             usuario = usuario,
@@ -254,5 +256,21 @@ class AgendamentoService(
         }
 
         return horariosDisponiveis
+    }
+
+    fun listarCalendario(idFuncionario: Int): List<CalendarioDto?> {
+
+        //val agendamentos: List<Agendamento> = repository.findAll()
+
+        val agendamentos: List<Agendamento> = repository.listarCalendarioPorFuncionario(idFuncionario)
+
+        return agendamentos.map { agendamento ->
+            CalendarioDto(
+                titulo = "${agendamento.usuario?.nome} - ${agendamento.servico?.nome}",
+                data = agendamento.data.toString(),
+                inicio = agendamento.inicio.toString().substring(0, 5), // "HH:mm"
+                fim = agendamento.fim.toString().substring(0, 5) // "HH:mm"
+            )
+        }
     }
 }
