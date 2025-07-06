@@ -3,9 +3,11 @@ package sptech.salonTime.service
 import org.springframework.stereotype.Service
 import sptech.salonTime.dto.*
 import sptech.salonTime.entidade.Agendamento
+import sptech.salonTime.entidade.DiaSemana
 import sptech.salonTime.exception.*
 import sptech.salonTime.mapper.AgendamentoMapper
 import sptech.salonTime.repository.*
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -16,7 +18,8 @@ class AgendamentoService(
     val usuarioRepository: UsuarioRepository,
     val statusAgendamentoRepository: StatusAgendamentoRepository,
     val servicoRepository: ServicoRepository,
-    val cupomRepository: CupomRepository
+    val cupomRepository: CupomRepository,
+    val funcionamentoRepository: FuncionamentoRepository
 ) {
 
     fun listar(): List<AgendamentoDto?> {
@@ -219,9 +222,37 @@ class AgendamentoService(
         }
     }
 
-    fun obterHorariosDisponiveis(idServico: Int, data: LocalDate): List<HorarioDisponivelDto> {
+    fun obterHorariosDisponiveis(idServico: Int, data: LocalDate): List<HorarioDisponivelDto>? {
+
+        val servico = servicoRepository.findById(idServico).orElseThrow {
+            ServicoNaoEcontradoException("Serviço com ID $idServico não encontrado.")
+        }
+//        if (data.isBefore(LocalDate.now())) {
+//            throw DataErradaException("A data do agendamento não pode ser anterior à data atual.")
+//        }
+
+        val diaDaSemana: DayOfWeek = data.dayOfWeek
+
+        val diaSemanaEnum: DiaSemana = DiaSemana.valueOf(diaDaSemana.name)
+
+        val funcionamento = funcionamentoRepository.findByDiaSemana(diaSemanaEnum)
+            ?: throw FuncionamentoNaoEncontradoException("Funcionamento não encontrado para o dia da semana: $diaDaSemana")
+
+        if (!funcionamento.aberto!!) {
+            throw FuncionamentoNaoEncontradoException("O salão não está aberto no dia ${data.dayOfWeek}.")
+        }
+
+        val horario: LocalTime? = servico.tempo // 2h45
+        val duracao: Long = (horario?.toSecondOfDay()?.toLong() ?: 0) / 60
+
+
         val horariosOcupados = repository.buscarHorariosOcupados(data)
-        return gerarHorariosDisponiveis(horariosOcupados)
+        return funcionamento.inicio?.let {
+            funcionamento.fim?.let { it1 ->
+                gerarHorariosDisponiveis(horariosOcupados,
+                    it, it1, 60L, duracao)
+            }
+        }
     }
 
 
@@ -229,34 +260,44 @@ class AgendamentoService(
 
 
 
-    private fun gerarHorariosDisponiveis(horariosOcupados: List<HorariosOcupadosDto>): List<HorarioDisponivelDto> {
-        val abertura = LocalTime.of(9, 0)
-        val fechamento = LocalTime.of(18, 0)
-        val intervaloMinutos = 30
-
+    private fun gerarHorariosDisponiveis(
+        horariosOcupados: List<HorariosOcupadosDto>,
+        abertura: LocalTime,
+        fechamento: LocalTime,
+        intervaloMinutos: Long,
+        duracaoServicoMinutos: Long
+    ): List<HorarioDisponivelDto> {
         val horariosDisponiveis = mutableListOf<HorarioDisponivelDto>()
+
         var horarioAtual = abertura
 
-        while (horarioAtual.plusMinutes(intervaloMinutos.toLong()) <= fechamento) {
-            val proximoHorario = horarioAtual.plusMinutes(intervaloMinutos.toLong())
+        while (horarioAtual.plusMinutes(duracaoServicoMinutos) <= fechamento) {
+            val fimHorarioAtual = horarioAtual.plusMinutes(duracaoServicoMinutos)
 
-            val conflita = horariosOcupados.any { ocupado ->
-                horarioAtual < ocupado.getFim() && proximoHorario > ocupado.getInicio()
+            val conflito = horariosOcupados.any { ocupado ->
+                val inicioOcupado = LocalTime.parse(ocupado.getInicio().toString())
+                val fimOcupado = LocalTime.parse(ocupado.getFim().toString())
+
+                // Verifica se há sobreposição
+                horarioAtual.isBefore(fimOcupado) && fimHorarioAtual.isAfter(inicioOcupado)
             }
 
-            if (!conflita) {
+            if (!conflito) {
                 horariosDisponiveis.add(
-                    HorarioDisponivelDto(
-                        inicio = horarioAtual.toString().substring(0, 5),  // "HH:mm"
-                        fim = proximoHorario.toString().substring(0, 5)
-                    )
+                    HorarioDisponivelDto(horario = horarioAtual.toString())
                 )
             }
-            horarioAtual = proximoHorario
+
+            // Avança para o próximo horário possível
+            horarioAtual = horarioAtual.plusMinutes(intervaloMinutos)
         }
 
         return horariosDisponiveis
     }
+
+
+
+
 
     fun listarCalendario(idFuncionario: Int): List<CalendarioDto?> {
 
