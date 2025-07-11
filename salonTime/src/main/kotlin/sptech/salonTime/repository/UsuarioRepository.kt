@@ -7,4 +7,5 @@ import sptech.salonTime.entidade.Usuario
 interface UsuarioRepository: JpaRepository<Usuario, Int> {
     fun findByEmail(email: String): Usuario?
     fun findAllByAtivoTrue(): List<Usuario>?
+    fun findAllByAtivoTrueAndTipoUsuarioId(i: Int): List<Usuario>?
 }

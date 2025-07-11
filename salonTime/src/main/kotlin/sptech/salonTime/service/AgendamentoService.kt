@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import sptech.salonTime.dto.*
 import sptech.salonTime.entidade.Agendamento
 import sptech.salonTime.entidade.DiaSemana
+import sptech.salonTime.entidade.Usuario
 import sptech.salonTime.exception.*
 import sptech.salonTime.mapper.AgendamentoMapper
 import sptech.salonTime.repository.*
@@ -19,7 +20,8 @@ class AgendamentoService(
     val statusAgendamentoRepository: StatusAgendamentoRepository,
     val servicoRepository: ServicoRepository,
     val cupomRepository: CupomRepository,
-    val funcionamentoRepository: FuncionamentoRepository
+    val funcionamentoRepository: FuncionamentoRepository,
+    val funcionarioCompetenciaRepository: FuncionarioCompetenciaRepository
 ) {
 
     fun listar(): List<AgendamentoDto?> {
@@ -227,6 +229,16 @@ class AgendamentoService(
         val servico = servicoRepository.findById(idServico).orElseThrow {
             ServicoNaoEcontradoException("Serviço com ID $idServico não encontrado.")
         }
+
+        val funcionariosComCompetencia = funcionarioCompetenciaRepository
+            .findAllByServicoId(idServico)
+            .map { it.funcionario }
+            .filter { it.ativo }
+
+        val idsFuncionarios = funcionariosComCompetencia.map { it.id }
+
+
+//        COMENTADO APENAS POR TESTE
 //        if (data.isBefore(LocalDate.now())) {
 //            throw DataErradaException("A data do agendamento não pode ser anterior à data atual.")
 //        }
@@ -246,11 +258,13 @@ class AgendamentoService(
         val duracao: Long = (horario?.toSecondOfDay()?.toLong() ?: 0) / 60
 
 
-        val horariosOcupados = repository.buscarHorariosOcupados(data)
+        val horariosOcupados = repository.buscarHorariosOcupados(data, idsFuncionarios)
+
+
         return funcionamento.inicio?.let {
             funcionamento.fim?.let { it1 ->
                 gerarHorariosDisponiveis(horariosOcupados,
-                    it, it1, 60L, duracao)
+                    it, it1, 60L, duracao, funcionariosComCompetencia)
             }
         }
     }
@@ -265,7 +279,8 @@ class AgendamentoService(
         abertura: LocalTime,
         fechamento: LocalTime,
         intervaloMinutos: Long,
-        duracaoServicoMinutos: Long
+        duracaoServicoMinutos: Long,
+        funcionariosComCompetencia: List<Usuario>
     ): List<HorarioDisponivelDto> {
         val horariosDisponiveis = mutableListOf<HorarioDisponivelDto>()
 
@@ -274,23 +289,26 @@ class AgendamentoService(
         while (horarioAtual.plusMinutes(duracaoServicoMinutos) <= fechamento) {
             val fimHorarioAtual = horarioAtual.plusMinutes(duracaoServicoMinutos)
 
-            val conflito = horariosOcupados.any { ocupado ->
-                val inicioOcupado = LocalTime.parse(ocupado.getInicio().toString())
-                val fimOcupado = LocalTime.parse(ocupado.getFim().toString())
+            val todosFuncionariosOcupados = funcionariosComCompetencia.all { funcionario ->
+                horariosOcupados.any { ocupado ->
+                    val inicioOcupado = ocupado.getInicio()
+                    val fimOcupado = ocupado.getFim()
 
-                // Verifica se há sobreposição
-                horarioAtual.isBefore(fimOcupado) && fimHorarioAtual.isAfter(inicioOcupado)
+                    // Só considera conflitos do mesmo funcionário
+                    ocupado.getFuncionarioId() == funcionario.id &&
+                            horarioAtual.isBefore(fimOcupado) && fimHorarioAtual.isAfter(inicioOcupado)
+                }
             }
 
-            if (!conflito) {
+            if (!todosFuncionariosOcupados) {
                 horariosDisponiveis.add(
                     HorarioDisponivelDto(horario = horarioAtual.toString())
                 )
             }
 
-            // Avança para o próximo horário possível
             horarioAtual = horarioAtual.plusMinutes(intervaloMinutos)
         }
+
 
         return horariosDisponiveis
     }

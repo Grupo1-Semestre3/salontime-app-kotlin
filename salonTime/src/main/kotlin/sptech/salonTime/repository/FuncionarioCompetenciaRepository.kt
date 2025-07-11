@@ -9,5 +9,6 @@ interface FuncionarioCompetenciaRepository: JpaRepository<FuncionarioCompetencia
     // Método para encontrar competências de um serviço por ID do serviço
     @Query(nativeQuery = true, value = "SELECT * FROM funcionario_competencia WHERE servico_id = ?1")
     fun findCompetenciaByServicoId(id: Int): List<FuncionarioCompetencia>?
+    fun findAllByServicoId(idServico: Int): List<FuncionarioCompetencia>
 
 }

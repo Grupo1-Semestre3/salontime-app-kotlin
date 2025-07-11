@@ -58,12 +58,12 @@ interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
     fun buscarAgendamentosCancelados(): List<Agendamento>
 
     @Query(value = """
-    SELECT a.inicio, a.fim,
-        (SELECT f.capacidade FROM funcionamento f WHERE f.funcionario_id = a.funcionario_id LIMIT 1) AS capacidade
-    FROM agendamento a
-    WHERE a.data = :data
+    SELECT a.inicio, a.fim, a.funcionario_id,
+    (SELECT f.capacidade FROM funcionamento f WHERE f.funcionario_id = a.funcionario_id LIMIT 1) AS capacidade
+FROM agendamento a
+WHERE a.data = :data AND a.funcionario_id IN (:ids)
 """, nativeQuery = true)
-    fun buscarHorariosOcupados(@Param("data") data: LocalDate): List<HorariosOcupadosDto>
+    fun buscarHorariosOcupados(@Param("data") data: LocalDate, @Param("ids") ids: List<Int>): List<HorariosOcupadosDto>
 
     @Query(value = """
         SELECT * FROM agendamento WHERE funcionario_id = :idFuncionario
