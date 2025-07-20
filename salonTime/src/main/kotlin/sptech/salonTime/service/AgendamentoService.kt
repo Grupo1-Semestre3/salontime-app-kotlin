@@ -49,13 +49,9 @@ class AgendamentoService(
             null
         }
 
-
-
         if (agendamento.data < LocalDate.now()) {
             throw DataErradaException("A data do agendamento não pode ser anterior à data atual.")
         }
-
-
 
         val existeAgendamento = repository.existeConflitoDeAgendamento(
             agendamento.data, agendamento.inicio, agendamento.fim
@@ -71,10 +67,15 @@ class AgendamentoService(
 
         val usuario = usuarioRepository.findById(agendamento.usuario)
             .orElseThrow { UsuarioNaoEncontradoException("Usuário não encontrado") }
-        val funcionario = usuarioRepository.findById(agendamento.funcionario)
+
+        val listaDeFuncionarios = usuarioRepository.buscarIdsFuncionarios()
+
+        val funcionariosDisponiveis = usuarioRepository.buscasFuncionariosDisponiveisPorData(agendamento.data, agendamento.inicio, agendamento.fim, listaDeFuncionarios)
+
+        val funcionario = usuarioRepository.findById(funcionariosDisponiveis.get(0))
             .orElseThrow { FuncionarioNaoEcontradoException("Funcionario não encontrado") }
 
-        if (!funcionario.tipoUsuario?.id?.equals(3)!!) {
+        if (!funcionario.tipoUsuario?.id?.equals(3)!! && !funcionario.tipoUsuario?.id?.equals(1)!!) {
             throw FuncionarioNaoEcontradoException("O usuário selecionado não é um funcionário.")
         }
 
