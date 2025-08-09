@@ -76,6 +76,18 @@ sempre na anotação @Query
     fun listarPorIdComMedia(id: Int): ServicoDto
 
 
+    @Query(
+        value = """
+        SELECT simultaneo = 1
+        FROM servico
+        WHERE id = :idServicoConflito
+    """,
+        nativeQuery = true
+    )
+    fun verificarSimultaneo(
+        idServicoConflito: Int
+    ): Int
+
 
 
 }

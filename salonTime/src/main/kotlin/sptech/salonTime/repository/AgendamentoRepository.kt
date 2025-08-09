@@ -31,6 +31,22 @@ interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
         fim: LocalTime?
     ): Long
 
+    @Query(
+        value = """
+        SELECT servico_id
+        FROM agendamento
+        WHERE data = :data
+          AND (:inicio < fim AND :fim > inicio)
+        LIMIT 1
+    """,
+        nativeQuery = true
+    )
+    fun pegarAgendamentoConlfito(
+        data: LocalDate?,
+        inicio: LocalTime?,
+        fim: LocalTime?
+    ): Int
+
 
     @Query("""
     SELECT a FROM Agendamento a

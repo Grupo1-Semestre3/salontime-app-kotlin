@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import sptech.salonTime.dto.*
 import sptech.salonTime.entidade.Agendamento
 import sptech.salonTime.entidade.DiaSemana
+import sptech.salonTime.entidade.Servico
 import sptech.salonTime.entidade.Usuario
 import sptech.salonTime.exception.*
 import sptech.salonTime.mapper.AgendamentoMapper
@@ -62,7 +63,21 @@ class AgendamentoService(
         }
 
         if (existeAgendamento > 0) {
-            throw ConflitoDeAgendamentoException("Já existe um agendamento nesse horário.")
+
+            val idServicoConflito = repository.pegarAgendamentoConlfito(
+                agendamento.data, agendamento.inicio, agendamento.fim
+            )
+
+            val checkSimultaneoAgendamentoExistente = servicoRepository.verificarSimultaneo(idServicoConflito)
+            val checkSimultaneoFuturoAgendamento = servicoRepository.verificarSimultaneo(agendamento.servico)
+
+            if (checkSimultaneoAgendamentoExistente == 1 && checkSimultaneoFuturoAgendamento == 1) {
+                // Permitir o agendamento, pois ambos os serviços permitem simultaneidade
+            } else {
+                // Não permitir o agendamento, pois pelo menos um dos serviços não permite simultaneidade
+                throw ConflitoDeAgendamentoException("Já existe um agendamento nesse horário.")
+
+            }
         }
 
         val usuario = usuarioRepository.findById(agendamento.usuario)
