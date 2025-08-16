@@ -73,6 +73,28 @@ interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
     """)
     fun buscarAgendamentosCancelados(): List<Agendamento>
 
+
+
+    @Query(value = """
+    SELECT 
+        a.inicio, 
+        a.fim, 
+        a.funcionario_id,
+        f.capacidade,
+        s.simultaneo
+    FROM agendamento a
+    JOIN servico s ON s.id = a.servico_id
+    LEFT JOIN funcionamento f 
+        ON f.funcionario_id = a.funcionario_id
+    WHERE a.data = :data 
+      AND a.funcionario_id IN (:ids)
+""", nativeQuery = true)
+    fun buscarHorariosOcupados(
+        @Param("data") data: LocalDate,
+        @Param("ids") ids: List<Int>
+    ): List<HorariosOcupadosDto>
+
+/*
     @Query(value = """
     SELECT a.inicio, a.fim, a.funcionario_id,
     (SELECT f.capacidade FROM funcionamento f WHERE f.funcionario_id = a.funcionario_id LIMIT 1) AS capacidade
@@ -80,9 +102,20 @@ FROM agendamento a
 WHERE a.data = :data AND a.funcionario_id IN (:ids)
 """, nativeQuery = true)
     fun buscarHorariosOcupados(@Param("data") data: LocalDate, @Param("ids") ids: List<Int>): List<HorariosOcupadosDto>
-
+*/
     @Query(value = """
         SELECT * FROM agendamento WHERE funcionario_id = :idFuncionario
     """, nativeQuery = true)
     fun listarCalendarioPorFuncionario(idFuncionario: Int): List<Agendamento>
+
+    @Query("""
+        SELECT a FROM Agendamento a
+        WHERE a.funcionario.id = :funcionarioId
+          AND a.data = :data
+          AND a.statusAgendamento.status = 'AGENDADO'
+    """)
+    fun buscarHorariosOcupadosPorFuncionario(
+        @Param("data") data: LocalDate,
+        @Param("funcionarioId") funcionarioId: Int
+    ): List<Agendamento>
 }

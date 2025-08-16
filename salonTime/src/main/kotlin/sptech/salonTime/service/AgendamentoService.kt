@@ -22,6 +22,7 @@ class AgendamentoService(
     val servicoRepository: ServicoRepository,
     val cupomRepository: CupomRepository,
     val funcionamentoRepository: FuncionamentoRepository,
+    val horarioExcecaoRepository: HorarioExcecaoRepository,
     val funcionarioCompetenciaRepository: FuncionarioCompetenciaRepository
 ) {
 
@@ -85,7 +86,12 @@ class AgendamentoService(
 
         val listaDeFuncionarios = usuarioRepository.buscarIdsFuncionarios()
 
-        val funcionariosDisponiveis = usuarioRepository.buscasFuncionariosDisponiveisPorData(agendamento.data, agendamento.inicio, agendamento.fim, listaDeFuncionarios)
+        val funcionariosDisponiveis = usuarioRepository.buscasFuncionariosDisponiveisPorData(
+            agendamento.data,
+            agendamento.inicio,
+            agendamento.fim,
+            listaDeFuncionarios
+        )
 
         val funcionario = usuarioRepository.findById(funcionariosDisponiveis.get(0))
             .orElseThrow { FuncionarioNaoEcontradoException("Funcionario não encontrado") }
@@ -220,7 +226,9 @@ class AgendamentoService(
             AgendamentoNaoEncontradoException("Agendamento não encontrado")
         }
 
-        val tipoPagamento = agendamentoEcontrado.pagamento?.id?.let { pagamentoRepository.findById(it).orElseThrow { PagamentoNaoEncontradoException("Pagamento Não encontrado") } }
+        val tipoPagamento = agendamentoEcontrado.pagamento?.id?.let {
+            pagamentoRepository.findById(it).orElseThrow { PagamentoNaoEncontradoException("Pagamento Não encontrado") }
+        }
 
         val taxa = tipoPagamento?.taxa
 
@@ -240,7 +248,8 @@ class AgendamentoService(
         }
     }
 
-    fun obterHorariosDisponiveis(idServico: Int, data: LocalDate): List<HorarioDisponivelDto>? {
+
+    /*fun obterHorariosDisponiveis(idServico: Int, data: LocalDate): List<HorarioDisponivelDto>? {
 
         val servico = servicoRepository.findById(idServico).orElseThrow {
             ServicoNaoEcontradoException("Serviço com ID $idServico não encontrado.")
@@ -258,6 +267,7 @@ class AgendamentoService(
 //        if (data.isBefore(LocalDate.now())) {
 //            throw DataErradaException("A data do agendamento não pode ser anterior à data atual.")
 //        }
+
 
         val diaDaSemana: DayOfWeek = data.dayOfWeek
 
@@ -279,15 +289,13 @@ class AgendamentoService(
 
         return funcionamento.inicio?.let {
             funcionamento.fim?.let { it1 ->
-                gerarHorariosDisponiveis(horariosOcupados,
-                    it, it1, 60L, duracao, funcionariosComCompetencia)
+                gerarHorariosDisponiveis(
+                    horariosOcupados,
+                    it, it1, 60L, duracao, funcionariosComCompetencia
+                )
             }
         }
     }
-
-
-
-
 
 
     private fun gerarHorariosDisponiveis(
@@ -328,8 +336,79 @@ class AgendamentoService(
 
         return horariosDisponiveis
     }
+*/
 
 
+
+
+
+    fun obterHorariosDisponiveis(idServico: Int, data: LocalDate): List<HorarioDisponivelDto> {
+        val servico = servicoRepository.findById(idServico)
+            .orElseThrow { ServicoNaoEcontradoException("Serviço com ID $idServico não encontrado.") }
+
+        val funcionarios = funcionarioCompetenciaRepository
+            .findAllByServicoId(idServico)
+            .map { it.funcionario }
+            .filter { it.ativo }
+
+        if (funcionarios.isEmpty()) return emptyList()
+
+        val duracaoMinutos = servico.tempo?.toSecondOfDay()?.div(60)?.toLong()
+            ?: throw IllegalArgumentException("Serviço sem duração definida.")
+
+        val horariosValidos = mutableSetOf<LocalTime>()
+
+        val diaDaSemana: DayOfWeek = data.dayOfWeek
+
+        val diaSemanaEnum: DiaSemana = DiaSemana.valueOf(diaDaSemana.name)
+
+        funcionarios.forEach { funcionario ->
+            // 1 - Verificar se existe exceção para o funcionário
+            val excecao = horarioExcecaoRepository.findExcecaoPorData(data, funcionario.id!!)
+            val funcionamento = funcionamentoRepository.findByFuncionarioAndDiaSemana(
+                funcionario.id!!, DiaSemana.valueOf(data.dayOfWeek.name)
+            )
+
+            val inicio = excecao?.inicio ?: funcionamento?.inicio
+            val fim = excecao?.fim ?: funcionamento?.fim
+            val aberto = excecao?.aberto ?: funcionamento?.aberto
+            val capacidade = excecao?.capacidade ?: funcionamento?.capacidade ?: 1
+
+            if (inicio == null || fim == null || aberto != true) return@forEach
+
+            // 2 - Buscar agendamentos existentes do funcionário para o dia
+            val agendamentos = repository.buscarHorariosOcupadosPorFuncionario(data, funcionario.id)
+
+            // 3 - Gerar possíveis horários a cada 15 minutos
+            var horarioAtual = inicio
+            if (horarioAtual != null) {
+                while (horarioAtual != null && horarioAtual.plusMinutes(duracaoMinutos) <= fim) {
+                    horarioAtual?.let { atual ->
+                        val fimHorario = atual.plusMinutes(duracaoMinutos)
+
+                        val conflitos = agendamentos.count { ag ->
+                            atual.isBefore(ag.fim) && fimHorario.isAfter(ag.inicio)
+                        }
+
+                        val podeAgendar = if (servico.simultaneo == true) {
+                            conflitos < capacidade
+                        } else {
+                            conflitos == 0
+                        }
+
+                        if (podeAgendar) {
+                            horariosValidos.add(atual)
+                        }
+
+                        horarioAtual = atual.plusMinutes(60)
+                    }
+                }
+
+            }
+        }
+
+        return horariosValidos.sorted().map { HorarioDisponivelDto(it.toString().substring(0, 5)) }
+    }
 
 
 

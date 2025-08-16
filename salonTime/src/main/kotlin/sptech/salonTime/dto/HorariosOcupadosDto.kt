@@ -7,4 +7,5 @@ interface HorariosOcupadosDto {
     fun getFim(): LocalTime
     fun getCapacidade(): Int
     fun getFuncionarioId(): Int
+    fun getSimultaneo(): Int
 }

@@ -39,6 +39,7 @@ class AgendamentoController(val repository: AgendamentoRepository, val statusAge
     }
 
 
+
     @GetMapping("/{id}")
     fun getById(@PathVariable id: Int): ResponseEntity<AgendamentoDto> {
         return ResponseEntity.status(200).body(service.listarPorId(id))
