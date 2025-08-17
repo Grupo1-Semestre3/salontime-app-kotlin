@@ -12,6 +12,7 @@ import sptech.salonTime.repository.*
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 @Service
 class AgendamentoService(
@@ -341,6 +342,9 @@ class AgendamentoService(
 
 
 
+/*
+
+HORARIO DISPONIVEL OTIMIZADO MAS SIMULTANEO NÃO FUNCIONA
 
     fun obterHorariosDisponiveis(idServico: Int, data: LocalDate): List<HorarioDisponivelDto> {
         val servico = servicoRepository.findById(idServico)
@@ -379,7 +383,7 @@ class AgendamentoService(
             // 2 - Buscar agendamentos existentes do funcionário para o dia
             val agendamentos = repository.buscarHorariosOcupadosPorFuncionario(data, funcionario.id)
 
-            // 3 - Gerar possíveis horários a cada 15 minutos
+            // 3 - Gerar possíveis horários a cada 60 minutos
             var horarioAtual = inicio
             if (horarioAtual != null) {
                 while (horarioAtual != null && horarioAtual.plusMinutes(duracaoMinutos) <= fim) {
@@ -408,6 +412,70 @@ class AgendamentoService(
         }
 
         return horariosValidos.sorted().map { HorarioDisponivelDto(it.toString().substring(0, 5)) }
+    }
+
+    */
+
+    fun obterHorariosDisponiveis(idServico: Int, data: LocalDate): List<HorarioDisponivelDto> {
+        val servico = servicoRepository.findById(idServico)
+            .orElseThrow { ServicoNaoEcontradoException("Serviço com ID $idServico não encontrado.") }
+
+        val funcionarios = funcionarioCompetenciaRepository
+            .findAllByServicoId(idServico)
+            .map { it.funcionario }
+            .filter { it.ativo }
+
+        if (funcionarios.isEmpty()) return emptyList()
+
+        val duracaoMinutos = servico.tempo?.toSecondOfDay()?.div(60)?.toLong()
+            ?: throw IllegalArgumentException("Serviço sem duração definida.")
+
+        val horariosValidos = mutableSetOf<LocalTime>()
+        val diaSemanaEnum = DiaSemana.valueOf(data.dayOfWeek.name)
+
+        funcionarios.forEach { funcionario ->
+            val excecao = horarioExcecaoRepository.findExcecaoPorData(data, funcionario.id!!)
+            val funcionamento = funcionamentoRepository.findByFuncionarioAndDiaSemana(funcionario.id!!, diaSemanaEnum)
+
+            val inicio = excecao?.inicio ?: funcionamento?.inicio
+            val fim = excecao?.fim ?: funcionamento?.fim
+            val aberto = excecao?.aberto ?: funcionamento?.aberto
+            val capacidade = excecao?.capacidade ?: funcionamento?.capacidade ?: 1
+
+            if (inicio != null && fim != null && aberto == true) {
+                val agendamentos = repository.buscarHorariosOcupadosPorFuncionario(data, funcionario.id)
+                var horarioAtual: LocalTime = inicio
+
+                while (horarioAtual.plusMinutes(duracaoMinutos) <= fim) {
+                    val fimHorario = horarioAtual.plusMinutes(duracaoMinutos)
+
+                    val conflitos = agendamentos.filter { ag ->
+                        horarioAtual.isBefore(ag.fim) && fimHorario.isAfter(ag.inicio)
+                    }
+
+                    val podeAgendar = when {
+                        // já existe agendamento de serviço NÃO simultâneo → bloqueia
+                        conflitos.any { it.servico?.simultaneo != true } -> false
+
+                        // serviço novo é simultâneo → respeitar capacidade
+                        servico.simultaneo == true -> conflitos.size < capacidade
+
+                        // serviço novo não é simultâneo → só se não houver conflito
+                        else -> conflitos.isEmpty()
+                    }
+
+                    if (podeAgendar) {
+                        horariosValidos.add(horarioAtual)
+                    }
+
+                    horarioAtual = horarioAtual.plusMinutes(60) // step fixo de 60min
+                }
+            }
+        }
+
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+        return horariosValidos.sorted()
+            .map { HorarioDisponivelDto(it.format(formatter)) }
     }
 
 

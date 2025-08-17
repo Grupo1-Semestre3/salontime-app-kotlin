@@ -18,5 +18,5 @@ interface FuncionamentoRepository: JpaRepository<Funcionamento, Int> {
     fun findByFuncionarioAndDiaSemana(
         @Param("funcionarioId") funcionarioId: Int,
         @Param("diaSemana") diaSemana: DiaSemana
-    ): Funcionamento?
+    ): Funcionamento
 }
