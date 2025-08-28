@@ -60,15 +60,9 @@ class UsuariosController(
         }
     }
 
-    @PatchMapping("/login/{id}")
-    fun login(@PathVariable id: Int): ResponseEntity<Usuario> {
-        val usuario = service.listarPorId(id)
-        return if (!usuario.equals(null)) {
-            service.login(id)
-            ResponseEntity.status(200).body(usuario)
-        } else {
-            ResponseEntity.status(404).build()
-        }
+    @PatchMapping("/login")
+    fun login(@RequestBody dados: LoginDto): ResponseEntity<Usuario> {
+        return ResponseEntity.status(200).body(service.login(dados))
     }
 
     @PatchMapping("/logoff/{id}")

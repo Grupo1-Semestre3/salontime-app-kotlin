@@ -72,15 +72,17 @@ class UsuarioService(val repository: UsuarioRepository, val tipoUsuarioRepositor
         }
     }
 
-    fun login(id: Int): Usuario {
-        val usuario = repository.findById(id).orElseThrow { UsuarioNaoEncontradoException("Usuário não encontrado") }
+    fun login(dado: LoginDto): Usuario {
 
-        if (usuario.ativo == false){
-            throw UsuarioEstaDesativadoException("Usuário está inativo")
+        val resposta = repository.login(dado.email, dado.senha)
+
+        return if (resposta != null) {
+            resposta.login = true
+            repository.save(resposta)
+        } else {
+            throw Exception("Usuário ou senha inválidos")
         }
 
-        usuario.login = true
-        return repository.save(usuario )
     }
 
     fun logoff(id: Int): Usuario {

@@ -38,4 +38,11 @@ interface UsuarioRepository: JpaRepository<Usuario, Int> {
     """, nativeQuery = true)
     fun buscarIdsFuncionarios(): List<Int>
 
+    @Query("""
+        
+    select * from usuario where senha = :senha and email = :email and ativo = true;
+        
+    """, nativeQuery = true)
+    fun login( @Param("email") email: String,  @Param("senha") senha: String): Usuario?
+
 }
