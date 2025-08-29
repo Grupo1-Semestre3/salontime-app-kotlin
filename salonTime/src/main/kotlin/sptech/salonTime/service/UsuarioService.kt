@@ -8,6 +8,7 @@ import sptech.salonTime.entidade.TipoUsuario
 import sptech.salonTime.entidade.Usuario
 import sptech.salonTime.exception.TipoUsuarioNaoEncontradoException
 import sptech.salonTime.exception.UsuarioEstaDesativadoException
+import sptech.salonTime.exception.UsuarioJaCadastradoException
 import sptech.salonTime.exception.UsuarioNaoEncontradoException
 import sptech.salonTime.mapper.UsuarioMapper
 import sptech.salonTime.repository.TipoUsuarioRepository
@@ -29,6 +30,13 @@ class UsuarioService(val repository: UsuarioRepository, val tipoUsuarioRepositor
 
         usuarioEntity.tipoUsuario = TipoUsuario(2, "CLIENTE")// Definindo o tipo de usuário como FUNCIONARIO
         usuarioEntity.dataCriacao = LocalDateTime.now()  // Definindo a data de criação do usuário
+
+        val usuario = repository.findByEmail(usuario.email)
+
+        if (usuario != null) {
+            throw UsuarioJaCadastradoException("Email já cadastrado")
+        }
+
         val usuarioSalvo = repository.save(usuarioEntity)
 
         return UsuarioMapper.toDto(usuarioSalvo)
@@ -43,6 +51,13 @@ class UsuarioService(val repository: UsuarioRepository, val tipoUsuarioRepositor
 
         usuarioEntity.tipoUsuario = TipoUsuario(3, "FUNCIONARIO")// Definindo o tipo de usuário como FUNCIONARIO
         usuarioEntity.dataCriacao = LocalDateTime.now()
+
+        val usuario = repository.findByEmail(usuario.email)
+
+        if (usuario != null) {
+            throw UsuarioJaCadastradoException("Email já cadastrado")
+        }
+
         val usuarioSalvo = repository.save(usuarioEntity)
 
         return UsuarioMapper.toDto(usuarioSalvo)
