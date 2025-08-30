@@ -12,6 +12,5 @@ data class CadastroAgendamentoDto(
     val cupom: String? = null,
     val data: LocalDate,
     val inicio: LocalTime,
-    val fim: LocalTime,
     val preco : Double = 0.0
 )

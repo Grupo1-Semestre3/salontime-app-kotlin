@@ -52,12 +52,18 @@ class AgendamentoService(
             null
         }
 
+        val servico = servicoRepository.findById(agendamento.servico)
+            .orElseThrow { ServicoNaoEcontradoException("Serviço não encontrado") }
+
+        val fimServico = agendamento.inicio.plusHours(servico.tempo?.hour?.toLong() ?: 0)
+            .plusMinutes(servico.tempo?.minute?.toLong() ?: 0)
+
         if (agendamento.data < LocalDate.now()) {
             throw DataErradaException("A data do agendamento não pode ser anterior à data atual.")
         }
 
         val existeAgendamento = repository.existeConflitoDeAgendamento(
-            agendamento.data, agendamento.inicio, agendamento.fim
+            agendamento.data, agendamento.inicio, fimServico
         )
 
         if (agendamento.data.isBefore(LocalDate.now())) {
@@ -67,7 +73,7 @@ class AgendamentoService(
         if (existeAgendamento > 0) {
 
             val idServicoConflito = repository.pegarAgendamentoConlfito(
-                agendamento.data, agendamento.inicio, agendamento.fim
+                agendamento.data, agendamento.inicio, fimServico
             )
 
             val checkSimultaneoAgendamentoExistente = servicoRepository.verificarSimultaneo(idServicoConflito)
@@ -90,7 +96,7 @@ class AgendamentoService(
         val funcionariosDisponiveis = usuarioRepository.buscasFuncionariosDisponiveisPorData(
             agendamento.data,
             agendamento.inicio,
-            agendamento.fim,
+            fimServico,
             listaDeFuncionarios
         )
 
@@ -103,10 +109,11 @@ class AgendamentoService(
 
         val statusAgendamento = statusAgendamentoRepository.findById(agendamento.statusAgendamento)
             .orElseThrow { StatusAgendamentoNaoEncontradoException("Status de agendamento não encontrado") }
-        val servico = servicoRepository.findById(agendamento.servico)
-            .orElseThrow { ServicoNaoEcontradoException("Serviço não encontrado") }
+
         val pagamento = pagamentoRepository.findById(agendamento.pagamento)
             .orElseThrow { PagamentoNaoEncontradoException("Pagamento não encontrado") }
+
+
 
 
         val novoAgendamento = Agendamento(
@@ -118,7 +125,7 @@ class AgendamentoService(
             pagamento = pagamento,
             data = agendamento.data,
             inicio = agendamento.inicio,
-            fim = agendamento.fim
+            fim = fimServico
         )
         val agendamentoSalvo = repository.save(novoAgendamento)
 
