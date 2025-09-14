@@ -24,7 +24,8 @@ class AgendamentoService(
     val cupomRepository: CupomRepository,
     val funcionamentoRepository: FuncionamentoRepository,
     val horarioExcecaoRepository: HorarioExcecaoRepository,
-    val funcionarioCompetenciaRepository: FuncionarioCompetenciaRepository
+    val funcionarioCompetenciaRepository: FuncionarioCompetenciaRepository,
+    val emailService: EmailService
 ) {
 
     fun listar(): List<AgendamentoDto?> {

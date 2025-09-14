@@ -22,8 +22,12 @@ class CupomController(val service: CupomService) {
         return if (ativos.isNotEmpty()) ResponseEntity.ok(ativos)
         else ResponseEntity.noContent().build()
     }
-    
 
+  /*  @GetMapping("/{codigo}")
+    fun validarVigencia(@PathVariable codigo: String): ResponseEntity<Cupom> {
+        return ResponseEntity.status(200).body(service.validarVigencia(codigo))
+    }
+*/
     @PutMapping("/{id}")
     fun atualizar(@PathVariable id: Int, @RequestBody cupom: Cupom): ResponseEntity<Cupom> {
         val atualizado = service.atualizar(id, cupom)
@@ -36,4 +40,5 @@ class CupomController(val service: CupomService) {
         return if (service.deletar(id)) ResponseEntity.noContent().build()
         else ResponseEntity.notFound().build()
     }
+
 }

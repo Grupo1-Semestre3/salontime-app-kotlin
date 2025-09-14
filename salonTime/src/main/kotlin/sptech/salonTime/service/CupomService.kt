@@ -27,8 +27,6 @@ class CupomService(val repository: CupomRepository) {
         }
     }
 
-
-
     fun deletar(id: Int): Boolean {
         return if (repository.existsById(id)) {
             repository.deleteById(id)
@@ -37,4 +35,8 @@ class CupomService(val repository: CupomRepository) {
             false
         }
     }
+
+   /* fun validarVigencia(codigo: String): Cupom? {
+
+    }*/
 }
