@@ -115,7 +115,29 @@ class AgendamentoService(
             .orElseThrow { PagamentoNaoEncontradoException("Pagamento não encontrado") }
 
 
+        usuario.email?.let {
+            emailService.enviarEmail(
+                nome = usuario.nome,
+                servico = servico.nome,
+                data = agendamento.data.toString(),
+                hora = agendamento.inicio.toString().substring(0, 5),
+                assunto = "Confirmação de Agendamento",
+                destinatario = it,
+                destinoTipo = "cliente"
+            )
+        }
 
+        funcionario.email?.let {
+            emailService.enviarEmail(
+                nome = funcionario.nome,
+                servico = funcionario.nome,
+                data = agendamento.data.toString(),
+                hora = agendamento.inicio.toString().substring(0, 5),
+                assunto = "Confirmação de Agendamento",
+                destinatario = it,
+                destinoTipo = "funcionario"
+            )
+        }
 
         val novoAgendamento = Agendamento(
             usuario = usuario,

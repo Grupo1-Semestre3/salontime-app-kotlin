@@ -1,10 +1,11 @@
 package sptech.salonTime.service
 
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.mail.SimpleMailMessage
 import org.springframework.stereotype.Service
 
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
+import org.springframework.scheduling.annotation.Async
 
 @Service
 class EmailService(
@@ -21,7 +22,7 @@ class EmailService(
         destinoTipo: String
     ) {
         val message = mailSender.createMimeMessage()
-        val helper = MimeMessageHelper(message, "utf-8")
+        val helper = SimpleMailMessage()
 
         var corpo = ""
 
@@ -62,10 +63,10 @@ class EmailService(
 
 
 
-        helper.setFrom("salontime.atendimento@gmail.com")
+        helper.setFrom("salontime.atendimento@outlook.com")
         helper.setTo(destinatario)
         helper.setSubject(assunto)
-        helper.setText(corpo, false) // false = texto simples, true = HTML
+        helper.setText(corpo)
 
         mailSender.send(message)
 
