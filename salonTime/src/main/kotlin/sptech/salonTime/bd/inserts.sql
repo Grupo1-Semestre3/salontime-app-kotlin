@@ -133,6 +133,21 @@ INSERT INTO horario_excecao (
 );
 
 
+INSERT INTO info_salao (email, telefone, logradouro, numero, cidade, estado, complemento)
+VALUES ('contato@salaoexemplo.com', '11987654321', 'Rua das Flores', '123', 'São Paulo', 'SP', 'Próximo ao metrô');
+
+INSERT INTO cupom (nome, descricao, codigo, ativo, inicio, fim, tipo_destinatario)
+VALUES
+('Desconto Black Friday', 'Desconto de 30% na Black Friday', 'BLACK30', 1, '2025-11-25', '2025-11-30', 'clientes');
+
+INSERT INTO cupom (nome, descricao, codigo, ativo, inicio, fim, tipo_destinatario)
+VALUES
+('Frete Grátis', 'Frete grátis para compras acima de R$100', 'FRETEGRATIS', 1, '2025-05-01', '2025-06-01', 'todos');
+
+INSERT INTO cupom (nome, descricao, codigo, ativo, inicio, fim, tipo_destinatario)
+VALUES
+('Desconto Aniversário', '20% para aniversariantes do mês', 'ANIV20', 1, '2025-01-01', '2025-12-31', 'clientes');
+
 
 
 
