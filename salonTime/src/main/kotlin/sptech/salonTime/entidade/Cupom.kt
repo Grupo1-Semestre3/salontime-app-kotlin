@@ -32,7 +32,10 @@ data class Cupom(
     var fim: LocalDate? = null,
 
     @field:Size(max = 45)
-    var tipoDestinatario: String? = null
+    var tipoDestinatario: String? = null,
+
+    @NotNull
+    var desconto: Int? = null
 )
 
 
