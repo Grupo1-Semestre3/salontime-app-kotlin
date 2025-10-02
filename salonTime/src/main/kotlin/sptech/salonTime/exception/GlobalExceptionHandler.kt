@@ -17,6 +17,16 @@ class GlobalExceptionHandler {
         return ResponseEntity(erro, HttpStatus.NOT_FOUND)
     }
 
+
+    @ExceptionHandler(UsuarioSenhaErradaException::class)
+    fun handleUsuarioSenhaErradaException(ex: UsuarioSenhaErradaException): ResponseEntity<Any> {
+        val erro = mapOf(
+            "erro" to ex.message,
+            "status" to HttpStatus.BAD_REQUEST.value()
+        )
+        return ResponseEntity(erro, HttpStatus.BAD_REQUEST)
+    }
+
     @ExceptionHandler(AtributoInvalidoAoAtualizarException::class)
     fun handleConflitoDeAgendamento(ex: AtributoInvalidoAoAtualizarException): ResponseEntity<Any> {
         val erro = mapOf(

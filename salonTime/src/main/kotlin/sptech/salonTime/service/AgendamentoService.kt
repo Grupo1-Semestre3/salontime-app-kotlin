@@ -2,10 +2,7 @@ package sptech.salonTime.service
 
 import org.springframework.stereotype.Service
 import sptech.salonTime.dto.*
-import sptech.salonTime.entidade.Agendamento
-import sptech.salonTime.entidade.DiaSemana
-import sptech.salonTime.entidade.Servico
-import sptech.salonTime.entidade.Usuario
+import sptech.salonTime.entidade.*
 import sptech.salonTime.exception.*
 import sptech.salonTime.mapper.AgendamentoMapper
 import sptech.salonTime.repository.*
@@ -25,6 +22,8 @@ class AgendamentoService(
     val funcionamentoRepository: FuncionamentoRepository,
     val horarioExcecaoRepository: HorarioExcecaoRepository,
     val funcionarioCompetenciaRepository: FuncionarioCompetenciaRepository,
+    val repositoryCupomDestinadoRepository: CupomDestinadoRepository,
+    val cupomDestinadoRepository: CupomDestinadoRepository,
     val emailService: EmailService
 ) {
 
@@ -46,11 +45,59 @@ class AgendamentoService(
 
     fun cadastrar(agendamento: CadastroAgendamentoDto): AgendamentoDto {
 
+        var cupomDestinado = CupomDestinado()
+
         val cupom = if (agendamento.cupom != null) {
             cupomRepository.findByCodigo(agendamento.cupom)
                 ?: throw CupomNaoEncontradoException("Cupom não encontrado ou inválido.")
-        } else {
-            null
+        } else {null}
+
+        val usuario = usuarioRepository.findById(agendamento.usuario)
+            .orElseThrow { UsuarioNaoEncontradoException("Usuário não encontrado") }
+
+        if (cupom != null) {
+
+            val usuarioEncontrado = usuarioRepository.findById(agendamento.usuario)
+
+            if (cupom == null) {
+                throw CupomNaoEncontradoException("Cupom inválido")
+            }
+
+            // Se existir, verifico se está ativo e se a data de fim é maior que a data atual
+            if (cupom.ativo == false || cupom.fim!! < java.time.LocalDate.now()) {
+                throw CupomNaoEncontradoException("Cupom expirado")
+            }
+
+            val cupomUsado = repositoryCupomDestinadoRepository.findByCupomAndUsuario(cupom, usuarioEncontrado)
+
+            if(cupom.tipoDestinatario == "TODOS"){
+                if (cupomUsado?.usado == true) {
+                    throw CupomNaoEncontradoException("Cupom já utilizado")
+                }else if(cupomUsado?.usado == false){
+                    cupomUsado.usado = true
+                    cupomDestinado = cupomUsado
+
+                }
+                if (cupomUsado == null) {
+                    cupomDestinado = CupomDestinado(
+                        cupom = cupom,
+                        usuario = usuario,
+                        usado = true
+                    )
+                }
+            }else if(cupom.tipoDestinatario == "EXCLUSIVO"){
+
+                if (cupomUsado != null && cupomUsado.usado == false) {
+                    cupomUsado.usado = true
+                    cupomDestinado = cupomUsado
+                }else{
+                    throw CupomNaoEncontradoException("Cupom já utilizado ou não pertence ao usuário")
+                }
+
+            }
+
+
+
         }
 
         val servico = servicoRepository.findById(agendamento.servico)
@@ -89,8 +136,7 @@ class AgendamentoService(
             }
         }
 
-        val usuario = usuarioRepository.findById(agendamento.usuario)
-            .orElseThrow { UsuarioNaoEncontradoException("Usuário não encontrado") }
+        // usuario estava verificando aqui
 
         val listaDeFuncionarios = usuarioRepository.buscarIdsFuncionarios()
 
@@ -115,7 +161,7 @@ class AgendamentoService(
             .orElseThrow { PagamentoNaoEncontradoException("Pagamento não encontrado") }
 
 
-        usuario.email?.let {
+        /*usuario.email?.let {
             emailService.enviarEmail(
                 nome = usuario.nome,
                 servico = servico.nome,
@@ -138,6 +184,7 @@ class AgendamentoService(
                 destinoTipo = "funcionario"
             )
         }
+*/
 
         val novoAgendamento = Agendamento(
             usuario = usuario,
@@ -151,6 +198,12 @@ class AgendamentoService(
             fim = fimServico
         )
         val agendamentoSalvo = repository.save(novoAgendamento)
+
+        if (agendamento.cupom != null) {
+            cupomDestinadoRepository.save(cupomDestinado)
+        }
+
+
 
         return AgendamentoMapper.toDto(agendamentoSalvo)
     }

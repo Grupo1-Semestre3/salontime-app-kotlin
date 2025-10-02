@@ -6,10 +6,7 @@ import org.springframework.stereotype.Service
 import sptech.salonTime.dto.*
 import sptech.salonTime.entidade.TipoUsuario
 import sptech.salonTime.entidade.Usuario
-import sptech.salonTime.exception.TipoUsuarioNaoEncontradoException
-import sptech.salonTime.exception.UsuarioEstaDesativadoException
-import sptech.salonTime.exception.UsuarioJaCadastradoException
-import sptech.salonTime.exception.UsuarioNaoEncontradoException
+import sptech.salonTime.exception.*
 import sptech.salonTime.mapper.UsuarioMapper
 import sptech.salonTime.repository.TipoUsuarioRepository
 import sptech.salonTime.repository.UsuarioRepository
@@ -111,15 +108,18 @@ class UsuarioService(val repository: UsuarioRepository, val tipoUsuarioRepositor
         }
     }
 
-    fun mudarSenha(id: Int, novaSenha: SenhaDto): Usuario {
+    fun mudarSenha(id: Int, senha: SenhaDto): Usuario {
         val usuario = repository.findById(id).orElseThrow { UsuarioNaoEncontradoException("Usuário não encontrado") }
-        return if (usuario != null) {
-            usuario.id = id
-            usuario.senha = novaSenha.senha
-            repository.save(usuario)
+        usuario.id = id
+
+        if (senha.senhaAtual == usuario.senha) {
+            usuario.senha = senha.novaSenha
         } else {
-            throw Exception("Usuário não encontrado")
+            throw UsuarioSenhaErradaException("Senha atual incorreta")
         }
+
+        return repository.save(usuario)
+
     }
 
     fun mudarEmail(id: Int, novoEmail: EmailDto): Usuario {
