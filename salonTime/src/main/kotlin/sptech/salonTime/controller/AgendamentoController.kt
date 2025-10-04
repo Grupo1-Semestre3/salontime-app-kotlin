@@ -10,10 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import sptech.salonTime.dto.AgendamentoDto
-import sptech.salonTime.dto.CadastroAgendamentoDto
-import sptech.salonTime.dto.CalendarioDto
-import sptech.salonTime.dto.HorarioDisponivelDto
+import sptech.salonTime.dto.*
 import sptech.salonTime.entidade.Agendamento
 
 import sptech.salonTime.repository.AgendamentoRepository
@@ -75,6 +72,11 @@ class AgendamentoController(val repository: AgendamentoRepository, val statusAge
     @GetMapping("/proximo-usuario/{id}")
     fun getProximosAgendamentosPorUsuario(@PathVariable id: Int):ResponseEntity<AgendamentoDto>{
         return ResponseEntity.status(200).body(service.buscarProximosAgendamentosPorUsuario(id))
+    }
+
+    @GetMapping("/historico/{idAgendamento}")
+    fun historicoAgendamento(@PathVariable idAgendamento: Int): ResponseEntity<List<HistoricoAgendamentoDto>> {
+        return ResponseEntity.status(200).body(service.historicoAgendamento(idAgendamento))
     }
 
     @GetMapping("/passados-funcionario/{idFuncionario}")

@@ -45,4 +45,6 @@ interface UsuarioRepository: JpaRepository<Usuario, Int> {
     """, nativeQuery = true)
     fun login( @Param("email") email: String,  @Param("senha") senha: String): Usuario?
 
+    fun findAllByTipoUsuarioIdAndAtivoTrue(i: Int): List<Usuario>
+
 }

@@ -38,4 +38,21 @@ class InfoSalaoService(private val repository: InfoSalaoRepository) {
 
 
     }
+
+    fun editarCompleto(id: Int, novoInfoSalao: InfoSalao): InfoSalao {
+        val infoSalaoExistente = repository.findById(id)
+            .orElseThrow { IllegalArgumentException("InfoSalao não encontrado") }
+
+        val infoSalaoAtualizado = infoSalaoExistente.copy(
+            email = novoInfoSalao.email,
+            telefone = novoInfoSalao.telefone,
+            logradouro = novoInfoSalao.logradouro,
+            numero = novoInfoSalao.numero,
+            cidade = novoInfoSalao.cidade,
+            estado = novoInfoSalao.estado,
+            complemento = novoInfoSalao.complemento
+        )
+
+        return repository.save(infoSalaoAtualizado)
+    }
 }

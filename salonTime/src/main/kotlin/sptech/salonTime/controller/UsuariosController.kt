@@ -29,6 +29,16 @@ class UsuariosController(
         }
     }
 
+    @GetMapping("/lista-funcionarios")
+    fun listarFuncionarios(): ResponseEntity<List<UsuarioPublicoDto>> {
+        return ResponseEntity.status(200).body(service.listarFuncionarios())
+    }
+
+    @GetMapping("/lista-clientes")
+    fun listarClientes(): ResponseEntity<List<UsuarioPublicoDto>> {
+        return ResponseEntity.status(200).body(service.listarClientes())
+    }
+
     @PostMapping("/cadastro")
     fun criar(@RequestBody @Valid novoUsuario: CadastroUsuarioDto): ResponseEntity<UsuarioPublicoDto> {
         return ResponseEntity.status(201).body(service.salvarUsuario(novoUsuario))

@@ -19,6 +19,11 @@ class InfoSalaoController (private val service: InfoSalaoService) {
         return ResponseEntity.status(200).body(service.editar(atributo, novoValor))
     }
 
+    @PutMapping
+    fun editarInfoSalaoCompleto(@RequestBody novoInfoSalao: InfoSalao): ResponseEntity<InfoSalao> {
+        return ResponseEntity.status(200).body(service.editarCompleto(1, novoInfoSalao))
+    }
+
 
 
 }

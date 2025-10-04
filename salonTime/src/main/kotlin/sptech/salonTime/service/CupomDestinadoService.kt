@@ -57,6 +57,31 @@ class CupomDestinadoService (
         return repository.findAll().map { CupomDestinadoMapper.toDto(it) }
     }
 
+    fun listarPorIdUsuario(idUsuario: Int): List<CupomDestinadoDto> {
+        val usuario = usuarioRepository.findById(idUsuario)
+            .orElseThrow { RuntimeException("Usuário não encontrado") }
 
+        val listaDisponiveis = mutableListOf<CupomDestinado>()
 
+        // 1️⃣ Cupons do tipo TODOS
+        val cuponsTodos = cupomRepository.findByTipoDestinatario("TODOS")
+        cuponsTodos.forEach { cupom ->
+            val jaExiste = repository.existsByUsuarioAndCupom(usuario, cupom)
+            if (!jaExiste) {
+                listaDisponiveis.add(CupomDestinado(cupom = cupom, usuario = usuario, usado = false))
+            }
+        }
+
+        // 2️⃣ Cupons do tipo EXCLUSIVO e ainda não usados
+        val cuponsExclusivos = cupomRepository.findByTipoDestinatario("EXCLUSIVO")
+        cuponsExclusivos.forEach { cupom ->
+            val cupomDestinado = repository.findByUsuario(usuario)
+                .find { it.cupom?.id == cupom.id && it.usado == false }
+            if (cupomDestinado != null) {
+                listaDisponiveis.add(cupomDestinado)
+            }
+        }
+
+        return listaDisponiveis.map { CupomDestinadoMapper.toDto(it) }
+    }
 }

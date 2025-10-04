@@ -24,6 +24,11 @@ class CupomDestinadoController(val service: CupomDestinadoService) {
         return ResponseEntity.status(200).body(service.listar())
     }
 
+    @GetMapping("/cupom-destinado/lista/{idUsuario}")
+    fun listarPorIdUsuario(@PathVariable idUsuario: Int): ResponseEntity<List<CupomDestinadoDto>> {
+        return ResponseEntity.status(200).body(service.listarPorIdUsuario(idUsuario))
+    }
+
     @PostMapping
     fun inserir(@RequestBody cupomDestinado: CupomDestinado): ResponseEntity<CupomDestinadoDto>{
         return ResponseEntity.status(201).body(service.salvar(cupomDestinado))

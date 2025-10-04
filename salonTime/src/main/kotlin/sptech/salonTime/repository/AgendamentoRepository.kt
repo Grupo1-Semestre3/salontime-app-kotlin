@@ -3,6 +3,7 @@ package sptech.salonTime.repository
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
+import sptech.salonTime.dto.HistoricoAgendamentoDto
 import sptech.salonTime.dto.HorariosOcupadosDto
 import sptech.salonTime.entidade.Agendamento
 import java.time.LocalDate
@@ -22,7 +23,10 @@ interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
     )
     fun buscarProximosAgendamentosPorFuncionario(idFunc: Int): List<Agendamento>
 
-    @Query(value = "SELECT * FROM agendamento WHERE ((data > CURDATE()) OR (data = CURDATE() AND inicio > CURTIME())) AND usuario_id = :idUser ORDER BY data ASC, inicio ASC LIMIT 1", nativeQuery = true)
+    @Query(
+        value = "SELECT * FROM agendamento WHERE ((data > CURDATE()) OR (data = CURDATE() AND inicio > CURTIME())) AND usuario_id = :idUser ORDER BY data ASC, inicio ASC LIMIT 1",
+        nativeQuery = true
+    )
     fun buscarProximosAgendamentosPorUsuario(idUser: Int): Agendamento?
 
     @Query(
@@ -57,29 +61,33 @@ interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
     ): Int
 
 
-    @Query("""
+    @Query(
+        """
     SELECT a FROM Agendamento a
     JOIN FETCH a.usuario u
     JOIN FETCH a.funcionario f
     JOIN FETCH a.pagamento p
     JOIN FETCH a.servico s
     JOIN FETCH a.statusAgendamento sa
-""")
+"""
+    )
     fun listarTudo(): List<Agendamento>
 
-    @Query(nativeQuery = true, value = """
+    @Query(
+        nativeQuery = true, value = """
         SELECT * FROM agendamento WHERE (data < CURDATE() AND usuario_id = :idUser) OR (data = CURDATE() AND inicio < CURTIME()) ORDER BY data ASC, inicio ASC
-    """)
+    """
+    )
     fun buscarAgendamentosPassadosPorUsuario(idUser: Int): List<Agendamento>
 
-    @Query(nativeQuery = true, value = """
+    @Query(
+        nativeQuery = true, value = """
         
         
         SELECT * 
 FROM agendamento 
 WHERE 
   funcionario_id = :idFunc
-  AND status_agendamento_id != 1
   AND (
     data < CURDATE() 
     OR 
@@ -87,17 +95,20 @@ WHERE
   )
 ORDER BY data ASC, inicio ASC;
         
-        """)
+        """
+    )
     fun buscarAgendamentosPassadosPorFuncionario(idFunc: Int): List<Agendamento>
 
-    @Query(nativeQuery = true, value = """
+    @Query(
+        nativeQuery = true, value = """
         SELECT * FROM agendamento WHERE status_agendamento_id = 2 ORDER BY data ASC, inicio ASC
-    """)
+    """
+    )
     fun buscarAgendamentosCancelados(): List<Agendamento>
 
 
-
-    @Query(value = """
+    @Query(
+        value = """
     SELECT 
         a.inicio, 
         a.fim, 
@@ -110,13 +121,14 @@ ORDER BY data ASC, inicio ASC;
         ON f.funcionario_id = a.funcionario_id
     WHERE a.data = :data 
       AND a.funcionario_id IN (:ids)
-""", nativeQuery = true)
+""", nativeQuery = true
+    )
     fun buscarHorariosOcupados(
         @Param("data") data: LocalDate,
         @Param("ids") ids: List<Int>
     ): List<HorariosOcupadosDto>
 
-/*
+    /*
     @Query(value = """
     SELECT a.inicio, a.fim, a.funcionario_id,
     (SELECT f.capacidade FROM funcionamento f WHERE f.funcionario_id = a.funcionario_id LIMIT 1) AS capacidade
@@ -125,19 +137,40 @@ WHERE a.data = :data AND a.funcionario_id IN (:ids)
 """, nativeQuery = true)
     fun buscarHorariosOcupados(@Param("data") data: LocalDate, @Param("ids") ids: List<Int>): List<HorariosOcupadosDto>
 */
-    @Query(value = """
+    @Query(
+        value = """
         SELECT * FROM agendamento WHERE funcionario_id = :idFuncionario
-    """, nativeQuery = true)
+    """, nativeQuery = true
+    )
     fun listarCalendarioPorFuncionario(idFuncionario: Int): List<Agendamento>
 
-    @Query("""
+    @Query(
+        """
         SELECT a FROM Agendamento a
         WHERE a.funcionario.id = :funcionarioId
           AND a.data = :data
           AND a.statusAgendamento.status = 'AGENDADO'
-    """)
+    """
+    )
     fun buscarHorariosOcupadosPorFuncionario(
         @Param("data") data: LocalDate,
         @Param("funcionarioId") funcionarioId: Int
     ): List<Agendamento>
+
+    @Query(
+        nativeQuery = true,
+        value = """
+        SELECT 
+            sa.status AS statusAgendamento, 
+            ha.data_horario AS dataHora
+        FROM historico_agendamento ha
+        JOIN status_agendamento sa 
+            ON ha.agendamento_status_agendamento_id = sa.id
+        WHERE ha.agendamento_id = :idAgendamento
+    """
+    )
+    fun findHistoricoByAgendamentoId(
+        @Param("idAgendamento") idAgendamento: Int
+    ): List<HistoricoAgendamentoDto>
+
 }

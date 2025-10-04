@@ -43,6 +43,18 @@ class AgendamentoService(
         return AgendamentoMapper.toDto(agendamentoEncontrado)
     }
 
+    fun historicoAgendamento(idAgendamento: Int): List<HistoricoAgendamentoDto> {
+        repository.findById(idAgendamento).orElseThrow {
+            AgendamentoNaoEncontradoException("Agendamento com ID $idAgendamento não encontrado.")
+        }
+
+        return repository.findHistoricoByAgendamentoId(idAgendamento)
+
+
+    }
+
+
+
     fun cadastrar(agendamento: CadastroAgendamentoDto): AgendamentoDto {
 
         var cupomDestinado = CupomDestinado()
