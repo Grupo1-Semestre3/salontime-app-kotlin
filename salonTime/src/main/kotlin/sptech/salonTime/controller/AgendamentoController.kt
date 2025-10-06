@@ -74,7 +74,7 @@ class AgendamentoController(val repository: AgendamentoRepository, val statusAge
         return ResponseEntity.status(200).body(service.buscarProximosAgendamentosPorUsuario(id))
     }
 
-    @GetMapping("/historico/{idAgendamento}")
+        @GetMapping("/historico/{idAgendamento}")
     fun historicoAgendamento(@PathVariable idAgendamento: Int): ResponseEntity<List<HistoricoAgendamentoDto>> {
         return ResponseEntity.status(200).body(service.historicoAgendamento(idAgendamento))
     }

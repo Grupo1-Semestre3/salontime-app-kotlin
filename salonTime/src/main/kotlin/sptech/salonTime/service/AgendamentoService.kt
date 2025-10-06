@@ -326,12 +326,13 @@ class AgendamentoService(
             pagamentoRepository.findById(it).orElseThrow { PagamentoNaoEncontradoException("Pagamento Não encontrado") }
         }
 
-        val taxa = tipoPagamento?.taxa
+//        val taxa = tipoPagamento?.taxa
+//
+//        if (taxa != null) {
+//            agendamentoEcontrado.preco = valor - (valor * taxa / 100)
+//        }
 
-        if (taxa != null) {
-            agendamentoEcontrado.preco = valor - (valor * taxa / 100)
-        }
-
+        agendamentoEcontrado.preco = valor
         var agendamentoSalvo = repository.save(agendamentoEcontrado)
         return AgendamentoMapper.toDto(agendamentoSalvo)
 

@@ -1,6 +1,7 @@
 package sptech.salonTime.controller
 
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -33,6 +34,12 @@ class HorarioExcecaoController (val service: HorarioExcecaoService){
     @PatchMapping("/{id}/{aberto}")
     fun editarAberto(@PathVariable id: Int,@PathVariable aberto: Boolean): ResponseEntity<HorarioExcecao> {
         return ResponseEntity.status(200).body(service.editarAberto(id, aberto))
+    }
+
+    @DeleteMapping("/{id}")
+    fun deletar(@PathVariable id: Int): ResponseEntity<Void> {
+        service.deletar(id)
+        return ResponseEntity.status(204).build()
     }
 
 }
