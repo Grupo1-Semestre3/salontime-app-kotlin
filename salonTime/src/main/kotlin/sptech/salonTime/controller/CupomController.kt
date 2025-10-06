@@ -41,4 +41,10 @@ class CupomController(val service: CupomService) {
         else ResponseEntity.notFound().build()
     }
 
+    @PatchMapping("/{id}/desativar")
+    fun desativar(@PathVariable id: Int): ResponseEntity<Void> {
+        return if (service.desativar(id)) ResponseEntity.noContent().build()
+        else ResponseEntity.notFound().build()
+    }
+
 }

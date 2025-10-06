@@ -39,4 +39,15 @@ class CupomService(val repository: CupomRepository) {
    /* fun validarVigencia(codigo: String): Cupom? {
 
     }*/
+
+    fun desativar(id: Int): Boolean {
+        val cupom = repository.findById(id)
+        return if (cupom.isPresent) {
+            val cupomAtualizado = cupom.get().apply { ativo = false }
+            repository.save(cupomAtualizado)
+            true
+        } else {
+            false
+        }
+    }
 }
