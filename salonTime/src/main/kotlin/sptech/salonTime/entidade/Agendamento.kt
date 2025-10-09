@@ -36,13 +36,13 @@ data class Agendamento(
 
     @NotNull
     @FutureOrPresent
-    val data: LocalDate? = null,
+    var data: LocalDate? = null,
 
     @NotNull
-    val inicio: LocalTime? = null,
+    var inicio: LocalTime? = null,
 
     @NotNull
-    val fim: LocalTime? = null,
+    var fim: LocalTime? = null,
 
     @NotNull
     @DecimalMin("0.0", inclusive = false)
