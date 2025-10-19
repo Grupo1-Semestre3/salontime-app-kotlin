@@ -2,12 +2,20 @@ package sptech.salonTime.service
 
 import org.springframework.stereotype.Service
 import sptech.salonTime.entidade.Cupom
+import sptech.salonTime.exception.CupomDuplicadoException
+import sptech.salonTime.exception.CupomNaoEncontradoException
 import sptech.salonTime.repository.CupomRepository
 
 @Service
 class CupomService(val repository: CupomRepository) {
 
     fun criar(cupom: Cupom): Cupom {
+
+        val existente = repository.findByCodigo(cupom.codigo)
+
+        if (existente != null) {
+            throw CupomDuplicadoException("Cupom com código '${cupom.codigo}' já existe.")
+        }
         return repository.save(cupom)
     }
 

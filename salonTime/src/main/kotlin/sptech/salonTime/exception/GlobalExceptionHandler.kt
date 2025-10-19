@@ -192,4 +192,13 @@ class GlobalExceptionHandler {
         )
         return ResponseEntity(erro, HttpStatus.BAD_REQUEST)
     }
+
+    @ExceptionHandler(CupomDuplicadoException::class)
+    fun handleCupomDuplicadoExceptionException(ex: CupomDuplicadoException): ResponseEntity<Any> {
+        val erro = mapOf(
+            "erro" to ex.message,
+            "status" to HttpStatus.BAD_REQUEST.value()
+        )
+        return ResponseEntity(erro, HttpStatus.BAD_REQUEST)
+    }
 }
