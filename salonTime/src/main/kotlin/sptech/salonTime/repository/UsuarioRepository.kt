@@ -47,4 +47,24 @@ interface UsuarioRepository: JpaRepository<Usuario, Int> {
 
     fun findAllByTipoUsuarioIdAndAtivoTrue(i: Int): List<Usuario>
 
+    @Query(
+        value = """
+        SELECT 
+            u.id AS id,
+            u.nome AS nome,
+            u.email AS email,
+            u.telefone AS telefone,
+            COUNT(a.id) AS totalPendencias
+        FROM usuario u
+        LEFT JOIN agendamento a 
+            ON a.usuario_id = u.id 
+            AND a.status_agendamento_id = 4
+        WHERE u.tipo_usuario_id = 2
+          AND u.ativo = true
+        GROUP BY u.id, u.nome, u.email, u.telefone
+        """,
+        nativeQuery = true
+    )
+    fun listarClientesComPendencias(): List<Map<String, Any>>
+
 }

@@ -7,6 +7,7 @@ import sptech.salonTime.exception.*
 import sptech.salonTime.mapper.AgendamentoMapper
 import sptech.salonTime.repository.*
 import java.time.DayOfWeek
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -336,11 +337,14 @@ class AgendamentoService(
         }
     }
 
+    @Transactional
     fun buscarAgendamentosPassadosPorFuncionario(id: Int): List<AgendamentoDto>? {
 
         val funcionario = usuarioRepository.findById(id).orElseThrow {
             FuncionarioNaoEcontradoException("Funcionário com ID $id não encontrado.")
         }
+
+        repository.atualizarStatusAgendamentosPassados()
 
         val agendamentos = repository.buscarAgendamentosPassadosPorFuncionario(id)
 

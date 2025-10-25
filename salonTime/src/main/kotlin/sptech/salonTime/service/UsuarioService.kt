@@ -46,10 +46,24 @@ class UsuarioService(val repository: UsuarioRepository, val tipoUsuarioRepositor
         val funcionarios = repository.findAllByTipoUsuarioIdAndAtivoTrue(3) // 3 é o ID do tipo de usuário "FUNCIONARIO"
         return funcionarios.mapNotNull { UsuarioMapper.toDto(it) }
     }
-
+/*
     fun listarClientes(): List<UsuarioPublicoDto> {
         val clientes = repository.findAllByTipoUsuarioIdAndAtivoTrue(2) // 2 é o ID do tipo de usuário "CLIENTE"
         return clientes.mapNotNull { UsuarioMapper.toDto(it) }
+    }*/
+
+    fun listarClientes(): List<ClienteDto> {
+        val resultado = repository.listarClientesComPendencias()
+
+        return resultado.map {
+            ClienteDto(
+                id = (it["id"] as Number).toInt(),
+                nome = it["nome"] as String,
+                email = it["email"] as String,
+                telefone = it["telefone"] as String,
+                totalPendencias = (it["totalPendencias"] as Number).toLong()
+            )
+        }
     }
 
 

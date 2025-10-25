@@ -39,7 +39,7 @@ data class Agendamento(
     var data: LocalDate? = null,
 
     @NotNull
-    var inicio: LocalTime? = null,
+        var inicio: LocalTime? = null,
 
     @NotNull
     var fim: LocalTime? = null,
