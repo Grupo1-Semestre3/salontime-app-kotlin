@@ -57,15 +57,15 @@ where atual.ano = :ano and atual.mes = :mes;
         SELECT 
     atual.ano,
     atual.mes,
-    atual.total_cadastros,
-    anterior.total_cadastros AS cadastros_mes_anterior,
+    atual.total_cadastros AS totalCadastros,
+    anterior.total_cadastros AS cadastrosMesAnterior,
     CASE 
         WHEN anterior.total_cadastros IS NULL OR anterior.total_cadastros = 0 THEN NULL
         ELSE ROUND(
             (atual.total_cadastros - anterior.total_cadastros) * 100.0 / anterior.total_cadastros, 
             2
         )
-    END AS variacao_percentual
+    END AS variacaoPercentual
 FROM vw_cadastros_mensais_usuarios atual
 LEFT JOIN vw_cadastros_mensais_usuarios anterior
     ON (
@@ -75,7 +75,7 @@ LEFT JOIN vw_cadastros_mensais_usuarios anterior
 WHERE atual.ano = :ano AND atual.mes = :mes;
         
     """, nativeQuery = true)
-    fun buscarKpiUsuarios(ano: Int, mes: Int): DashboardKpiUsuariosDto
+    fun buscarKpiUsuarios(ano: Int, mes: Int): DashboardKpiUsuariosDto?
 
     @Query("""
         
