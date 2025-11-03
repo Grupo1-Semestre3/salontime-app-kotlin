@@ -96,6 +96,7 @@ class ServicoController(val service: ServicoService) {
         return ResponseEntity.status(200).body(service.getFoto(id))
     }
 
+
 }
 
 

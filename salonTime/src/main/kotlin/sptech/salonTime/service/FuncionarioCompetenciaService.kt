@@ -1,10 +1,8 @@
 package sptech.salonTime.service
 
+import jakarta.validation.constraints.Null
 import org.springframework.stereotype.Service
-import sptech.salonTime.dto.CadastroCompetenciaFuncionario
-import sptech.salonTime.dto.FuncionarioCompetenciaDto
-import sptech.salonTime.dto.TipoUsuarioDto
-import sptech.salonTime.dto.UsuarioDto
+import sptech.salonTime.dto.*
 import sptech.salonTime.entidade.FuncionarioCompetencia
 import sptech.salonTime.entidade.Servico
 import sptech.salonTime.exception.CompetenciaNaoEcontradaException
@@ -57,6 +55,16 @@ class FuncionarioCompetenciaService(val repository: FuncionarioCompetenciaReposi
         return competencias?.map { competencia ->
             FuncionarioCompetenciaDto(
                 id = competencia.id,
+                servico = ServicoDto(
+                    id = competencia.servico?.id,
+                    nome = competencia.servico?.nome,
+                    descricao = competencia.servico?.descricao,
+                    tempo = competencia.servico?.tempo,
+                    preco = competencia.servico?.preco,
+                    status = competencia.servico?.status,
+                    simultaneo = competencia.servico?.simultaneo,
+                    mediaAvaliacao = null
+                ),
                 funcionario = UsuarioDto(
                     id = competencia.funcionario?.id,
                     nome = competencia.funcionario?.nome,
@@ -72,4 +80,44 @@ class FuncionarioCompetenciaService(val repository: FuncionarioCompetenciaReposi
         }
     }
 
+    fun listarPorFuncionario(id: Int): List<FuncionarioCompetenciaDto> {
+        // Verifica se o funcionario existe
+        val funcionario = usuarioRepository.findById(id)
+            .orElseThrow { CompetenciaNaoEcontradaException("Funcionario não existe") }
+
+        // Busca apenas os IDs das competências desse funcionario
+        val competenciasIds = repository.findCompetenciaByFuncionarioId(id) ?: emptyList()
+
+        return competenciasIds.mapNotNull { fc ->
+            // Para cada id, buscar os objetos completos
+            val servico = fc.servico?.id?.let { servicoRepository.findById(it).orElse(null) }
+            val funcionarioCompleto = fc.funcionario?.id?.let { usuarioRepository.findById(it).orElse(null) }
+
+            if (servico == null || funcionarioCompleto == null) return@mapNotNull null
+
+            FuncionarioCompetenciaDto(
+                id = fc.id,
+                servico = ServicoDto(
+                    id = servico.id,
+                    nome = servico.nome,
+                    descricao = servico.descricao,
+                    tempo = servico.tempo,
+                    preco = servico.preco,
+                    status = servico.status,
+                    simultaneo = servico.simultaneo,
+                    mediaAvaliacao = null
+                ),
+                funcionario = UsuarioDto(
+                    id = funcionarioCompleto.id,
+                    nome = funcionarioCompleto.nome,
+                    tipoUsuario = funcionarioCompleto.tipoUsuario?.let {
+                        TipoUsuarioDto(id = it.id, descricao = it.descricao)
+                    },
+                    telefone = funcionarioCompleto.telefone,
+                    email = funcionarioCompleto.email,
+                    foto = funcionarioCompleto.foto.toString() ?: ""
+                )
+            )
+        }
+    }
 }

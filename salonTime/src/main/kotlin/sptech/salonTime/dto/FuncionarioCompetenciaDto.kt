@@ -4,5 +4,6 @@ import sptech.salonTime.entidade.Servico
 
 data class FuncionarioCompetenciaDto(
     val id: Int?,
-    val funcionario: UsuarioDto?
+    val funcionario: UsuarioDto?,
+    val servico: ServicoDto?
 )

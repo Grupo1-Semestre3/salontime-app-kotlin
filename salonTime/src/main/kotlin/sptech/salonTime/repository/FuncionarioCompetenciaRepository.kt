@@ -11,4 +11,6 @@ interface FuncionarioCompetenciaRepository: JpaRepository<FuncionarioCompetencia
     fun findCompetenciaByServicoId(id: Int): List<FuncionarioCompetencia>?
     fun findAllByServicoId(idServico: Int): List<FuncionarioCompetencia>
 
+    @Query(nativeQuery = true, value = "SELECT * FROM funcionario_competencia WHERE funcionario_id = ?")
+    fun findCompetenciaByFuncionarioId(id: Int): List<FuncionarioCompetencia>?
 }

@@ -87,7 +87,7 @@ interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
         SELECT * 
 FROM agendamento 
 WHERE 
-  funcionario_id = :idFunc
+  usuario_id = :idFunc
   AND (
     data < CURDATE() 
     OR 

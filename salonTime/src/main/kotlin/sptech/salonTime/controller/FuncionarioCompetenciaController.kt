@@ -44,4 +44,8 @@ class FuncionarioCompetenciaController (val service: FuncionarioCompetenciaServi
         return ResponseEntity.status(204).build()
     }
 
+    @GetMapping("/funcionario/{id}")
+    fun listarPorFuncionario(@PathVariable id: Int): ResponseEntity<List<FuncionarioCompetenciaDto>> {
+        return ResponseEntity.status(200).body(service.listarPorFuncionario(id))
+    }
 }
