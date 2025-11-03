@@ -18,6 +18,7 @@ interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
         SELECT * FROM agendamento 
         WHERE ((data > CURDATE()) OR (data = CURDATE() AND inicio > CURTIME())) 
         AND funcionario_id = :idFunc 
+        AND status_agendamento_id = 1
         ORDER BY data ASC, inicio ASC 
         LIMIT 1
     """,
@@ -26,7 +27,7 @@ interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
     fun buscarProximosAgendamentosPorFuncionario(idFunc: Int): List<Agendamento>
 
     @Query(
-        value = "SELECT * FROM agendamento WHERE ((data > CURDATE()) OR (data = CURDATE() AND inicio > CURTIME())) AND usuario_id = :idUser ORDER BY data ASC, inicio ASC LIMIT 1",
+        value = "SELECT * FROM agendamento WHERE ((data > CURDATE()) OR (data = CURDATE() AND inicio > CURTIME())) AND usuario_id = :idUser AND status_agendamento_id = 1 ORDER BY data ASC, inicio ASC LIMIT 1",
         nativeQuery = true
     )
     fun buscarProximosAgendamentosPorUsuario(idUser: Int): Agendamento?
@@ -89,7 +90,7 @@ interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
         SELECT * 
 FROM agendamento 
 WHERE 
-  usuario_id = :idFunc
+  funcionario_id = :idFunc
   AND (
     data < CURDATE() 
     OR 
