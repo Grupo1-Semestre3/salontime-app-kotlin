@@ -122,11 +122,14 @@ SELECT
     atual.quantidade_atendimentos AS qtd_atual,
     COALESCE(anterior.quantidade_atendimentos, 0) AS qtd_anterior
 FROM view_atendimentos_por_servico_mes AS atual
-JOIN data_base ON atual.ano = data_base.ano AND atual.mes = data_base.mes
+JOIN data_base ON atual.mes = CONCAT(LPAD(data_base.ano, 4, '0'), '-', LPAD(data_base.mes, 2, '0'))
 LEFT JOIN view_atendimentos_por_servico_mes AS anterior
   ON atual.servico_id = anterior.servico_id
-  AND anterior.ano = (SELECT ano FROM mes_anterior)
-  AND anterior.mes = (SELECT mes FROM mes_anterior)
+  AND anterior.mes = CONCAT(
+    LPAD((SELECT ano FROM mes_anterior), 4, '0'), 
+    '-', 
+    LPAD((SELECT mes FROM mes_anterior), 2, '0')
+  )
 ORDER BY atual.nome_servico
 
     """, nativeQuery = true)
