@@ -1,6 +1,8 @@
 package sptech.salonTime.repository
 
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import sptech.salonTime.dto.HistoricoAgendamentoDto
@@ -75,7 +77,7 @@ interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
 
     @Query(
         nativeQuery = true, value = """
-        SELECT * FROM agendamento WHERE (data < CURDATE() AND usuario_id = :idUser) OR (data = CURDATE() AND inicio < CURTIME()) ORDER BY data ASC, inicio ASC
+        SELECT * FROM agendamento WHERE (data < CURDATE() AND usuario_id = :idUser) OR (data = CURDATE() AND inicio < CURTIME()) ORDER BY data DESC, inicio DESC
     """
     )
     fun buscarAgendamentosPassadosPorUsuario(idUser: Int): List<Agendamento>
@@ -92,12 +94,31 @@ WHERE
     data < CURDATE() 
     OR 
     (data = CURDATE() AND inicio < CURTIME())
-  )
-ORDER BY data ASC, inicio ASC;
+  ) 
+  AND status_agendamento_id != 1
+ORDER BY data DESC, inicio DESC;
+
         
         """
     )
     fun buscarAgendamentosPassadosPorFuncionario(idFunc: Int): List<Agendamento>
+
+
+    @Transactional
+    @Modifying
+    @Query(
+        nativeQuery = true,
+        value = """
+        UPDATE agendamento
+        SET status_agendamento_id = 4
+        WHERE status_agendamento_id = 1
+          AND (
+            data < CURDATE()
+            OR (data = CURDATE() AND inicio < CURTIME())
+          )
+    """
+    )
+    fun atualizarStatusAgendamentosPassados()
 
     @Query(
         nativeQuery = true, value = """

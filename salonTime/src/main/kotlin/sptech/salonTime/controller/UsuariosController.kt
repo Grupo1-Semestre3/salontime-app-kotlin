@@ -35,7 +35,7 @@ class UsuariosController(
     }
 
     @GetMapping("/lista-clientes")
-    fun listarClientes(): ResponseEntity<List<UsuarioPublicoDto>> {
+    fun listarClientes(): ResponseEntity<List<ClienteDto>> {
         return ResponseEntity.status(200).body(service.listarClientes())
     }
 

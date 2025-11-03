@@ -58,6 +58,11 @@ class AgendamentoController(val repository: AgendamentoRepository, val statusAge
         return ResponseEntity.status(201).body(service.cadastrar(agendamento))
     }
 
+    @PatchMapping("reagendamento/{id}")
+    fun patchReagendamento(@PathVariable id: Int, @RequestBody @Valid agendamento: ReagendamentoAgendamentoDto): ResponseEntity<AgendamentoDto> {
+        return ResponseEntity.status(200).body(service.reagendar(id, agendamento))
+    }
+
 //O campo de fim não pode ser alterado manualmente, pois ele é um cálculo baseado no campo de início e na duração do serviço. O campo de fim é calculado automaticamente com base no horário de início e na duração do serviço associado ao agendamento. Portanto, não é necessário ou apropriado permitir que o usuário altere manualmente esse campo.
     @PatchMapping("/{atributo}/{id}/{novoValor}")
     fun patch(@PathVariable id: Int, @PathVariable atributo: String, @PathVariable novoValor:String): ResponseEntity<AgendamentoDto> {

@@ -15,7 +15,7 @@ class DashboardService(
         return repository.buscarRelatorioMensal(ano, mes)
     }
 
-    fun pegarKpiUsuarios(ano: Int, mes: Int): DashboardKpiUsuariosDto {
+    fun pegarKpiUsuarios(ano: Int, mes: Int): DashboardKpiUsuariosDto? {
         return repository.buscarKpiUsuarios(ano, mes)
     }
     fun atendimentoGrafico(ano: Int, mes: Int): List<DashboardAtendimentoGraficoDto>{

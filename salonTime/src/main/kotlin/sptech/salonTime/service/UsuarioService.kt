@@ -4,16 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import sptech.salonTime.dto.*
+import sptech.salonTime.entidade.Funcionamento
 import sptech.salonTime.entidade.TipoUsuario
 import sptech.salonTime.entidade.Usuario
 import sptech.salonTime.exception.*
 import sptech.salonTime.mapper.UsuarioMapper
+import sptech.salonTime.repository.FuncionamentoRepository
 import sptech.salonTime.repository.TipoUsuarioRepository
 import sptech.salonTime.repository.UsuarioRepository
 import java.time.LocalDateTime
 
 @Service
-class UsuarioService(val repository: UsuarioRepository, val tipoUsuarioRepository: TipoUsuarioRepository) {
+class UsuarioService(val repository: UsuarioRepository, val tipoUsuarioRepository: TipoUsuarioRepository, val funcionamentoRepository: FuncionamentoRepository) {
 
     fun listar(): List<Usuario> {
         return repository.findAllByAtivoTrue() ?: emptyList()
@@ -44,10 +46,24 @@ class UsuarioService(val repository: UsuarioRepository, val tipoUsuarioRepositor
         val funcionarios = repository.findAllByTipoUsuarioIdAndAtivoTrue(3) // 3 é o ID do tipo de usuário "FUNCIONARIO"
         return funcionarios.mapNotNull { UsuarioMapper.toDto(it) }
     }
-
+/*
     fun listarClientes(): List<UsuarioPublicoDto> {
         val clientes = repository.findAllByTipoUsuarioIdAndAtivoTrue(2) // 2 é o ID do tipo de usuário "CLIENTE"
         return clientes.mapNotNull { UsuarioMapper.toDto(it) }
+    }*/
+
+    fun listarClientes(): List<ClienteDto> {
+        val resultado = repository.listarClientesComPendencias()
+
+        return resultado.map {
+            ClienteDto(
+                id = (it["id"] as Number).toInt(),
+                nome = it["nome"] as String,
+                email = it["email"] as String,
+                telefone = it["telefone"] as String,
+                totalPendencias = (it["totalPendencias"] as Number).toLong()
+            )
+        }
     }
 
 
@@ -67,6 +83,23 @@ class UsuarioService(val repository: UsuarioRepository, val tipoUsuarioRepositor
         }
 
         val usuarioSalvo = repository.save(usuarioEntity)
+
+
+        // Pegando os funcionamentos do usuário com id = 1
+        val funcionamentosPadrao = funcionamentoRepository.findAllByFuncionarioId(1)
+
+        val novosFuncionamentos = funcionamentosPadrao.map { funcPadrao ->
+            Funcionamento(
+                diaSemana = funcPadrao.diaSemana,
+                inicio = funcPadrao.inicio,
+                fim = funcPadrao.fim,
+                aberto = funcPadrao.aberto,
+                capacidade = funcPadrao.capacidade,
+                funcionario = usuarioSalvo // associando ao novo usuário
+            )
+        }
+
+        funcionamentoRepository.saveAll(novosFuncionamentos)
 
         return UsuarioMapper.toDto(usuarioSalvo)
 

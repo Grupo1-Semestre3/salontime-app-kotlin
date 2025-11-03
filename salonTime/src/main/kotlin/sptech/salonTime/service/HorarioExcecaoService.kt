@@ -33,6 +33,14 @@ class HorarioExcecaoService (var repository: HorarioExcecaoRepository) {
     fun salvar(horarioExcecao: HorarioExcecao): HorarioExcecao {
         return repository.save(horarioExcecao)
     }
-    
+
+    fun deletar(id: Int) {
+        if(repository.existsById(id)){
+            repository.deleteById(id)
+        } else {
+            throw Exception("Horario excecao nao encontrado")
+        }
+    }
+
 
 }

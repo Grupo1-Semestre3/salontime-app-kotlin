@@ -7,6 +7,7 @@ import sptech.salonTime.exception.*
 import sptech.salonTime.mapper.AgendamentoMapper
 import sptech.salonTime.repository.*
 import java.time.DayOfWeek
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -220,6 +221,54 @@ class AgendamentoService(
         return AgendamentoMapper.toDto(agendamentoSalvo)
     }
 
+    fun reagendar(id: Int, agendamento: ReagendamentoAgendamentoDto): AgendamentoDto? {
+
+        val agendamentoEcontrado = repository.findById(id).orElseThrow {
+            AgendamentoNaoEncontradoException("Agendamento com ID $id não encontrado.")
+        }
+
+        val servico = agendamentoEcontrado.servico?.id?.let { servicoRepository.findById(it) }?.orElseThrow{ServicoNaoEcontradoException("Serviço não encontrado")}
+
+        val fimServico = agendamento.inicio.plusHours(servico?.tempo?.hour?.toLong() ?: 0)
+            .plusMinutes(servico?.tempo?.minute?.toLong() ?: 0)
+
+
+        if (agendamento.novaData.isBefore(LocalDate.now())) {
+            throw DataErradaException("A data do agendamento não pode ser anterior à data atual.")
+        }
+
+        val existeAgendamento = repository.existeConflitoDeAgendamento(
+            agendamento.novaData, agendamento.inicio, fimServico
+        )
+
+        if (existeAgendamento > 0) {
+
+            val idServicoConflito = repository.pegarAgendamentoConlfito(
+                agendamento.novaData, agendamento.inicio, fimServico
+            )
+
+            val checkSimultaneoAgendamentoExistente = servicoRepository.verificarSimultaneo(idServicoConflito)
+            val checkSimultaneoFuturoAgendamento = servicoRepository.verificarSimultaneo(servico?.id!!)
+
+            if (checkSimultaneoAgendamentoExistente == 1 && checkSimultaneoFuturoAgendamento == 1) {
+                // Permitir o agendamento, pois ambos os serviços permitem simultaneidade
+            } else {
+                // Não permitir o agendamento, pois pelo menos um dos serviços não permite simultaneidade
+                throw ConflitoDeAgendamentoException("Já existe um agendamento nesse horário.")
+
+            }
+        }
+
+        agendamentoEcontrado.data = agendamento.novaData
+        agendamentoEcontrado.inicio = agendamento.inicio
+        agendamentoEcontrado.fim = fimServico
+
+        val agendamentoSalvo = repository.save(agendamentoEcontrado)
+
+        return AgendamentoMapper.toDto(agendamentoSalvo)
+
+    }
+
     fun atualizarAtributo(id: Int, atributo: String, novoValor: String): AgendamentoDto {
         val agendamento = repository.findById(id)
             .orElseThrow { AgendamentoNaoEncontradoException("Agendamento com ID $id não encontrado.") }
@@ -288,11 +337,14 @@ class AgendamentoService(
         }
     }
 
+    @Transactional
     fun buscarAgendamentosPassadosPorFuncionario(id: Int): List<AgendamentoDto>? {
 
         val funcionario = usuarioRepository.findById(id).orElseThrow {
             FuncionarioNaoEcontradoException("Funcionário com ID $id não encontrado.")
         }
+
+        repository.atualizarStatusAgendamentosPassados()
 
         val agendamentos = repository.buscarAgendamentosPassadosPorFuncionario(id)
 
@@ -326,12 +378,13 @@ class AgendamentoService(
             pagamentoRepository.findById(it).orElseThrow { PagamentoNaoEncontradoException("Pagamento Não encontrado") }
         }
 
-        val taxa = tipoPagamento?.taxa
+//        val taxa = tipoPagamento?.taxa
+//
+//        if (taxa != null) {
+//            agendamentoEcontrado.preco = valor - (valor * taxa / 100)
+//        }
 
-        if (taxa != null) {
-            agendamentoEcontrado.preco = valor - (valor * taxa / 100)
-        }
-
+        agendamentoEcontrado.preco = valor
         var agendamentoSalvo = repository.save(agendamentoEcontrado)
         return AgendamentoMapper.toDto(agendamentoSalvo)
 
@@ -590,4 +643,6 @@ HORARIO DISPONIVEL OTIMIZADO MAS SIMULTANEO NÃO FUNCIONA
             )
         }
     }
+
+
 }

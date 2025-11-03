@@ -57,15 +57,15 @@ where atual.ano = :ano and atual.mes = :mes;
         SELECT 
     atual.ano,
     atual.mes,
-    atual.total_cadastros,
-    anterior.total_cadastros AS cadastros_mes_anterior,
+    atual.total_cadastros AS totalCadastros,
+    anterior.total_cadastros AS cadastrosMesAnterior,
     CASE 
         WHEN anterior.total_cadastros IS NULL OR anterior.total_cadastros = 0 THEN NULL
         ELSE ROUND(
             (atual.total_cadastros - anterior.total_cadastros) * 100.0 / anterior.total_cadastros, 
             2
         )
-    END AS variacao_percentual
+    END AS variacaoPercentual
 FROM vw_cadastros_mensais_usuarios atual
 LEFT JOIN vw_cadastros_mensais_usuarios anterior
     ON (
@@ -75,7 +75,7 @@ LEFT JOIN vw_cadastros_mensais_usuarios anterior
 WHERE atual.ano = :ano AND atual.mes = :mes;
         
     """, nativeQuery = true)
-    fun buscarKpiUsuarios(ano: Int, mes: Int): DashboardKpiUsuariosDto
+    fun buscarKpiUsuarios(ano: Int, mes: Int): DashboardKpiUsuariosDto?
 
     @Query("""
         
@@ -122,11 +122,14 @@ SELECT
     atual.quantidade_atendimentos AS qtd_atual,
     COALESCE(anterior.quantidade_atendimentos, 0) AS qtd_anterior
 FROM view_atendimentos_por_servico_mes AS atual
-JOIN data_base ON atual.ano = data_base.ano AND atual.mes = data_base.mes
+JOIN data_base ON atual.mes = CONCAT(LPAD(data_base.ano, 4, '0'), '-', LPAD(data_base.mes, 2, '0'))
 LEFT JOIN view_atendimentos_por_servico_mes AS anterior
   ON atual.servico_id = anterior.servico_id
-  AND anterior.ano = (SELECT ano FROM mes_anterior)
-  AND anterior.mes = (SELECT mes FROM mes_anterior)
+  AND anterior.mes = CONCAT(
+    LPAD((SELECT ano FROM mes_anterior), 4, '0'), 
+    '-', 
+    LPAD((SELECT mes FROM mes_anterior), 2, '0')
+  )
 ORDER BY atual.nome_servico
 
     """, nativeQuery = true)
