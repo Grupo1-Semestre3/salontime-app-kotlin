@@ -2,16 +2,86 @@ package sptech.salonTime.repository
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import sptech.salonTime.dto.DashboardAgendamentosMensaisDto
 import sptech.salonTime.dto.DashboardAtendimentoGraficoDto
 import sptech.salonTime.dto.DashboardAtendimentoServicoDto
 import sptech.salonTime.dto.DashboardKpiUsuariosDto
 import sptech.salonTime.entidade.Agendamento
+import java.time.LocalDate
 
 //Agendamento colocado propositalmente para evitar erro, mas os selects são para a dash e dash não tem entidade
 @Repository
 interface DashboardRepository : JpaRepository<Agendamento, Int> {
+
+
+
+
+
+    @Query(
+        value = """
+WITH filtrado AS (
+    SELECT
+        YEAR(data) AS ano,
+        MONTH(data) AS mes,
+        SUM(CASE WHEN status_agendamento_id = 5 THEN 1 ELSE 0 END) AS total_atendimentos,
+        SUM(CASE WHEN status_agendamento_id = 2 THEN 1 ELSE 0 END) AS total_cancelados,
+        SUM(CASE WHEN status_agendamento_id = 5 THEN preco ELSE 0 END) AS faturamento_total
+    FROM vw_agendamentos_base
+    WHERE data BETWEEN :dataInicio AND :dataFim
+    GROUP BY YEAR(data), MONTH(data)
+),
+totais AS (
+    SELECT
+        SUM(total_atendimentos) AS total_atendimentos_geral,
+        SUM(total_cancelados) AS total_cancelados_geral,
+        SUM(faturamento_total) AS faturamento_total_geral
+    FROM filtrado
+)
+SELECT
+    f.ano,
+    f.mes,
+    f.total_atendimentos AS totalAtendimentos,
+    f.total_cancelados AS totalCancelados,
+    f.faturamento_total AS faturamentoTotal,
+
+    (f.total_atendimentos / NULLIF(t.total_atendimentos_geral, 0) * 100) AS totalAtendimentosTaxa,
+    (f.total_cancelados / NULLIF(t.total_cancelados_geral, 0) * 100) AS totalCanceladosTaxa,
+    (f.faturamento_total / NULLIF(t.faturamento_total_geral, 0) * 100) AS faturamentoTotalTaxa
+FROM filtrado f
+CROSS JOIN totais t;
+
+    """,
+        nativeQuery = true
+    )
+    fun buscarRelatorioMensalPersonalizado(
+        @Param("dataInicio") dataInicio: LocalDate,
+        @Param("dataFim") dataFim: LocalDate
+    ): List<DashboardAgendamentosMensaisDto>
+
+
+
+
+    @Query("""
+   SELECT
+    SUM(total_cadastros) AS totalCadastros
+FROM 
+    vw_cadastros_diarios_usuarios_personalizado
+WHERE 
+    data BETWEEN :dataInicio AND :dataFim;
+""", nativeQuery = true)
+    fun buscarKpiUsuariosPersonalizado(
+        @Param("dataInicio") dataInicio: LocalDate,
+        @Param("dataFim") dataFim: LocalDate
+    ): DashboardKpiUsuariosDto?
+
+
+
+
+
+
+
 
     @Query(
         value = """
@@ -49,9 +119,7 @@ where atual.ano = :ano and atual.mes = :mes;
     )
     fun buscarRelatorioMensal(ano: Int, mes: Int): List<DashboardAgendamentosMensaisDto>
 
-
-
-
+    
     @Query("""
         
         SELECT 
@@ -107,30 +175,29 @@ ORDER BY a.dia
 
     @Query("""
         
-        WITH data_base AS (
+      WITH data_base AS (
   SELECT :ano AS ano, :mes AS mes
 ),
 mes_anterior AS (
   SELECT
     CASE WHEN mes = 1 THEN ano - 1 ELSE ano END AS ano,
     CASE WHEN mes = 1 THEN 12 ELSE mes - 1 END AS mes
-  FROM data_base	
+  FROM data_base
 )
 SELECT
-    atual.servico_id,
-    atual.nome_servico,
-    atual.quantidade_atendimentos AS qtd_atual,
-    COALESCE(anterior.quantidade_atendimentos, 0) AS qtd_anterior
+    atual.servico_id AS servicoId,
+    atual.nome_servico AS nomeServico,
+    atual.quantidade_atendimentos AS qtdAtual,
+    COALESCE(anterior.quantidade_atendimentos, 0) AS qtdAnterior
 FROM view_atendimentos_por_servico_mes AS atual
-JOIN data_base ON atual.mes = CONCAT(LPAD(data_base.ano, 4, '0'), '-', LPAD(data_base.mes, 2, '0'))
+JOIN data_base 
+    ON atual.ano = data_base.ano
+   AND atual.mes = data_base.mes
 LEFT JOIN view_atendimentos_por_servico_mes AS anterior
-  ON atual.servico_id = anterior.servico_id
-  AND anterior.mes = CONCAT(
-    LPAD((SELECT ano FROM mes_anterior), 4, '0'), 
-    '-', 
-    LPAD((SELECT mes FROM mes_anterior), 2, '0')
-  )
-ORDER BY atual.nome_servico
+    ON anterior.servico_id = atual.servico_id
+   AND anterior.ano = (SELECT ano FROM mes_anterior)
+   AND anterior.mes = (SELECT mes FROM mes_anterior)
+ORDER BY atual.nome_servico;
 
     """, nativeQuery = true)
     fun buscarAtendimentoServico(ano: Int, mes: Int): List<DashboardAtendimentoServicoDto>

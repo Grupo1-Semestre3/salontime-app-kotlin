@@ -1,16 +1,27 @@
 package sptech.salonTime.service
 
+import org.springframework.cglib.core.Local
 import org.springframework.stereotype.Service
 import sptech.salonTime.dto.DashboardAgendamentosMensaisDto
 import sptech.salonTime.dto.DashboardAtendimentoGraficoDto
 import sptech.salonTime.dto.DashboardAtendimentoServicoDto
 import sptech.salonTime.dto.DashboardKpiUsuariosDto
 import sptech.salonTime.repository.DashboardRepository
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Service
 class DashboardService(
     val repository: DashboardRepository
 ) {
+    fun pegarAgendamentosMensaisPersonalizado(dataInicio: LocalDate, dataFim: LocalDate): List<DashboardAgendamentosMensaisDto> {
+        return repository.buscarRelatorioMensalPersonalizado(dataInicio, dataFim)
+    }
+
+    fun pegarKpiUsuariosPersonalizado(dataInicio: LocalDate, dataFim: LocalDate): DashboardKpiUsuariosDto? {
+        return repository.buscarKpiUsuariosPersonalizado(dataInicio, dataFim)
+    }
+
     fun pegarAgendamentosMensais(ano: Int, mes: Int): List<DashboardAgendamentosMensaisDto> {
         return repository.buscarRelatorioMensal(ano, mes)
     }
@@ -18,6 +29,7 @@ class DashboardService(
     fun pegarKpiUsuarios(ano: Int, mes: Int): DashboardKpiUsuariosDto? {
         return repository.buscarKpiUsuarios(ano, mes)
     }
+
     fun atendimentoGrafico(ano: Int, mes: Int): List<DashboardAtendimentoGraficoDto>{
         return repository.buscarAtendimentoGrafico(ano, mes)
     }

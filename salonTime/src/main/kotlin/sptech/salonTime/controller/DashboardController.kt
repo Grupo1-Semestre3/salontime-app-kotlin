@@ -11,12 +11,23 @@ import sptech.salonTime.dto.DashboardAtendimentoGraficoDto
 import sptech.salonTime.dto.DashboardAtendimentoServicoDto
 import sptech.salonTime.dto.DashboardKpiUsuariosDto
 import sptech.salonTime.service.DashboardService
+import java.time.LocalDate
 
 @RestController
 @RequestMapping("/dashboard")
 class DashboardController(
     val dashboardService: DashboardService
 ){
+
+    @GetMapping("kpi-personalizado/{dataInicio}/{dataFim}")
+    fun kpiPersonalizado(@PathVariable dataInicio: LocalDate, @PathVariable dataFim: LocalDate): ResponseEntity<List<DashboardAgendamentosMensaisDto>> {
+        return ResponseEntity.status(200).body(dashboardService.pegarAgendamentosMensaisPersonalizado(dataInicio, dataFim))
+    }
+
+    @GetMapping("kpi-usuarios-personalizado/{dataInicio}/{dataFim}")
+    fun kpiUsuariosPersonalizado(@PathVariable dataInicio: LocalDate, @PathVariable dataFim: LocalDate): ResponseEntity<DashboardKpiUsuariosDto?> {
+        return ResponseEntity.status(200).body(dashboardService.pegarKpiUsuariosPersonalizado(dataInicio, dataFim))
+    }
 
     @GetMapping("kpi/{ano}/{mes}")
     fun kpi(@PathVariable ano: Int, @PathVariable mes: Int): ResponseEntity<List<DashboardAgendamentosMensaisDto>> {
