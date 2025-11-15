@@ -2,6 +2,7 @@ package sptech.salonTime.controller
 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import sptech.salonTime.dto.PointsDto
 import sptech.salonTime.entidade.Cupom
 import sptech.salonTime.service.CupomService
 import java.time.LocalTime
@@ -46,5 +47,11 @@ class CupomController(val service: CupomService) {
         return if (service.desativar(id)) ResponseEntity.noContent().build()
         else ResponseEntity.notFound().build()
     }
+
+    @GetMapping("/points/{idUsuario}")
+    fun points(@PathVariable idUsuario: Int): ResponseEntity<PointsDto> {
+        return ResponseEntity.status(200).body(service.calcularPoints(idUsuario))
+    }
+
 
 }

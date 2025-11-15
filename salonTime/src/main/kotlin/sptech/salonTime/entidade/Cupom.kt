@@ -16,7 +16,7 @@ data class Cupom(
     @field:Size(min = 1, max = 45)
     var nome: String? = null,
 
-    @field:Size(max = 45)
+    @field:Size(max = 100)
     var descricao: String? = null,
 
     @field:Size(max = 45)

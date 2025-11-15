@@ -1,13 +1,16 @@
 package sptech.salonTime.service
 
 import org.springframework.stereotype.Service
+import sptech.salonTime.dto.PointsDto
 import sptech.salonTime.entidade.Cupom
 import sptech.salonTime.exception.CupomDuplicadoException
 import sptech.salonTime.exception.CupomNaoEncontradoException
+import sptech.salonTime.exception.UsuarioNaoEncontradoException
 import sptech.salonTime.repository.CupomRepository
+import sptech.salonTime.repository.UsuarioRepository
 
 @Service
-class CupomService(val repository: CupomRepository) {
+class CupomService(val repository: CupomRepository, val usuarioRepository: UsuarioRepository) {
 
     fun criar(cupom: Cupom): Cupom {
 
@@ -57,5 +60,10 @@ class CupomService(val repository: CupomRepository) {
         } else {
             false
         }
+    }
+
+    fun calcularPoints(idUsuario: Int): PointsDto? {
+        usuarioRepository.findById(idUsuario).orElseThrow { UsuarioNaoEncontradoException("Usuário não encontrado para cálculo de pontos.") }
+        return repository.calcularPoints(idUsuario)
     }
 }

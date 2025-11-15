@@ -216,8 +216,6 @@ class AgendamentoService(
             cupomDestinadoRepository.save(cupomDestinado)
         }
 
-
-
         return AgendamentoMapper.toDto(agendamentoSalvo)
     }
 
@@ -366,7 +364,44 @@ class AgendamentoService(
         agendamentoEcontrado.statusAgendamento = statusEncontrado;
         var agendamentoSalvo = repository.save(agendamentoEcontrado)
 
+        var points = agendamentoSalvo.usuario?.id?.let { cupomRepository.calcularPoints(it) }
+
+        if (points != null) {
+            if(points.pointsParcial.toInt().toLong() == points.pointsTotal){
+                val cupom = gerarCupom()
+                val novoCupom = Cupom(
+                    codigo = cupom,
+                    descricao = "Cupom de ${points.porcentagemCupom}% de desconto por acumulo de pontos",
+                    inicio = LocalDate.now(),
+                    fim = LocalDate.now().plusMonths(12),
+                    desconto = points.porcentagemCupom,
+                    ativo = true,
+                    tipoDestinatario = "EXCLUSIVO"
+                )
+                val existe = cupomRepository.findByCodigo(novoCupom.codigo)
+                if (existe != null) {
+                    throw CupomDuplicadoException("Cupom com código '${novoCupom.codigo}' já existe.")
+                }
+                cupomRepository.save(novoCupom)
+
+                val cupomDestinado = CupomDestinado(
+                    cupom = novoCupom,
+                    usuario = agendamentoSalvo.usuario!!,
+                    usado = false
+                )
+                cupomDestinadoRepository.save(cupomDestinado)
+
+            }
+        }
+
         return AgendamentoMapper.toDto(agendamentoSalvo)
+    }
+
+    fun gerarCupom(tamanho: Int = 3): String {
+        val caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        return (1..tamanho)
+            .map { caracteres.random() }
+            .joinToString("")
     }
 
     fun atualizarValor(id: Int, valor: Double): AgendamentoDto? {
