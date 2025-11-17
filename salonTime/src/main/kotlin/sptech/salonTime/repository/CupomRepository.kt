@@ -31,7 +31,7 @@ FROM (
       AND h.agendamento_usuario_id = :idUsuario
     GROUP BY h.agendamento_usuario_id
 ) a
-CROSS JOIN copum_configuracao cc;
+CROSS JOIN cupom_configuracao cc;
         """,
         nativeQuery = true
     )
