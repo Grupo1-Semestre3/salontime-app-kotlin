@@ -3,7 +3,9 @@ package sptech.salonTime.service
 import org.springframework.stereotype.Service
 import sptech.salonTime.entidade.CupomConfiguracao
 import sptech.salonTime.exception.CupomConfiguracaoException
+import sptech.salonTime.exception.UsuarioNaoEncontradoException
 import sptech.salonTime.repository.CupomConfiguracaoRepository
+import java.util.*
 
 
 @Service

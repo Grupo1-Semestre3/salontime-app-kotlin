@@ -5,11 +5,13 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import sptech.salonTime.entidade.CupomConfiguracao
 import sptech.salonTime.service.CupomConfiguracaoService
+import java.util.*
 
 @RestController
 @RequestMapping("/cupom-configuracao")
@@ -22,7 +24,7 @@ class CupomConfiguracaoController (val service: CupomConfiguracaoService) {
          return ResponseEntity.status(HttpStatus.CREATED).body(savedCupom)
      }
 
-    @PatchMapping
+    @PutMapping
     fun editarCupomConfiguracao(@RequestBody cupomConfiguracao: CupomConfiguracao): ResponseEntity<CupomConfiguracao> {
         val updatedCupom = service.editar(cupomConfiguracao.id ?: throw IllegalArgumentException("ID não pode ser nulo"), cupomConfiguracao)
         return ResponseEntity.ok(updatedCupom)
