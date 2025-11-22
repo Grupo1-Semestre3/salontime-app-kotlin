@@ -37,4 +37,12 @@ class DashboardService(
     fun atendimentoServico(ano: Int, mes: Int): List<DashboardAtendimentoServicoDto>{
         return repository.buscarAtendimentoServico(ano, mes)
     }
+
+    fun atendimentoGraficoPersonalizado(dataInicio: LocalDate, dataFim: LocalDate): List<DashboardAtendimentoGraficoDto>? {
+        return repository.buscarAtendimentoGraficoPersonalizado(dataInicio, dataFim)
+    }
+
+    fun atendimentoServicoPersonalizado(dataInicio: LocalDate, dataFim: LocalDate): List<DashboardAtendimentoServicoDto>? {
+        return repository.buscarAtendimentoServicoPersonalizado(dataInicio, dataFim)
+    }
 }

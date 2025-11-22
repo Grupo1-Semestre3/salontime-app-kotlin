@@ -39,9 +39,19 @@ class DashboardController(
         return ResponseEntity.status(200).body(dashboardService.pegarKpiUsuarios(ano, mes))
     }
 
-        @GetMapping("atendimento-grafico/{ano}/{mes}")
+    @GetMapping("atendimento-grafico-personalizado/{dataInicio}/{dataFim}")
+    fun atendimento(@PathVariable dataInicio: LocalDate, @PathVariable dataFim: LocalDate): ResponseEntity<List<DashboardAtendimentoGraficoDto>> {
+        return ResponseEntity.status(200).body(dashboardService.atendimentoGraficoPersonalizado(dataInicio, dataFim))
+    }
+
+    @GetMapping("atendimento-grafico/{ano}/{mes}")
     fun atendimento(@PathVariable ano: Int, @PathVariable mes: Int): ResponseEntity<List<DashboardAtendimentoGraficoDto>> {
         return ResponseEntity.status(200).body(dashboardService.atendimentoGrafico(ano, mes))
+    }
+
+    @GetMapping("atendimento-servico-personalizado/{dataInicio}/{dataFim}")
+    fun atendimentoServico(@PathVariable dataInicio: LocalDate, @PathVariable dataFim: LocalDate): ResponseEntity<List<DashboardAtendimentoServicoDto>> {
+        return ResponseEntity.status(200).body(dashboardService.atendimentoServicoPersonalizado(dataInicio, dataFim))
     }
 
     @GetMapping("atendimento-servico/{ano}/{mes}")

@@ -202,4 +202,68 @@ ORDER BY atual.nome_servico;
     """, nativeQuery = true)
     fun buscarAtendimentoServico(ano: Int, mes: Int): List<DashboardAtendimentoServicoDto>
 
+    @Query(value = """
+        SELECT 
+    DATE_FORMAT(a.dia, '%d') AS dia_mes_atual,
+    a.total_atendimentos AS qtd_atual,
+    DATE_FORMAT(b.dia, '%d') AS dia_mes_anterior,
+    b.total_atendimentos AS qtd_anterior
+FROM atendimentos_por_dia_personalizado a
+LEFT JOIN atendimentos_por_dia_personalizado b
+    ON DAY(a.dia) = DAY(b.dia)
+    AND MONTH(b.dia) = 
+        CASE 
+            WHEN MONTH(a.dia) = 1 THEN 12
+            ELSE MONTH(a.dia) - 1
+        END
+    AND YEAR(b.dia) =
+        CASE 
+            WHEN MONTH(a.dia) = 1 THEN YEAR(a.dia) - 1
+            ELSE YEAR(a.dia)
+        END
+WHERE a.dia BETWEEN :dataInicio AND :dataFim
+ORDER BY a.dia;
+
+    """, nativeQuery = true)
+    fun buscarAtendimentoGraficoPersonalizado(dataInicio: LocalDate, dataFim: LocalDate): List<DashboardAtendimentoGraficoDto>?
+
+
+    @Query("""
+WITH periodo_atual AS (
+    SELECT
+        servico_id,
+        nome_servico,
+        SUM(quantidade_atendimentos) AS qtdAtual
+    FROM view_atendimentos_por_servico_mes_personalizado
+    WHERE dia BETWEEN :dataInicio AND :dataFim
+    GROUP BY servico_id, nome_servico
+),
+periodo_anterior AS (
+    SELECT
+        servico_id,
+        nome_servico,
+        SUM(quantidade_atendimentos) AS qtdAnterior
+    FROM view_atendimentos_por_servico_mes_personalizado
+    WHERE dia BETWEEN 
+        DATE_SUB(:dataInicio, INTERVAL 1 MONTH) AND 
+        DATE_SUB(:dataFim, INTERVAL 1 MONTH)
+    GROUP BY servico_id, nome_servico
+)
+SELECT
+    atual.servico_id AS servicoId,
+    atual.nome_servico AS nomeServico,
+    atual.qtdAtual,
+    COALESCE(anterior.qtdAnterior, 0) AS qtdAnterior
+FROM periodo_atual atual
+LEFT JOIN periodo_anterior anterior
+      ON anterior.servico_id = atual.servico_id
+ORDER BY atual.nome_servico;
+""", nativeQuery = true)
+    fun buscarAtendimentoServicoPersonalizado(
+        dataInicio: LocalDate,
+        dataFim: LocalDate
+    ): List<DashboardAtendimentoServicoDto>
+
+
+
 }
