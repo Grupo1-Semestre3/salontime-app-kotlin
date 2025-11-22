@@ -3,14 +3,16 @@ package sptech.salonTime.service
 import org.springframework.stereotype.Service
 import sptech.salonTime.dto.PointsDto
 import sptech.salonTime.entidade.Cupom
+import sptech.salonTime.entidade.CupomConfiguracao
 import sptech.salonTime.exception.CupomDuplicadoException
 import sptech.salonTime.exception.CupomNaoEncontradoException
 import sptech.salonTime.exception.UsuarioNaoEncontradoException
+import sptech.salonTime.repository.CupomConfiguracaoRepository
 import sptech.salonTime.repository.CupomRepository
 import sptech.salonTime.repository.UsuarioRepository
 
 @Service
-class CupomService(val repository: CupomRepository, val usuarioRepository: UsuarioRepository) {
+class CupomService(val repository: CupomRepository, val usuarioRepository: UsuarioRepository, val cupomConfiguracao: CupomConfiguracaoRepository) {
 
     fun criar(cupom: Cupom): Cupom {
 
@@ -63,7 +65,28 @@ class CupomService(val repository: CupomRepository, val usuarioRepository: Usuar
     }
 
     fun calcularPoints(idUsuario: Int): PointsDto? {
-        usuarioRepository.findById(idUsuario).orElseThrow { UsuarioNaoEncontradoException("Usuário não encontrado para cálculo de pontos.") }
-        return repository.calcularPoints(idUsuario)
+        usuarioRepository.findById(idUsuario)
+            .orElseThrow { UsuarioNaoEncontradoException("Usuário não encontrado para cálculo de pontos.") }
+
+        val points = repository.calcularPoints(idUsuario)
+
+
+        if (points == null) {
+
+            val cupomConfig = cupomConfiguracao.findById(1)
+                .orElseThrow { CupomNaoEncontradoException("Configuração de cupom não encontrada.") }
+
+            val total = cupomConfig.intervaloAtendimento ?: 0
+            val desconto = cupomConfig.porcentagemDesconto ?: 0
+
+            return PointsDto(
+                pointsParcial = 0,
+                pointsTotal = cupomConfig.intervaloAtendimento!!.toLong(),
+                porcentagemCupom = cupomConfig.porcentagemDesconto!!.toInt()
+            )
+        }
+
+        return points
     }
+
 }

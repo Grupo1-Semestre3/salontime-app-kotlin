@@ -174,7 +174,7 @@ class AgendamentoService(
             .orElseThrow { PagamentoNaoEncontradoException("Pagamento não encontrado") }
 
 
-        /*usuario.email?.let {
+        usuario.email?.let {
             emailService.enviarEmail(
                 nome = usuario.nome,
                 servico = servico.nome,
@@ -184,7 +184,7 @@ class AgendamentoService(
                 destinatario = it,
                 destinoTipo = "cliente"
             )
-        }*/
+        }
         /*
                 funcionario.email?.let {
                     emailService.enviarEmail(

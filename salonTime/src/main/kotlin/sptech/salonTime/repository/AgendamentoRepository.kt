@@ -87,17 +87,22 @@ interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
         nativeQuery = true, value = """
         
         
-        SELECT * 
-FROM agendamento 
+SELECT *
+FROM agendamento
 WHERE 
   funcionario_id = :idFunc
   AND (
-    data < CURDATE() 
-    OR 
-    (data = CURDATE() AND inicio < CURTIME())
-  ) 
+    data < CURDATE()
+    OR (data = CURDATE() AND inicio < CURTIME())
+  )
   AND status_agendamento_id != 1
-ORDER BY data DESC, inicio DESC;
+ORDER BY 
+  CASE 
+    WHEN status_agendamento_id = 4 THEN 0
+    ELSE 1
+  END,
+  data ASC,
+  inicio ASC;
 
         
         """
