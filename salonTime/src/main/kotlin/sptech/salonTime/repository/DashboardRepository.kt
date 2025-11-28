@@ -4,10 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
-import sptech.salonTime.dto.DashboardAgendamentosMensaisDto
-import sptech.salonTime.dto.DashboardAtendimentoGraficoDto
-import sptech.salonTime.dto.DashboardAtendimentoServicoDto
-import sptech.salonTime.dto.DashboardKpiUsuariosDto
+import sptech.salonTime.dto.*
 import sptech.salonTime.entidade.Agendamento
 import java.time.LocalDate
 
@@ -203,10 +200,10 @@ ORDER BY atual.nome_servico;
     fun buscarAtendimentoServico(ano: Int, mes: Int): List<DashboardAtendimentoServicoDto>
 
     @Query(value = """
-        SELECT 
-    DATE_FORMAT(a.dia, '%d') AS dia_mes_atual,
+SELECT 
+    a.dia AS data_atual,
     a.total_atendimentos AS qtd_atual,
-    DATE_FORMAT(b.dia, '%d') AS dia_mes_anterior,
+    b.dia AS data_anterior,
     b.total_atendimentos AS qtd_anterior
 FROM atendimentos_por_dia_personalizado a
 LEFT JOIN atendimentos_por_dia_personalizado b
@@ -225,7 +222,7 @@ WHERE a.dia BETWEEN :dataInicio AND :dataFim
 ORDER BY a.dia;
 
     """, nativeQuery = true)
-    fun buscarAtendimentoGraficoPersonalizado(dataInicio: LocalDate, dataFim: LocalDate): List<DashboardAtendimentoGraficoDto>?
+    fun buscarAtendimentoGraficoPersonalizado(dataInicio: LocalDate, dataFim: LocalDate): List<DashboardAtendimentoGraficoDtoPersonalizado>?
 
 
     @Query("""

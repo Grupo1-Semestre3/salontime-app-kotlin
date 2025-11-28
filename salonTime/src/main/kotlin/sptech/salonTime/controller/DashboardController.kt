@@ -6,10 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import sptech.salonTime.dto.DashboardAgendamentosMensaisDto
-import sptech.salonTime.dto.DashboardAtendimentoGraficoDto
-import sptech.salonTime.dto.DashboardAtendimentoServicoDto
-import sptech.salonTime.dto.DashboardKpiUsuariosDto
+import sptech.salonTime.dto.*
 import sptech.salonTime.service.DashboardService
 import java.time.LocalDate
 
@@ -40,7 +37,7 @@ class DashboardController(
     }
 
     @GetMapping("atendimento-grafico-personalizado/{dataInicio}/{dataFim}")
-    fun atendimento(@PathVariable dataInicio: LocalDate, @PathVariable dataFim: LocalDate): ResponseEntity<List<DashboardAtendimentoGraficoDto>> {
+    fun atendimento(@PathVariable dataInicio: LocalDate, @PathVariable dataFim: LocalDate): ResponseEntity<List<DashboardAtendimentoGraficoDtoPersonalizado>> {
         return ResponseEntity.status(200).body(dashboardService.atendimentoGraficoPersonalizado(dataInicio, dataFim))
     }
 

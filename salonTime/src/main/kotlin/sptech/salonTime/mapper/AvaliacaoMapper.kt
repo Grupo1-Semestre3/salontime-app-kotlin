@@ -15,6 +15,7 @@ class AvaliacaoMapper {
                 dataAgendamento = (avaliacao.agendamento?.data ?: "Data não informada").toString(),
                 agendamentoId = avaliacao.agendamento?.id ?: 0,
                 nomeFuncionario = avaliacao.agendamento?.funcionario?.nome ?: "Funcionário não informado",
+                idUsuario = avaliacao.usuario?.id ?: 0,
                 nomeUsuario = avaliacao.agendamento?.usuario?.nome ?: "Usuário não informado",
                 notaServico = avaliacao.notaServico ?: 0,
                 descricaoServico = avaliacao.descricaoServico ?: "",

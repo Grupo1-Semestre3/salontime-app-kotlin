@@ -370,6 +370,7 @@ class AgendamentoService(
             if(points.pointsParcial.toInt().toLong() == points.pointsTotal){
                 val cupom = gerarCupom()
                 val novoCupom = Cupom(
+                    nome = "Marina Points",
                     codigo = cupom,
                     descricao = "Cupom de ${points.porcentagemCupom}% de desconto por acumulo de pontos",
                     inicio = LocalDate.now(),

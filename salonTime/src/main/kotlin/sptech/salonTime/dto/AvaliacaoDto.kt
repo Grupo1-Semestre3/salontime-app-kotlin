@@ -9,6 +9,7 @@ data class AvaliacaoDto(
     val dataAgendamento: String,
     val agendamentoId: Int,
     val nomeFuncionario: String,
+    val idUsuario: Int,
     val nomeUsuario: String,
     val notaServico: Int,
     val descricaoServico: String,

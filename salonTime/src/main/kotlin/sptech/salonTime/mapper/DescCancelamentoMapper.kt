@@ -15,6 +15,7 @@ class DescCancelamentoMapper {
                     agendamentoId = it,
                     nomeServico = agendamento.servico?.nome ?: "",
                     dataServico = agendamento.data.toString(),
+                    idCliente = agendamento.usuario?.id ?: 0,
                     nomeCliente = agendamento.usuario?.nome ?: "",
                     emailCliente = agendamento.usuario?.email ?: "",
                     nomeFuncionario = agendamento.funcionario?.nome ?: "",

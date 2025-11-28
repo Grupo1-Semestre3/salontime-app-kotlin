@@ -15,7 +15,7 @@ interface CupomRepository : JpaRepository<Cupom, Int> {
         value = """
 SELECT
     CASE
-        WHEN a.total_agendamentos % cc.intervalo_atendimento = 0 
+        WHEN a.total_agendamentos % cc.intervalo_atendimento = 0
              AND a.total_agendamentos > 0
         THEN cc.intervalo_atendimento
         ELSE a.total_agendamentos % cc.intervalo_atendimento

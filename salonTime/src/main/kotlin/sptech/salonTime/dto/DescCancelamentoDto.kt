@@ -6,6 +6,7 @@ data class DescCancelamentoDto(
     val agendamentoId: Int,
     val nomeServico: String,
     val dataServico: String,
+    val idCliente: Int,
     val nomeCliente: String,
     val emailCliente: String,
     val nomeFuncionario: String,
