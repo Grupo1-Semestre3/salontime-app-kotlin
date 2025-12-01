@@ -47,6 +47,7 @@ class AvaliacaoServiceTest {
         dataAgendamento = "2025-01-01",
         agendamentoId = 1,
         nomeFuncionario = "João",
+        idUsuario = 1,
         nomeUsuario = "Maria",
         notaServico = 5,
         descricaoServico = "Muito bom",

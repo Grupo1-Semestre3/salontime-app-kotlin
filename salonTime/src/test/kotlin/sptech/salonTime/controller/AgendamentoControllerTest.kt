@@ -118,7 +118,6 @@ class AgendamentoControllerTest {
             pagamento = 1,
             data = LocalDate.now(),
             inicio = LocalTime.of(10, 0),
-            fim = LocalTime.of(11, 0),
             preco = 50.0
         )
 
@@ -136,8 +135,8 @@ class AgendamentoControllerTest {
     fun patch() {
 
         val id = 1
-        val atributo = "statusAgendamento"
-        val novoValor = "Cancelado"
+        val atributo = "status"
+        val novoValor = "2"
 
         Mockito.`when`(service.atualizarAtributo(id, atributo, novoValor)).thenReturn(agendamentoDto)
 

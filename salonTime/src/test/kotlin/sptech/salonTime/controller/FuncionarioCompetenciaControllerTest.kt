@@ -55,7 +55,7 @@ class FuncionarioCompetenciaControllerTest {
  @DisplayName("Consulta registros de FuncionarioCompetencia por serviço")
  fun listarPorServico() {
   val usuarioDto = UsuarioDto(1, TipoUsuarioDto(1, "s"), "123456789", "Fulano", "123456789", "123456789")
-  val dto = FuncionarioCompetenciaDto(1, usuarioDto)
+  val dto = FuncionarioCompetenciaDto(1, usuarioDto, null)
   `when`(service.listarPorServico(1)).thenReturn(listOf(dto))
 
   val response = controller.listarPorServico(1)

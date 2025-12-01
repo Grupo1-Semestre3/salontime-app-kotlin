@@ -3,7 +3,9 @@ package sptech.salonTime.service
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
 import sptech.salonTime.entidade.Cupom
+import sptech.salonTime.repository.CupomConfiguracaoRepository
 import sptech.salonTime.repository.CupomRepository
+import sptech.salonTime.repository.UsuarioRepository
 import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -11,7 +13,9 @@ import kotlin.test.assertNull
 class CupomServiceTest {
 
  private val repository = mock(CupomRepository::class.java)
- private val service = CupomService(repository)
+ private val usuarioRepository = mock(UsuarioRepository::class.java)
+ private val cupomConfiguracaoRepository = mock(CupomConfiguracaoRepository::class.java)
+ private val service = CupomService(repository, usuarioRepository, cupomConfiguracaoRepository)
 
  private val cupom = Cupom(
   id = 1,

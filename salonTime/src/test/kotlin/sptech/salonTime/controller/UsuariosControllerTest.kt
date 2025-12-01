@@ -5,10 +5,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
 import org.springframework.http.HttpStatus
-import sptech.salonTime.dto.CadastroUsuarioDto
-import sptech.salonTime.dto.EmailDto
-import sptech.salonTime.dto.SenhaDto
-import sptech.salonTime.dto.UsuarioPublicoDto
+import sptech.salonTime.dto.*
 import sptech.salonTime.entidade.TipoUsuario
 import sptech.salonTime.entidade.Usuario
 import sptech.salonTime.service.UsuarioService
@@ -135,14 +132,19 @@ class UsuariosControllerTest {
     @Test
     @DisplayName("Faz login do usuário")
     fun login() {
-        `when`(service.listarPorId(1)).thenReturn(usuario)
-        `when`(service.login(1)).thenReturn(usuario)
 
-        val response = controller.login(1)
+        val loginDto = LoginDto(
+           email = "m@gmail.com", senha = "123456"
+        )
+
+        `when`(service.listarPorId(1)).thenReturn(usuario)
+        `when`(service.login(loginDto)).thenReturn(usuario)
+
+        val response = controller.login(loginDto)
 
         assertEquals(HttpStatus.OK, response.statusCode)
         assertEquals(usuario, response.body)
-        verify(service).login(1)
+        verify(service).login(loginDto)
     }
 
     @Test
@@ -161,7 +163,7 @@ class UsuariosControllerTest {
     @Test
     @DisplayName("Altera a senha do usuário")
     fun mudarSenha() {
-        val novaSenha = SenhaDto("novaSenha123")
+        val novaSenha = SenhaDto("senha123", "novaSenha123")
         `when`(service.listarPorId(1)).thenReturn(usuario)
         `when`(service.mudarSenha(1, novaSenha)).thenReturn(usuario)
 

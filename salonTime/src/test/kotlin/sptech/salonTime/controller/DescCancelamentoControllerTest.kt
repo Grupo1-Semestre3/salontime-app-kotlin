@@ -22,6 +22,7 @@ class DescCancelamentoControllerTest {
   agendamentoId = 10,
   nomeServico = "Corte de cabelo",
   dataServico = "2025-06-01T10:00:00",
+  idCliente = 5,
   nomeCliente = "João",
   emailCliente = "joao@email.com",
   nomeFuncionario = "Carlos",
@@ -68,15 +69,16 @@ class DescCancelamentoControllerTest {
   )
 
   val criado = DescCancelamentoDto(
-   id = 1, // Substitua pelo ID correto
+   id = 1,
    descricao = "Cliente desistiu",
-   agendamentoId = novoCancelamento.agendamento?.id ?: 0, // Substitua pelo ID do agendamento
-   nomeServico = "Serviço não informado", // Substitua pelo nome do serviço correto
-   dataServico = "2025-06-01T10:00:00", // Substitua pela data correta
-   nomeCliente = "Cliente não informado", // Substitua pelo nome do cliente correto
-   emailCliente = "email@cliente.com", // Substitua pelo email correto
-   nomeFuncionario = "Funcionário não informado", // Substitua pelo nome do funcionário correto
-   emailFuncionario = "email@funcionario.com" // Substitua pelo email correto
+   agendamentoId = novoCancelamento.agendamento?.id ?: 0,
+   nomeServico = "Serviço não informado",
+   dataServico = "2025-06-01T10:00:00",
+    idCliente = 5,
+   nomeCliente = "Cliente não informado",
+   emailCliente = "email@cliente.com",
+   nomeFuncionario = "Funcionário não informado",
+   emailFuncionario = "email@funcionario.com"
   )
 
   `when`(service.criar(novoCancelamento)).thenReturn(criado)

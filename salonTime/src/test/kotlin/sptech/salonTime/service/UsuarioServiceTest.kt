@@ -4,10 +4,12 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
 import sptech.salonTime.dto.CadastroUsuarioDto
+import sptech.salonTime.dto.LoginDto
 import sptech.salonTime.dto.SenhaDto
 import sptech.salonTime.entidade.TipoUsuario
 import sptech.salonTime.entidade.Usuario
 import sptech.salonTime.exception.UsuarioNaoEncontradoException
+import sptech.salonTime.repository.FuncionamentoRepository
 import sptech.salonTime.repository.TipoUsuarioRepository
 import sptech.salonTime.repository.UsuarioRepository
 import java.time.LocalDateTime
@@ -17,7 +19,8 @@ class UsuarioServiceTest {
 
     private val usuarioRepository = mock(UsuarioRepository::class.java)
     private val tipoUsuarioRepository = mock(TipoUsuarioRepository::class.java)
-    private val service = UsuarioService(usuarioRepository, tipoUsuarioRepository)
+    private val funcionametoRepository = mock(FuncionamentoRepository::class.java)
+    private val service = UsuarioService(usuarioRepository, tipoUsuarioRepository, funcionametoRepository)
 
 
     val dto = CadastroUsuarioDto(
@@ -96,10 +99,10 @@ class UsuarioServiceTest {
     fun `mudarSenha deve alterar a senha do usuário`() {
         val usuario = usuarioMock
 
-        val novaSenha = SenhaDto("novaSenha123")
+        val novaSenha = SenhaDto("senha123", "novaSenha123")
 
         `when`(usuarioRepository.findById(1)).thenReturn(Optional.of(usuario))
-        `when`(usuarioRepository.save(any())).thenReturn(usuario.copy(senha = novaSenha.senha))
+        `when`(usuarioRepository.save(any())).thenReturn(usuario.copy(senha = novaSenha.novaSenha))
 
         val atualizado = service.mudarSenha(1, novaSenha)
 
@@ -108,16 +111,42 @@ class UsuarioServiceTest {
     }
 
     @Test
-    fun `login deve ativar login quando usuário está ativo`() {
-        val usuario = usuarioMock
+    fun `login deve ativar login quando credenciais estao corretas`() {
+        val usuario = Usuario(
+            id = 1,
+            tipoUsuario = TipoUsuario(2, "CLIENTE"),
+            nome = "Maria",
+            telefone = "11999999999",
+            cpf = "12345678900",
+            email = "m@gmail.com",
+            senha = "123",
+            login = false
+        )
 
-        `when`(usuarioRepository.findById(1)).thenReturn(Optional.of(usuario))
-        `when`(usuarioRepository.save(any())).thenReturn(usuario.copy(login = true))
+        val loginDto = LoginDto(
+            email = "m@gmail.com",
+            senha = "123"
+        )
 
-        val resultado = service.login(1)
+        // Mock do método usado no login
+        `when`(usuarioRepository.login(loginDto.email, loginDto.senha))
+            .thenReturn(usuario)
 
+        // Mockando o save: o retorno deve ser o usuário já com login = true
+        `when`(usuarioRepository.save(any()))
+            .thenAnswer { invocation ->
+                val u = invocation.arguments[0] as Usuario
+                u.copy(login = true)
+            }
+
+        val resultado = service.login(loginDto)
+
+        // Verificações
         assertTrue(resultado.login)
+        assertEquals("m@gmail.com", resultado.email)
+        verify(usuarioRepository).login("m@gmail.com", "123")
         verify(usuarioRepository).save(any())
     }
+
 
 }
