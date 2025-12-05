@@ -3,8 +3,10 @@ package sptech.salonTime.controller
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito
 import org.mockito.Mockito.*
 import org.springframework.http.HttpStatus
+import sptech.salonTime.dto.PointsDto
 import sptech.salonTime.entidade.Cupom
 import sptech.salonTime.service.CupomService
 import java.time.LocalDate
@@ -78,4 +80,23 @@ class CupomControllerTest {
   assertEquals(HttpStatus.NO_CONTENT, response.statusCode)
   verify(service).deletar(1)
  }
+
+ @Test
+ fun `calcularPoints deve retornar PointsDto quando service retornar valores`() {
+  val idUsuario = 1
+
+  val dto = PointsDto(
+   pointsParcial = 3,
+   pointsTotal = 5,
+   porcentagemCupom = 20
+  )
+
+  Mockito.`when`(service.calcularPoints(idUsuario)).thenReturn(dto)
+
+  val response = controller.points(idUsuario)
+
+  assertEquals(200, response.statusCode.value())
+  assertEquals(dto, response.body)
+ }
+
 }

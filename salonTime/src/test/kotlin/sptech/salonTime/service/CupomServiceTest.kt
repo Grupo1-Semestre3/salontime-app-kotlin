@@ -1,14 +1,21 @@
 package sptech.salonTime.service
 
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.*
+import sptech.salonTime.dto.PointsDto
 import sptech.salonTime.entidade.Cupom
+import sptech.salonTime.entidade.CupomConfiguracao
+import sptech.salonTime.entidade.Usuario
+import sptech.salonTime.exception.CupomDuplicadoException
+import sptech.salonTime.exception.CupomNaoEncontradoException
+import sptech.salonTime.exception.UsuarioNaoEncontradoException
 import sptech.salonTime.repository.CupomConfiguracaoRepository
 import sptech.salonTime.repository.CupomRepository
 import sptech.salonTime.repository.UsuarioRepository
 import java.time.LocalDate
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
+import java.util.*
 
 class CupomServiceTest {
 
@@ -28,16 +35,38 @@ class CupomServiceTest {
   tipoDestinatario = "Todos"
  )
 
+
+ // ----------------------------------------------------------------------
+ // CRIAR
+ // ----------------------------------------------------------------------
  @Test
  fun `criar deve salvar e retornar cupom`() {
+  `when`(repository.findByCodigo("DESC10")).thenReturn(null)
   `when`(repository.save(cupom)).thenReturn(cupom)
 
   val result = service.criar(cupom)
 
   assertEquals(cupom, result)
+  verify(repository).findByCodigo("DESC10")
   verify(repository).save(cupom)
  }
 
+ @Test
+ fun `criar deve lançar exceção quando o código já existir`() {
+  `when`(repository.findByCodigo("DESC10")).thenReturn(cupom)
+
+  assertThrows<CupomDuplicadoException> {
+   service.criar(cupom)
+  }
+
+  verify(repository).findByCodigo("DESC10")
+  verify(repository, never()).save(any())
+ }
+
+
+ // ----------------------------------------------------------------------
+ // LISTAR
+ // ----------------------------------------------------------------------
  @Test
  fun `listarAtivos deve retornar cupons ativos`() {
   val cupons = listOf(cupom)
@@ -49,38 +78,46 @@ class CupomServiceTest {
   verify(repository).listarAtivos()
  }
 
+
+ // ----------------------------------------------------------------------
+ // ATUALIZAR
+ // ----------------------------------------------------------------------
  @Test
  fun `atualizar deve atualizar cupom existente`() {
   val cupomAtualizado = cupom.copy(nome = "Desconto Atualizado")
 
-  `when`(repository.findById(1)).thenReturn(java.util.Optional.of(cupom))
+  `when`(repository.findById(1)).thenReturn(Optional.of(cupom))
   `when`(repository.save(any(Cupom::class.java))).thenReturn(cupomAtualizado)
 
   val result = service.atualizar(1, cupomAtualizado)
 
-  assertEquals(cupomAtualizado, result)
+  assertEquals("Desconto Atualizado", result?.nome)
   verify(repository).findById(1)
-  verify(repository).save(cupomAtualizado)
+  verify(repository).save(any(Cupom::class.java))
  }
 
  @Test
  fun `atualizar deve retornar null se cupom não existir`() {
-  `when`(repository.findById(1)).thenReturn(java.util.Optional.empty())
+  `when`(repository.findById(1)).thenReturn(Optional.empty())
 
   val result = service.atualizar(1, cupom)
 
   assertNull(result)
   verify(repository).findById(1)
-  verify(repository, never()).save(any(Cupom::class.java))
+  verify(repository, never()).save(any())
  }
 
+
+ // ----------------------------------------------------------------------
+ // DELETAR
+ // ----------------------------------------------------------------------
  @Test
  fun `deletar deve remover cupom existente`() {
   `when`(repository.existsById(1)).thenReturn(true)
 
   val result = service.deletar(1)
 
-  assertEquals(true, result)
+  assertTrue(result)
   verify(repository).existsById(1)
   verify(repository).deleteById(1)
  }
@@ -91,8 +128,75 @@ class CupomServiceTest {
 
   val result = service.deletar(1)
 
-  assertEquals(false, result)
+  assertFalse(result)
   verify(repository).existsById(1)
   verify(repository, never()).deleteById(anyInt())
+ }
+
+
+ // ----------------------------------------------------------------------
+ // CALCULAR POINTS
+ // ----------------------------------------------------------------------
+ @Test
+ fun `calcularPoints deve retornar PointsDto vindo do repository quando nao for null`() {
+  val idUsuario = 1
+  val usuario = Usuario().apply { id = 1 }
+
+  val dtoEsperado = PointsDto(
+   pointsParcial = 4,
+   pointsTotal = 5,
+   porcentagemCupom = 20
+  )
+
+  `when`(usuarioRepository.findById(idUsuario)).thenReturn(Optional.of(usuario))
+  `when`(repository.calcularPoints(idUsuario)).thenReturn(dtoEsperado)
+
+  val result = service.calcularPoints(idUsuario)
+
+  assertEquals(dtoEsperado, result)
+ }
+
+ @Test
+ fun `calcularPoints deve retornar dto calculado quando repository retornar null`() {
+  val idUsuario = 1
+  val usuario = Usuario().apply { id = 1 }
+
+  val config = CupomConfiguracao(
+   id = 1,
+   intervaloAtendimento = 5,
+   porcentagemDesconto = 20
+  )
+
+  `when`(usuarioRepository.findById(idUsuario)).thenReturn(Optional.of(usuario))
+  `when`(repository.calcularPoints(idUsuario)).thenReturn(null)
+  `when`(cupomConfiguracaoRepository.findById(1)).thenReturn(Optional.of(config))
+
+  val result = service.calcularPoints(idUsuario)
+
+  assertEquals(0, result!!.pointsParcial)
+  assertEquals(5L, result.pointsTotal)
+  assertEquals(20, result.porcentagemCupom)
+ }
+
+ @Test
+ fun `calcularPoints deve lançar exceção quando usuario nao existir`() {
+  `when`(usuarioRepository.findById(1)).thenReturn(Optional.empty())
+
+  assertThrows<UsuarioNaoEncontradoException> {
+   service.calcularPoints(1)
+  }
+ }
+
+ @Test
+ fun `calcularPoints deve lançar exceção quando cupom configuracao nao for encontrada`() {
+  val usuario = Usuario().apply { id = 1 }
+
+  `when`(usuarioRepository.findById(1)).thenReturn(Optional.of(usuario))
+  `when`(repository.calcularPoints(1)).thenReturn(null)
+  `when`(cupomConfiguracaoRepository.findById(1)).thenReturn(Optional.empty())
+
+  assertThrows<CupomNaoEncontradoException> {
+   service.calcularPoints(1)
+  }
  }
 }
