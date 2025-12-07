@@ -106,8 +106,12 @@ WHERE
 
 from vw_agendamentos_mensal atual
 left join vw_agendamentos_mensal anterior
-    on anterior.ano = atual.ano
-    and anterior.mes = atual.mes - 1
+    on (
+        (anterior.ano = atual.ano AND anterior.mes = atual.mes - 1)
+        OR
+        (atual.mes = 1 AND anterior.ano = atual.ano - 1 AND anterior.mes = 12)
+    )
+    
 
 where atual.ano = :ano and atual.mes = :mes;
 

@@ -78,8 +78,13 @@ interface AgendamentoRepository: JpaRepository<Agendamento, Int> {
 
     @Query(
         nativeQuery = true, value = """
-        SELECT * FROM agendamento WHERE (data < CURDATE() AND usuario_id = :idUser) OR (data = CURDATE() AND inicio < CURTIME()) ORDER BY data DESC, inicio DESC
-    """
+         SELECT * 
+        FROM agendamento 
+        WHERE 
+            usuario_id = :idUser
+            AND status_agendamento_id = 5
+        ORDER BY data DESC, inicio DESC
+        """
     )
     fun buscarAgendamentosPassadosPorUsuario(idUser: Int): List<Agendamento>
 
